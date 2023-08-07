@@ -33,7 +33,7 @@ class Board
         reducer.dispatch(
           Action.new(
             type: Action::FILL_CELL,
-            id: i,
+            cell_id: i,
             value: char.to_i,
             initial: true
           )
@@ -66,6 +66,20 @@ class Board
 
   def find_cell(cell_id)
     state[:cells][cell_id]
+  end
+
+  def valid?
+    rows.each do |row|
+      self.errors += row.errors unless row.valid?
+    end
+    columns.each do |col|
+      self.errors += col.errors unless col.valid?
+    end
+    boxes.each do |box|
+      self.errors += box.errors unless box.valid?
+    end
+
+    errors.empty?
   end
 
   def print

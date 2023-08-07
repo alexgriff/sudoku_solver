@@ -16,7 +16,7 @@ class Solve
       while fillable_cells.any?
         fillable_cells.each do |cell|
           board.reducer.dispatch(
-            Action.new(type: Action::FILL_CELL, id: cell.id, value: cell.candidates.last)
+            Action.new(type: Action::FILL_CELL, cell_id: cell.id, value: cell.candidates.last)
           )
         end
         fillable_cells = board.empty_cells.select(&:has_one_remaining_candidate?)

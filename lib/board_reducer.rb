@@ -59,7 +59,7 @@ class Board::Reducer
   private
 
   def fill_cell(state, action)
-    fillable_cell = state[action.id]
+    fillable_cell = state[action.cell_id]
     row = Row.for_cell(board, fillable_cell)
     col = Column.for_cell(board, fillable_cell)
     box = Box.for_cell(board, fillable_cell)
@@ -71,7 +71,7 @@ class Board::Reducer
     state.map do |cell|
       if cell == fillable_cell
         Cell.new(
-          id: action.id,
+          id: action.cell_id,
           value: action.value,
           candidates: []
         )
@@ -89,9 +89,9 @@ class Board::Reducer
 
   def update_candidates(state, action)
     state_copy = state.dup
-    cell = state[action.id]
+    cell = state[action.cell_id]
     
-    state_copy[action.id] = Cell.new(
+    state_copy[action.cell_id] = Cell.new(
         id: cell.id,
         value: cell.value,
         candidates: action.new_candidates

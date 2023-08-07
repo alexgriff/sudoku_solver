@@ -43,7 +43,7 @@ class Strategy
         board.reducer.dispatch(
           Action.new(
             type: Action::FILL_CELL,
-            id: cell_id,
+            cell_id: cell_id,
             value: uniq_candidate,
             strategy: name
           )
@@ -76,7 +76,7 @@ class Strategy
             board.reducer.dispatch(
               Action.new(
                 type: Action::UPDATE_CANDIDATES,
-                id: non_paired_cell.id,
+                cell_id: non_paired_cell.id,
                 new_candidates: new_candidates,
                 strategy: name
               )
@@ -112,7 +112,7 @@ class Strategy
           board.reducer.dispatch(
             Action.new(
               type: Action::UPDATE_CANDIDATES,
-              id: outside_cell_id,
+              cell_id: outside_cell_id,
               new_candidates: new_candidates,
               strategy: name
             )
@@ -153,7 +153,7 @@ class Strategy
               board.reducer.dispatch(
                 Action.new(
                   type: Action::UPDATE_CANDIDATES,
-                  id: third_box_cell.id,
+                  cell_id: third_box_cell.id,
                   new_candidates: third_box_cell.candidates - [cand],
                   strategy: name
                 )
@@ -182,7 +182,7 @@ class Strategy
               board.reducer.dispatch(
                 Action.new(
                   type: Action::UPDATE_CANDIDATES,
-                  id: third_box_cell.id,
+                  cell_id: third_box_cell.id,
                   new_candidates: third_box_cell.candidates - [cand],
                   strategy: name
                 )
@@ -217,7 +217,7 @@ class Strategy
           board.reducer.dispatch(
             Action.new(
               type: Action::UPDATE_CANDIDATES,
-              id: paired_cell.id,
+              cell_id: paired_cell.id,
               new_candidates: cand_pair,
               strategy: name
             )

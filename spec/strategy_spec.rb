@@ -30,7 +30,7 @@ describe Strategy do
       strategy.apply(board)
       expect(board.find_cell(21).value).to eq(6)
       action = board.reducer.history.find do |actn|
-        actn.id == 21 &&
+        actn.cell_id == 21 &&
         actn.type == Action::FILL_CELL &&
         actn.strategy == Strategy::HIDDEN_SINGLE
       end
@@ -69,7 +69,7 @@ describe Strategy do
       expect(board.find_cell(64).candidates).to eq([7])
       
       action = board.reducer.history.find do |actn|
-        actn.id == 64 &&
+        actn.cell_id == 64 &&
         actn.type == Action::UPDATE_CANDIDATES &&
         actn.strategy == Strategy::NAKED_PAIR
       end
@@ -108,7 +108,7 @@ describe Strategy do
       expect(board.find_cell(24).candidates).to eq([3])
       
       action = board.reducer.history.find do |actn|
-        actn.id == 24 &&
+        actn.cell_id == 24 &&
         actn.type == Action::UPDATE_CANDIDATES &&
         actn.strategy == Strategy::LOCKED_CANDIDATES_POINTING
       end
@@ -146,7 +146,7 @@ describe Strategy do
       expect(board.find_cell(19).candidates).to eq([4])
       
       action = board.reducer.history.find do |actn|
-        actn.id == 19 &&
+        actn.cell_id == 19 &&
         actn.type == Action::UPDATE_CANDIDATES &&
         actn.strategy == Strategy::LOCKED_CANDIDATES_CLAIMING
       end
@@ -184,7 +184,7 @@ describe Strategy do
       expect(board.find_cell(44).candidates).to eq([1, 9])
       
       action = board.reducer.history.find do |actn|
-        actn.id == 44 &&
+        actn.cell_id == 44 &&
         actn.type == Action::UPDATE_CANDIDATES &&
         actn.strategy == Strategy::HIDDEN_PAIR
       end
