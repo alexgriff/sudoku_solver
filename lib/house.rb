@@ -36,7 +36,7 @@ class House
   end
 
   def cell_ids
-    @cell_ids ||= (0..80).to_a.select do |i|
+    @cell_ids ||= (0..(Board::NUM_CELLS - 1)).to_a.select do |i|
       Cell.new(id: i).send(self.class.house_id_method) == id
     end
   end

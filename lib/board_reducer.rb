@@ -46,7 +46,7 @@ class Board::Reducer
   def cells_reducer(state, action)
     case action.type
       when Action::INIT
-        (0..80).to_a.map { |i| Cell.new(id: i) }
+        (0..(Board::NUM_CELLS - 1)).to_a.map { |i| Cell.new(id: i) }
       when Action::FILL_CELL
         fill_cell(state, action)
       when Action::UPDATE_CANDIDATES

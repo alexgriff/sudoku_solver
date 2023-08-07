@@ -1,5 +1,8 @@
 class Board
   READABILITY_CHARACTERS = [' ', '|', '-'].freeze
+  SIZE = 9
+  NUM_CELLS = SIZE * SIZE
+
 
   def self.from_txt(txt)
     board_str = txt.split("\n").map do |row|
@@ -16,9 +19,9 @@ class Board
   attr_reader :cells, :state, :columns, :rows, :boxes, :reducer, :errors
 
   def initialize(initial_data)
-    @columns = (0..8).to_a.map { |id| Column.new(id: id, board: self) }
-    @rows = (0..8).to_a.map { |id| Row.new(id: id, board: self)}
-    @boxes = (0..8).to_a.map { |id| Box.new(id: id, board: self) }
+    @columns = (0..SIZE-1).to_a.map { |id| Column.new(id: id, board: self) }
+    @rows = (0..SIZE-1).to_a.map { |id| Row.new(id: id, board: self)}
+    @boxes = (0..SIZE-1).to_a.map { |id| Box.new(id: id, board: self) }
     @errors = []
     
     @reducer = Board::Reducer.new(self)
