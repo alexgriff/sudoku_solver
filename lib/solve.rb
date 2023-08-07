@@ -1,8 +1,9 @@
 class Solve
-  attr_reader :strategies, :with_summary
+  attr_reader :strategies, :display, :with_summary
 
-  def initialize(strategies = Strategy::BASIC, with_summary: false)
+  def initialize(strategies: Strategy::BASIC, display: false, with_summary: false)
     @strategies = strategies.map { |name| Strategy.new(name) }
+    @display = display
     @with_summary = with_summary
   end
   
@@ -17,6 +18,7 @@ class Solve
     end
 
     if board.solved? || !board.touched?
+      board.print if display
       puts(board.summary) if with_summary
       board.solved?
     else

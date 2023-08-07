@@ -174,7 +174,7 @@ def summary
 
     initial_solveable_cell_count = history.where(strategy: Strategy::NAKED_SINGLE).length
     initial_solveable_cell_count_msg = "Cells initially solveable 'by sudoku': #{initial_solveable_cell_count}"
-    
+
     hidden_single_cell_count = history.where(strategy: Strategy::HIDDEN_SINGLE).length
     hidden_single_cell_count_msg = "Hidden singles: #{hidden_single_cell_count}"
 
@@ -189,7 +189,7 @@ def summary
       strategy: Strategy::NAKED_PAIR
     ).length
     solveable_after_naked_pair_cells_count_msg = "Cells solveable 'by sudoku' after identifying naked pair: #{solveable_after_naked_pair_cells_count}"
-    
+
     aligned_candidates_in_box = history.where(
       strategy: Strategy::LOCKED_CANDIDATES_POINTING,
       type: Action::UPDATE_CANDIDATES,
@@ -201,7 +201,7 @@ def summary
       strategy: Strategy::LOCKED_CANDIDATES_POINTING
     ).length
     solveable_after_aligned_candidates_cells_count_msg = "Cells solveable 'by sudoku' after identifying locked candidate alignment: #{solveable_after_aligned_candidates_cells_count}"
-    
+
     claiming_lines = history.where(
       strategy: Strategy::LOCKED_CANDIDATES_CLAIMING,
       type: Action::UPDATE_CANDIDATES,
@@ -230,6 +230,7 @@ def summary
     )
 
     [
+      "\n",
       "Solved: #{solved?}",
       initial_filled_cell_count_msg,
       initial_solveable_cell_count_msg,
@@ -242,8 +243,7 @@ def summary
       solveable_after_claiming_lines_cells_count_msg,
       hidden_pairs_msg,
       "Passes: #{state[:passes]}",
-      "Cells accounted for: #{total_count}",
-      "\n"
+      total_count
     ].join("\n")
   end
 
