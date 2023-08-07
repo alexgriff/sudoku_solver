@@ -8,15 +8,19 @@ class Board::Reducer
 
   def dispatch(action)
     history << action
-    board.state = {
-      touched: touched_reducer(board.state[:touched], action),
-      passes: passes_reducer(board.state[:passes], action),
-      cells: cells_reducer(board.state[:cells], action)
-    }
+    board.set_state(
+      {
+        touched: touched_reducer(board.state[:touched], action),
+        passes: passes_reducer(board.state[:passes], action),
+        cells: cells_reducer(board.state[:cells], action)
+      }
+    )
   end
 
   def touched_reducer(state, action)
     case action.type
+      when Action::INIT
+        false
       when Action::FILL_CELL
         true
       when Action::UPDATE_CANDIDATES
@@ -30,6 +34,8 @@ class Board::Reducer
 
   def passes_reducer(state, action)
     case action.type
+      when Action::INIT
+        0
       when  Action::NEW_PASS
         state + 1
       else
@@ -39,6 +45,8 @@ class Board::Reducer
 
   def cells_reducer(state, action)
     case action.type
+      when Action::INIT
+        (0..80).to_a.map { |i| Cell.new(id: i) }
       when Action::FILL_CELL
         fill_cell(state, action)
       when Action::UPDATE_CANDIDATES

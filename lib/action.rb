@@ -1,4 +1,5 @@
 class Action
+  INIT = :init
   NEW_PASS = :new_pas
   FILL_CELL = :fill_cell
   UPDATE_CANDIDATES = :update_candidates

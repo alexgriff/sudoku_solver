@@ -14,20 +14,15 @@ class Board
   end
 
   attr_reader :cells, :state, :columns, :rows, :boxes, :reducer
-  attr_writer :state
 
   def initialize(initial_data)
     @columns = (0..8).to_a.map { |id| Column.new(id: id, board: self) }
     @rows = (0..8).to_a.map { |id| Row.new(id: id, board: self)}
     @boxes = (0..8).to_a.map { |id| Box.new(id: id, board: self) }
     
-    @state = { 
-      touched: false,
-      passes: 0,
-      cells: initial_data.map.with_index { |_char, i| Cell.new(id: i) }
-    }
-
     @reducer = Board::Reducer.new(self)
+    @state = {}
+    reducer.dispatch(Action.new(type: Action::INIT))
     
     initial_data.each.with_index do |char, i|
       if char != Cell::EMPTY
@@ -41,6 +36,10 @@ class Board
         )
       end
     end
+  end
+
+  def set_state(state)
+    @state = state
   end
 
   def empty_cells
