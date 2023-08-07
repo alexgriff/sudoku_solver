@@ -1,4 +1,5 @@
 class Strategy
+  NAKED_SINGLE = :naked_single
   HIDDEN_SINGLE = :hidden_single
   NAKED_PAIR = :naked_pair
   LOCKED_CANDIDATES_POINTING = :locked_candidates_pointing
@@ -77,6 +78,7 @@ class Strategy
               Action.new(
                 type: Action::UPDATE_CANDIDATES,
                 cell_id: non_paired_cell.id,
+                naked_pair_cell_id: cell.id,
                 new_candidates: new_candidates,
                 strategy: name
               )
@@ -114,7 +116,8 @@ class Strategy
               type: Action::UPDATE_CANDIDATES,
               cell_id: outside_cell_id,
               new_candidates: new_candidates,
-              strategy: name
+              strategy: name,
+              locked_alignment_id: "Box-#{box.id}|#{line_house.class.to_s}-#{line_house.id}|#{candidate}"
             )
           )
         end
@@ -155,7 +158,8 @@ class Strategy
                   type: Action::UPDATE_CANDIDATES,
                   cell_id: third_box_cell.id,
                   new_candidates: third_box_cell.candidates - [cand],
-                  strategy: name
+                  strategy: name,
+                  claiming_box_id: "Box-#{third_box.id}|Row-#{row.id}|#{cand}"
                 )
               )
             end
@@ -184,7 +188,8 @@ class Strategy
                   type: Action::UPDATE_CANDIDATES,
                   cell_id: third_box_cell.id,
                   new_candidates: third_box_cell.candidates - [cand],
-                  strategy: name
+                  strategy: name,
+                  claiming_box_id: "Box-#{third_box.id}|Col-#{col.id}|#{cand}"
                 )
               )
             end
@@ -219,6 +224,7 @@ class Strategy
               type: Action::UPDATE_CANDIDATES,
               cell_id: paired_cell.id,
               new_candidates: cand_pair,
+              paired_cell_id: cell.id,
               strategy: name
             )
           )

@@ -113,13 +113,17 @@ class Board::Reducer
     end
 
     def find(**kwargs)
-      select(**kwargs).first
+      where(**kwargs).first
     end
 
-    def select(**kwargs)
+    def where(**kwargs)
       @history.select do |action|
         kwargs.all? do |key, val|
-          action.respond_to?(key) ? action.send(key) == val : false
+          if val == nil
+            !action.respond_to?(key) || !action.send(key)
+          else
+            action.respond_to?(key) ? action.send(key) == val : false
+          end
         end
       end
     end

@@ -35,7 +35,7 @@ class Board
             type: Action::FILL_CELL,
             cell_id: i,
             value: char.to_i,
-            initial: true
+            init_board: true
           )
         )
       end
@@ -164,18 +164,87 @@ class Board
     "#<#{self.class.name}:0x#{object_id.to_s(16).rjust(16, '0')}>"
   end
 
-  def valid?
-    rows.each do |row|
-      self.errors += row.errors unless row.valid?
-    end
-    columns.each do |col|
-      self.errors += col.errors unless col.valid?
-    end
-    boxes.each do |box|
-      self.errors += box.errors unless box.valid?
-    end
+  def history
+    reducer.history
+  end
 
-    errors.empty?
+def summary
+    initial_filled_cell_count = history.where(init_board: true).length
+    initial_filled_cell_count_msg = "Filled cells at start: #{initial_filled_cell_count}"
+
+    initial_solveable_cell_count = history.where(strategy: Strategy::NAKED_SINGLE).length
+    initial_solveable_cell_count_msg = "Cells initially solveable 'by sudoku': #{initial_solveable_cell_count}"
+    
+    hidden_single_cell_count = history.where(strategy: Strategy::HIDDEN_SINGLE).length
+    hidden_single_cell_count_msg = "Hidden singles: #{hidden_single_cell_count}"
+
+    naked_pairs = history.where(
+      strategy: Strategy::NAKED_PAIR,
+      type: Action::UPDATE_CANDIDATES,
+    ).map(&:naked_pair_cell_id).uniq.length
+    naked_pairs_msg = "Naked pairs: #{naked_pairs}"
+
+    solveable_after_naked_pair_cells_count = history.where(
+      type: Action::FILL_CELL,
+      strategy: Strategy::NAKED_PAIR
+    ).length
+    solveable_after_naked_pair_cells_count_msg = "Cells solveable 'by sudoku' after identifying naked pair: #{solveable_after_naked_pair_cells_count}"
+    
+    aligned_candidates_in_box = history.where(
+      strategy: Strategy::LOCKED_CANDIDATES_POINTING,
+      type: Action::UPDATE_CANDIDATES,
+    ).map(&:locked_alignment_id).uniq.length
+    aligned_candidates_in_box_msg = "Lines with locked candidates aligned in same box: #{aligned_candidates_in_box}"
+
+    solveable_after_aligned_candidates_cells_count = history.where(
+      type: Action::FILL_CELL,
+      strategy: Strategy::LOCKED_CANDIDATES_POINTING
+    ).length
+    solveable_after_aligned_candidates_cells_count_msg = "Cells solveable 'by sudoku' after identifying locked candidate alignment: #{solveable_after_aligned_candidates_cells_count}"
+    
+    claiming_lines = history.where(
+      strategy: Strategy::LOCKED_CANDIDATES_CLAIMING,
+      type: Action::UPDATE_CANDIDATES,
+    ).map(&:claiming_box_id).uniq.length
+    claiming_lines_msg = "Lines with 'claimed' candidate from 2 intersecting lines of aligned locked candidates: #{claiming_lines}"
+
+    solveable_after_claiming_lines_cells_count = history.where(
+      type: Action::FILL_CELL,
+      strategy: Strategy::LOCKED_CANDIDATES_CLAIMING
+    ).length
+    solveable_after_claiming_lines_cells_count_msg = "Cells solveable 'by sudoku' after identifying 'claiming' line: #{solveable_after_claiming_lines_cells_count}"
+
+    hidden_pairs = history.where(
+      strategy: Strategy::HIDDEN_PAIR,
+      type: Action::UPDATE_CANDIDATES
+    ).map(&:paired_cell_id).uniq.length
+    hidden_pairs_msg = "Hidden pairs: #{hidden_pairs}"
+
+    total_count = (
+      initial_filled_cell_count +
+      initial_solveable_cell_count +
+      hidden_single_cell_count +
+      solveable_after_naked_pair_cells_count +
+      solveable_after_aligned_candidates_cells_count +
+      solveable_after_claiming_lines_cells_count
+    )
+
+    [
+      "Solved: #{solved?}",
+      initial_filled_cell_count_msg,
+      initial_solveable_cell_count_msg,
+      hidden_single_cell_count_msg,
+      naked_pairs_msg,
+      solveable_after_naked_pair_cells_count_msg,
+      aligned_candidates_in_box_msg,
+      solveable_after_aligned_candidates_cells_count_msg,
+      claiming_lines_msg,
+      solveable_after_claiming_lines_cells_count_msg,
+      hidden_pairs_msg,
+      "Passes: #{state[:passes]}",
+      "Cells accounted for: #{total_count}",
+      "\n"
+    ].join("\n")
   end
 
   private

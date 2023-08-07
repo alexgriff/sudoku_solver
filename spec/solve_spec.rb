@@ -66,6 +66,7 @@ describe Solve do
   end
 
   it "can solve taking into multiple 'passes'" do
+    # TODO: this no longer does multiple passes since more strategies have been added
     board = Board.from_txt(board_missing_more)
     Solve.new.solve(board)
     d2_cell = board.rows[1].cells[3]
