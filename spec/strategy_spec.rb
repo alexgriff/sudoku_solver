@@ -29,12 +29,12 @@ describe Strategy do
 
       strategy.apply(board)
       expect(board.find_cell(21).value).to eq(6)
-      action = board.reducer.history.find do |actn|
-        actn.cell_id == 21 &&
-        actn.type == Action::FILL_CELL &&
-        actn.strategy == Strategy::HIDDEN_SINGLE
-      end
 
+      action = board.reducer.history.find(
+        cell_id: 21,
+        type: Action::FILL_CELL,
+        strategy: Strategy::HIDDEN_SINGLE
+      )
       expect(action).to be_truthy
     end
   end
@@ -67,13 +67,12 @@ describe Strategy do
       
       strategy.apply(board)
       expect(board.find_cell(64).candidates).to eq([7])
-      
-      action = board.reducer.history.find do |actn|
-        actn.cell_id == 64 &&
-        actn.type == Action::UPDATE_CANDIDATES &&
-        actn.strategy == Strategy::NAKED_PAIR
-      end
 
+      action = board.reducer.history.find(
+        cell_id: 64,
+        type: Action::UPDATE_CANDIDATES,
+        strategy: Strategy::NAKED_PAIR
+      )
       expect(action).to be_truthy
     end
   end
@@ -106,12 +105,12 @@ describe Strategy do
       
       strategy.apply(board)
       expect(board.find_cell(24).candidates).to eq([3])
-      
-      action = board.reducer.history.find do |actn|
-        actn.cell_id == 24 &&
-        actn.type == Action::UPDATE_CANDIDATES &&
-        actn.strategy == Strategy::LOCKED_CANDIDATES_POINTING
-      end
+
+      action = board.reducer.history.find(
+        cell_id: 24,
+        type: Action::UPDATE_CANDIDATES,
+        strategy: Strategy::LOCKED_CANDIDATES_POINTING
+      )
       expect(action).to be_truthy
     end
   end
@@ -144,12 +143,12 @@ describe Strategy do
       
       strategy.apply(board)
       expect(board.find_cell(19).candidates).to eq([4])
-      
-      action = board.reducer.history.find do |actn|
-        actn.cell_id == 19 &&
-        actn.type == Action::UPDATE_CANDIDATES &&
-        actn.strategy == Strategy::LOCKED_CANDIDATES_CLAIMING
-      end
+
+      action = board.reducer.history.find(
+        cell_id: 19,
+        type: Action::UPDATE_CANDIDATES,
+        strategy: Strategy::LOCKED_CANDIDATES_CLAIMING
+      )
       expect(action).to be_truthy
     end
   end
@@ -182,12 +181,12 @@ describe Strategy do
       
       strategy.apply(board)
       expect(board.find_cell(44).candidates).to eq([1, 9])
-      
-      action = board.reducer.history.find do |actn|
-        actn.cell_id == 44 &&
-        actn.type == Action::UPDATE_CANDIDATES &&
-        actn.strategy == Strategy::HIDDEN_PAIR
-      end
+
+      action = board.reducer.history.find(
+        cell_id: 44,
+        type: Action::UPDATE_CANDIDATES,
+        strategy: Strategy::HIDDEN_PAIR
+      )
       expect(action).to be_truthy
     end
   end

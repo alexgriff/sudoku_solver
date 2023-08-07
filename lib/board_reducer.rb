@@ -3,7 +3,7 @@ class Board::Reducer
   
   def initialize(board)
     @board = board
-    @history = []
+    @history = History.new
   end
 
   def dispatch(action)
@@ -97,5 +97,31 @@ class Board::Reducer
         candidates: action.new_candidates
     )
     state_copy
+  end
+
+  class History
+    def initialize()
+      @history = []
+    end
+
+    def <<(next_action)
+      @history << next_action
+    end
+
+    def [](index)
+      @history[index]
+    end
+
+    def find(**kwargs)
+      select(**kwargs).first
+    end
+
+    def select(**kwargs)
+      @history.select do |action|
+        kwargs.all? do |key, val|
+          action.respond_to?(key) ? action.send(key) == val : false
+        end
+      end
+    end
   end
 end
