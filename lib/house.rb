@@ -23,11 +23,12 @@ class House
     "#{self::HOUSE_TYPE}_id"
   end
 
-  attr_reader :id, :board
+  attr_reader :id, :board, :errors
 
   def initialize(id:, board:)
     @id = id
     @board = board
+    @errors = []
   end
 
   def filled_values
@@ -91,10 +92,14 @@ class House
   private
 
   def has_9_cells?
-    cells.length == 9
+    unless cells.length == 9
+      errors << ("#{self.class::HOUSE_TYPE} #{id} does not have 9 cells")
+    end
   end
 
   def all_non_emptys_are_unique?
-    filled_values.length == filled_values.uniq.length
+    unless filled_values.length == filled_values.uniq.length
+      errors << ("#{self.class::HOUSE_TYPE} #{id} does not have uniq values")
+    end
   end
 end

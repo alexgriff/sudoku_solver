@@ -13,12 +13,13 @@ class Board
     new(data)
   end
 
-  attr_reader :cells, :state, :columns, :rows, :boxes, :reducer
+  attr_reader :cells, :state, :columns, :rows, :boxes, :reducer, :errors
 
   def initialize(initial_data)
     @columns = (0..8).to_a.map { |id| Column.new(id: id, board: self) }
     @rows = (0..8).to_a.map { |id| Row.new(id: id, board: self)}
     @boxes = (0..8).to_a.map { |id| Box.new(id: id, board: self) }
+    @errors = []
     
     @reducer = Board::Reducer.new(self)
     @state = {}
@@ -40,6 +41,8 @@ class Board
 
   def set_state(state)
     @state = state
+
+    raise "Board is invalid: #{errors.join("\n")}" unless valid?
   end
 
   def empty_cells
@@ -145,22 +148,20 @@ class Board
   end
 
   def valid?
-    # hacky thing for dev - incorporate in better way
-    msg = ''
     rows.each do |row|
-      msg += "Row #{row.id} is invalid\n" unless row.valid? 
+      self.errors += row.errors unless row.valid?
     end
     columns.each do |col|
-      msg += "Column #{col.id} is invalid\n" unless col.valid? 
+      self.errors += col.errors unless col.valid?
     end
     boxes.each do |box|
-      msg += "Box #{box.id} is invalid\n" unless box.valid? 
+      self.errors += box.errors unless box.valid?
     end
 
-    if msg.empty?
-      true
-    else
-      puts msg
-    end
+    errors.empty?
   end
+
+  private
+
+  attr_writer :errors
 end
