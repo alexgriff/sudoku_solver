@@ -194,25 +194,25 @@ def summary
       strategy: Strategy::LOCKED_CANDIDATES_POINTING,
       type: Action::UPDATE_CANDIDATES,
     ).map(&:locked_alignment_id).uniq.length
-    aligned_candidates_in_box_msg = "Lines with locked candidates aligned in same box: #{aligned_candidates_in_box}"
+    aligned_candidates_in_box_msg = "Lines with locked, aligned candidates in same box: #{aligned_candidates_in_box}"
 
     solveable_after_aligned_candidates_cells_count = history.where(
       type: Action::FILL_CELL,
       strategy: Strategy::LOCKED_CANDIDATES_POINTING
     ).length
-    solveable_after_aligned_candidates_cells_count_msg = "Cells solveable 'by sudoku' after identifying locked candidate alignment: #{solveable_after_aligned_candidates_cells_count}"
+    solveable_after_aligned_candidates_cells_count_msg = "Cells solveable 'by sudoku' after identifying locked, aligned candidates: #{solveable_after_aligned_candidates_cells_count}"
 
     claiming_lines = history.where(
       strategy: Strategy::LOCKED_CANDIDATES_CLAIMING,
       type: Action::UPDATE_CANDIDATES,
     ).map(&:claiming_box_id).uniq.length
-    claiming_lines_msg = "Lines with 'claimed' candidate from 2 intersecting lines of aligned locked candidates: #{claiming_lines}"
+    claiming_lines_msg = "Lines with 'claimed' candidate from bpx intersecting 2 locked candidate lines: #{claiming_lines}"
 
     solveable_after_claiming_lines_cells_count = history.where(
       type: Action::FILL_CELL,
       strategy: Strategy::LOCKED_CANDIDATES_CLAIMING
     ).length
-    solveable_after_claiming_lines_cells_count_msg = "Cells solveable 'by sudoku' after identifying 'claiming' line: #{solveable_after_claiming_lines_cells_count}"
+    solveable_after_claiming_lines_cells_count_msg = "Cells solveable 'by sudoku' after identifying 'claiming' line/box: #{solveable_after_claiming_lines_cells_count}"
 
     hidden_pairs = history.where(
       strategy: Strategy::HIDDEN_PAIR,

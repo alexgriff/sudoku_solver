@@ -9,7 +9,6 @@ class Solve
   
   def solve(board)    
     board.reducer.dispatch(Action.new(type: Action::NEW_PASS))
-    
     fill_cells(board, Strategy::NAKED_SINGLE)
 
     strategies.each do |strategy|
