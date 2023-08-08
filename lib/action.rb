@@ -1,5 +1,6 @@
 class Action
   INIT = :init
+  INIT_CELL = :init_cell
   NEW_PASS = :new_pass
   UPDATE_CELL = :update_cell
   @@id = 1

@@ -12,21 +12,21 @@ class Board::Reducer
       {
         touched: touched_reducer(board.state[:touched], action),
         passes: passes_reducer(board.state[:passes], action),
-        cells: cells_reducer(board.state[:cells], action),
-        solved: solved_reducer(board.state[:solved], action)
+        cells: cells_reducer(board.state[:cells], action)
       }
     )
   end
 
   def touched_reducer(state, action)
     case action.type
-      when Action::INIT, Action::NEW_PASS
+      when Action::INIT, Action::INIT_CELL, Action::NEW_PASS
         false
       when Action::UPDATE_CELL
-        if action.possible_values != board.state[:cells][action.cell_id]
-          true
+        cell = board.get_cell(action.cell_id)
+        if (board.state[:cells][cell.id] == action.possible_values) || cell.filled?
+          state
         else
-          false
+          true
         end
       else
         state
@@ -48,59 +48,17 @@ class Board::Reducer
     case action.type
     when Action::INIT
       (0..(Board::NUM_CELLS - 1)).to_a.map { |i| Cell::ALL_CANDIDATES.dup }
-    when Action::UPDATE_CELL
-      update_cell(state, action)
+    when Action::INIT_CELL, Action::UPDATE_CELL
+      state_copy = state.dup
+      cell = board.get_cell(action.cell_id)
+      unless cell.filled?
+        state_copy[action.cell_id] = action.possible_values
+      end
+      state_copy
     else
       state
     end
   end
-
-  def solved_reducer(state, action)
-    case action.type
-    when Action::INIT
-      {}
-    when Action::UPDATE_CELL
-      if action.possible_values.length == 1
-        copied_state = state.clone
-        copied_state[action.cell_id] = action.possible_values.first
-        copied_state
-      else
-        state
-      end
-    else
-      state
-    end
-  end
-
-  private
-
-  def update_cell(state, action)
-    cell = board.get_cell(action.cell_id)
-    seen_cell_ids_needing_update = []
-
-    if action.possible_values.length == 1
-      seen_cell_ids_needing_update = board.all_seen_empty_cells_for(cell).select do |seen_cell|
-        seen_cell.candidates.include?(action.possible_values.first)
-      end.map(&:id)
-    end
-    # debugger if action.cell_id == 23 || seen_cell_ids_needing_update.include?(23)
-
-    x = state.map.with_index do |values, i|
-      if i == action.cell_id
-        action.possible_values
-      elsif (seen_cell_ids_needing_update).include?(i)
-        foo = values - action.possible_values
-        # debugger if foo.length == 0
-        foo
-      else
-        values
-      end
-    end
-    # debugger
-    x
-  end
-
-
 
   class History
     def initialize()

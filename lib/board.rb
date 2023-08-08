@@ -32,10 +32,9 @@ class Board
       if char != Cell::EMPTY
         reducer.dispatch(
           Action.new(
-            type: Action::UPDATE_CELL,
+            type: Action::INIT_CELL,
             cell_id: i,
-            possible_values: [char.to_i],
-            init_board: true
+            possible_values: [char.to_i]
           )
         )        
       end
@@ -81,17 +80,13 @@ class Board
   end
 
   def all_seen_cells_for(cell)
-    (houses_for_cell(cell).map { |house| house.cell_ids }.flatten - [cell.id]).uniq.map do |cell_id|
+    (houses_for_cell(cell).map { |house| house.cell_ids }.flatten - [cell.id]).map do |cell_id|
       get_cell(cell_id)
     end
   end
 
   def all_seen_empty_cells_for(cell)
     all_seen_cells_for(cell).select { |cl| cl.empty? }
-  end
-
-  def unsolved_cell_ids
-    (0..NUM_CELLS-1).to_a - state[:solved].keys
   end
 
   def valid?
@@ -106,7 +101,6 @@ class Board
     boxes.each do |box|
       self.errors += box.errors unless box.valid?
     end
-
     errors.empty?
   end
 
