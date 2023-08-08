@@ -1,19 +1,27 @@
 class Solve
+  BASIC_STRATEGIES = [
+    Strategy::HiddenSingle,
+    Strategy::NakedPair,
+    Strategy::LockedCandidatesPointing,
+    Strategy::LockedCandidatesClaiming,
+    Strategy::HiddenPair
+  ]
+  
   attr_reader :strategies, :display, :with_summary
 
-  def initialize(strategies: Strategy::BASIC, display: false, with_summary: false)
-    @strategies = strategies.map { |name| Strategy.new(name) }
+  def initialize(strategies: BASIC_STRATEGIES, display: false, with_summary: false)
+    @strategies = strategies
     @display = display
     @with_summary = with_summary
   end
   
   def solve(board)    
     board.reducer.dispatch(Action.new(type: Action::NEW_PASS))
-    fill_cells(board, Strategy::NAKED_SINGLE)
+    fill_cells(board, strategy_name: :naked_single)
 
     strategies.each do |strategy|
       strategy.apply(board)
-      fill_cells(board, strategy.name)
+      fill_cells(board, strategy_name: strategy.name)
     end
 
     if board.solved? || !board.touched?
@@ -25,7 +33,7 @@ class Solve
     end
   end
 
-  def fill_cells(board, strategy_name)
+  def fill_cells(board, strategy_name: nil)
     fillable_cells = board.empty_cells.select(&:has_one_remaining_candidate?)
 
     while fillable_cells.any?

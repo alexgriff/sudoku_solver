@@ -2,8 +2,8 @@ describe Strategy do
   # some strategy examples taken from:
   # https://hodoku.sourceforge.net/en/techniques.php
 
-  describe Strategy::HIDDEN_SINGLE do
-    let(:strategy) { Strategy.new(Strategy::HIDDEN_SINGLE) }
+  describe Strategy::HiddenSingle do
+    let(:strategy) { Strategy::HiddenSingle }
 
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_singles.php#h1
@@ -33,14 +33,14 @@ describe Strategy do
       action = board.reducer.history.find(
         cell_id: 21,
         type: Action::FILL_CELL,
-        strategy: Strategy::HIDDEN_SINGLE
+        strategy: Strategy::HiddenSingle.name
       )
       expect(action).to be_truthy
     end
   end
   
-  describe Strategy::NAKED_PAIR do
-    let(:strategy) { Strategy.new(Strategy::NAKED_PAIR) }
+  describe Strategy::NakedPair do
+    let(:strategy) { Strategy::NakedPair }
 
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_naked.php
@@ -71,14 +71,14 @@ describe Strategy do
       action = board.reducer.history.find(
         cell_id: 64,
         type: Action::UPDATE_CANDIDATES,
-        strategy: Strategy::NAKED_PAIR
+        strategy: Strategy::NakedPair.name
       )
       expect(action).to be_truthy
     end
   end
 
-  describe Strategy::LOCKED_CANDIDATES_POINTING do
-    let(:strategy) { Strategy.new(Strategy::LOCKED_CANDIDATES_POINTING) }
+  describe Strategy::LockedCandidatesPointing do
+    let(:strategy) { Strategy::LockedCandidatesPointing }
 
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_intersections.php
@@ -109,14 +109,14 @@ describe Strategy do
       action = board.reducer.history.find(
         cell_id: 24,
         type: Action::UPDATE_CANDIDATES,
-        strategy: Strategy::LOCKED_CANDIDATES_POINTING
+        strategy: Strategy::LockedCandidatesPointing.name
       )
       expect(action).to be_truthy
     end
   end
 
-  describe Strategy::LOCKED_CANDIDATES_CLAIMING do
-    let(:strategy) { Strategy.new(Strategy::LOCKED_CANDIDATES_CLAIMING) }
+  describe Strategy::LockedCandidatesClaiming do
+    let(:strategy) { Strategy::LockedCandidatesClaiming }
 
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_intersections.php
@@ -147,14 +147,14 @@ describe Strategy do
       action = board.reducer.history.find(
         cell_id: 19,
         type: Action::UPDATE_CANDIDATES,
-        strategy: Strategy::LOCKED_CANDIDATES_CLAIMING
+        strategy: Strategy::LockedCandidatesClaiming.name
       )
       expect(action).to be_truthy
     end
   end
 
-  describe Strategy::HIDDEN_PAIR do
-    let(:strategy) { Strategy.new(Strategy::HIDDEN_PAIR) }
+  describe Strategy::HiddenPair do
+    let(:strategy) { Strategy::HiddenPair }
 
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_hidden.php#h2
@@ -185,7 +185,7 @@ describe Strategy do
       action = board.reducer.history.find(
         cell_id: 44,
         type: Action::UPDATE_CANDIDATES,
-        strategy: Strategy::HIDDEN_PAIR
+        strategy: Strategy::HiddenPair.name
       )
       expect(action).to be_truthy
     end

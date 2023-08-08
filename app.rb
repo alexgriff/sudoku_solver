@@ -18,11 +18,11 @@ SUDOKU
 board = Board.from_txt(txt)
 
 strategies = [
-  Strategy::HIDDEN_SINGLE,
-  Strategy::NAKED_PAIR,
-  Strategy::LOCKED_CANDIDATES_POINTING,
-  Strategy::LOCKED_CANDIDATES_CLAIMING,
-  Strategy::HIDDEN_PAIR,
+  Strategy::HiddenSingle,
+  Strategy::NakedPair,
+  Strategy::LockedCandidatesPointing,
+  Strategy::LockedCandidatesClaiming,
+  Strategy::HiddenPair,
 ]
 
 Solve.new(
