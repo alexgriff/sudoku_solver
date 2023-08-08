@@ -1,31 +1,27 @@
 class Strategy::HiddenPair < Strategy::BaseStrategy
   def self.execute(board, cell_id)
-    cell = Cell.from_state(id: cell_id, state: board.state[:cells2][cell_id])
+    cell = board.get_cell(cell_id)
     # are any 2 of my candidates found in one other cell only
     if cell.candidates.length >= 2
-      row = Row.for_cell(board, cell)
-      col = Column.for_cell(board, cell)
-      box = Box.for_cell(board, cell)
-
-      cell.candidate_permutations(2).each do |cand_pair|
-        hidden_pair_cells = [row, col, box].each_with_object([]) do |house, res|
+      cell.candidate_permutations(2).each do |cand_pair|    
+        hidden_pair_cells = board.houses_for_cell(cell).each_with_object([]) do |house, res|
           paired_cell = house.other_cells_with_candidates([cell.id], cand_pair).find do |potential_paired_cell|
             potential_paired_cell.candidates.length > 2 &&
-            house.other_cells_with_candidates([cell.id, potential_paired_cell.id], [cand_pair[0]]).length == 0 &&
-            house.other_cells_with_candidates([cell.id, potential_paired_cell.id], [cand_pair[1]]).length == 0
+            !house.any_other_cells_with_candidates?([cell.id, potential_paired_cell.id], [cand_pair[0]]) &&
+            !house.any_other_cells_with_candidates?([cell.id, potential_paired_cell.id], [cand_pair[1]])
           end
           res << paired_cell if paired_cell
           res
         end
-
+        
         hidden_pair_cells.each do |paired_cell|
           board.reducer.dispatch(
             Action.new(
-              type: Action::UPDATE_CANDIDATES,
+              type: Action::UPDATE_CELL,
               cell_id: paired_cell.id,
-              new_candidates: cand_pair,
               paired_cell_id: cell.id,
-              strategy: name
+              strategy: name,
+              possible_values: cand_pair
             )
           )
         end

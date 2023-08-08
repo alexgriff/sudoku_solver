@@ -1,23 +1,26 @@
 class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
   def self.execute(board, cell_id)
-    cell = Cell.from_state(id: cell_id, state: board.state[:cells2][cell_id])
+    cell = board.get_cell(cell_id)
     row = Row.for_cell(board, cell)
     col = Column.for_cell(board, cell)
     box = Box.for_cell(board, cell)
-
+    
+    cand_with_multiple_in_box = box.candidate_counts.select { |k, v| v >= 2 }.keys
+    cell_cands_present_in_other_box_cells = cell.candidates & cand_with_multiple_in_box
+    
     # find candidate that is only in 2 rows/cols in box
-    cell.candidates.each do |cand|
-      cand_cells = box.cells_with_candidates([cand])
-      cand_row_ids = cand_cells.map(&:row_id).uniq
-      cand_col_ids = cand_cells.map(&:column_id).uniq
+    cell_cands_present_in_other_box_cells.each do |cand|
+      box_cells_with_cand = box.cells_with_candidates([cand])
+      locked_cand_row_ids = box_cells_with_cand.map(&:row_id).uniq
+      locked_cand_col_ids = box_cells_with_cand.map(&:column_id).uniq
       
       # if in only 2 rows is there another box with same cand row ids
-      if cand_row_ids.length == 2
+      if locked_cand_row_ids.length == 2
         other_box_ids = row.box_ids - [box.id]
         matched_box_id = other_box_ids.find do |other_box_id|
           other_box = board.boxes[other_box_id]
           cand_cells_other_box = other_box.cells_with_candidates([cand])
-          cand_row_ids == cand_cells_other_box.map(&:row_id).uniq
+          locked_cand_row_ids == cand_cells_other_box.map(&:row_id).uniq
         end
         
         # if so, third box cant have the cand in those rows
@@ -26,27 +29,16 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
           third_box = board.boxes[third_box_id]
 
           third_box.cells_with_candidates([cand]).each do |third_box_cell|
-            if cand_row_ids.include?(third_box_cell.row_id)
+            if locked_cand_row_ids.include?(third_box_cell.row_id)
               new_candidates = third_box_cell.candidates - [cand]
-              claiming_box_id = "Box-#{third_box.id}|Row-#{row.id}|#{cand}"
-              if new_candidates.length == 1
+              if new_candidates != third_box_cell.candidates
                 board.reducer.dispatch(
                   Action.new(
-                    type: Action::FILL_CELL,
+                    type: Action::UPDATE_CELL,
                     cell_id: third_box_cell.id,
-                    value: new_candidates.first,
                     strategy: name,
-                    claiming_box_id: claiming_box_id
-                  )
-                )
-              else
-                board.reducer.dispatch(
-                  Action.new(
-                    type: Action::UPDATE_CANDIDATES,
-                    cell_id: third_box_cell.id,
-                    new_candidates: new_candidates,
-                    strategy: name,
-                    claiming_box_id: claiming_box_id
+                    claiming_box_id: "Box-#{third_box.id}|Row-#{row.id}|#{cand}",
+                    possible_values: new_candidates
                   )
                 )
               end
@@ -56,12 +48,12 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
       end
 
       # if in only 2 cols is there another box with same cand col ids
-      if cand_col_ids.length == 2
+      if locked_cand_col_ids.length == 2
         other_box_ids = col.box_ids - [box.id]
         matched_box_id = other_box_ids.find do |other_box_id|
           other_box = board.boxes[other_box_id]
           cand_cells_other_box = other_box.cells_with_candidates([cand])
-          cand_col_ids == cand_cells_other_box.map(&:column_id).uniq
+          locked_cand_col_ids == cand_cells_other_box.map(&:column_id).uniq
         end
 
         # if so, third box cant have the cand in those cols
@@ -70,28 +62,16 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
           third_box = board.boxes[third_box_id]
 
           third_box.cells_with_candidates([cand]).each do |third_box_cell|
-            if cand_col_ids.include?(third_box_cell.column_id)
+            if locked_cand_col_ids.include?(third_box_cell.column_id)
               new_candidates = third_box_cell.candidates - [cand]
-              claiming_box_id = "Box-#{third_box.id}|Col-#{col.id}|#{cand}"
-
-              if new_candidates.length == 1
+              if new_candidates != third_box_cell.candidates
                 board.reducer.dispatch(
                   Action.new(
-                    type: Action::FILL_CELL,
+                    type: Action::UPDATE_CELL,
                     cell_id: third_box_cell.id,
-                    value: new_candidates.first,
                     strategy: name,
-                    claiming_box_id: claiming_box_id
-                  )
-                )
-              else
-                board.reducer.dispatch(
-                  Action.new(
-                    type: Action::UPDATE_CANDIDATES,
-                    cell_id: third_box_cell.id,
-                    new_candidates: new_candidates,
-                    strategy: name,
-                    claiming_box_id: claiming_box_id
+                    claiming_box_id: "Box-#{third_box.id}|Col-#{col.id}|#{cand}",
+                    possible_values: new_candidates
                   )
                 )
               end

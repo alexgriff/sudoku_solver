@@ -16,7 +16,7 @@ class Board
     new(data)
   end
 
-  attr_reader :cells, :state, :columns, :rows, :boxes, :reducer, :errors
+  attr_reader :state, :columns, :rows, :boxes, :reducer, :errors
 
   def initialize(initial_data)
     @columns = (0..SIZE-1).to_a.map { |id| Column.new(id: id, board: self) }
@@ -32,12 +32,12 @@ class Board
       if char != Cell::EMPTY
         reducer.dispatch(
           Action.new(
-            type: Action::FILL_CELL,
+            type: Action::UPDATE_CELL,
             cell_id: i,
-            value: char.to_i,
+            possible_values: [char.to_i],
             init_board: true
           )
-        )
+        )        
       end
     end
   end
@@ -48,41 +48,55 @@ class Board
     raise "Board is invalid: #{errors.join("\n")}" unless valid?
   end
 
+  def cells
+    (0..NUM_CELLS-1).to_a.map { |i| get_cell(i) }
+  end
+
   def empty_cells
-    state[:cells].select(&:empty?)
+    cells.select(&:empty?)
   end
 
   def empty_cell_ids
     empty_cells.map(&:id)
   end
-  
-  # def empty_cell_ids2
-  #   state[:cells2].each_index.select do |i|
-  #     state[:cells2][i].length > 1
-  #   end
-  # end
-
-  def fillable_cells
-    empty_cells.select(&:has_one_remaining_candidate?)
-  end
-
-  # def solved?
-  #   state[:cells].all?(&:filled?)
-  # end
 
   def solved?
-    state[:cells2].all? { |state_cell| state_cell.length == 1 }
+    cells.all? { |cell| cell.filled? }
   end
 
   def touched?
     state[:touched]
   end
 
-  def find_cell(cell_id)
-    state[:cells][cell_id]
+  def get_cell(cell_id)
+    Cell.from_state(id: cell_id, state: state[:cells][cell_id])
+  end
+
+  def houses_for_cell(cell)
+    [
+      Row.for_cell(self, cell),
+      Column.for_cell(self, cell),
+      Box.for_cell(self, cell),
+    ]
+  end
+
+  def all_seen_cells_for(cell)
+    (houses_for_cell(cell).map { |house| house.cell_ids }.flatten - [cell.id]).uniq.map do |cell_id|
+      get_cell(cell_id)
+    end
+  end
+
+  def all_seen_empty_cells_for(cell)
+    all_seen_cells_for(cell).select { |cl| cl.empty? }
+  end
+
+  def unsolved_cell_ids
+    (0..NUM_CELLS-1).to_a - state[:solved].keys
   end
 
   def valid?
+    errors.clear
+
     rows.each do |row|
       self.errors += row.errors unless row.valid?
     end

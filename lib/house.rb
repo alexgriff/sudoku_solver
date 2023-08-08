@@ -1,5 +1,4 @@
 class House
-
   def self.for_cell(board, cell)
     @klass_cache ||= {}
     cache_key = "#{board.object_id}-#{cell.id}"
@@ -42,73 +41,59 @@ class House
   end
 
   def cells
-    cell_ids.map { |id| board.find_cell(id) }
+    cell_ids.map { |id| board.get_cell(id) }
+  end
+  
+  def empty_cell_ids
+    cell_ids.select { |cell_id| board.get_cell(cell_id).empty? }
   end
 
   def empty_cells
-    cells.select(&:empty?)
-  end
-
-  def empty_cell_ids
-    empty_cells.map(&:id)
+    empty_cell_ids.map { |cell_id| board.get_cell(cell_id) }
   end
   
-  def empty_cell_ids2
-    cell_ids.select { |id| board.state[:cells2][id].length > 1 }
+  def empty_other_cells(filtered_out_cell_ids)
+    (empty_cell_ids - filtered_out_cell_ids).map { |cell_id| board.get_cell(cell_id) } 
   end
 
   def filled_cells
     cells.select(&:filled?)
   end
 
-  def other_cell_ids(filtered_cell_ids)
-    cell_ids - filtered_cell_ids
+  def other_cell_ids(filtered_out_cell_ids)
+    cell_ids - filtered_out_cell_ids
   end
 
-  def other_cells(filtered_cell_ids)
-    other_cell_ids(filtered_cell_ids).map { |id| board.find_cell(id) } 
+  def other_cells(filtered_out_cell_ids)
+    other_cell_ids(filtered_out_cell_ids).map { |id| board.get_cell(id) } 
   end
-
+  
   def cells_with_candidates(cands)
     empty_cells.select { |cell| (cands & cell.candidates).length == cands.length }
   end
 
-  def cell_ids_with_candidates(cands)
-    empty_cell_ids2.select { |cell_id| (cands & board.state[:cells2][cell_id]).length == cands.length }
-  end
-
-  def other_cells_with_candidates(filtered_cell_ids, cands)
-    empty_cells.select do |cell|
-      other_cell_ids(filtered_cell_ids).include?(cell.id) &&
-      cells_with_candidates(cands).include?(cell)
+  def other_cells_with_candidates(filtered_out_cell_ids, cands)
+    other_cells(filtered_out_cell_ids).select do |cell|
+      cells_with_candidates(cands).map(&:id).include?(cell.id)
     end
   end
 
-  def other_cells_ids_with_candidates(filtered_cell_ids, cands)
-    empty_cell_ids.select do |id|
-      other_cell_ids(filtered_cell_ids).include?(id)
-      cell_ids_with_candidates(cands).include?(id)
-    end
+  def any_other_cells_with_candidates?(filtered_out_cell_ids, cands)
+    other_cells_with_candidates(filtered_out_cell_ids, cands).any?
   end
 
   def uniq_candidates
     candidate_counts.select { |k, v| v == 1}.keys
   end
-
-  def candidate_counts
-    empty_cells.map(&:candidates)
-               .flatten
-               .each_with_object({}) do |cand, counts|
-                  counts[cand] ||= 0
-                  counts[cand] += 1
-               end
-  end
   
-  # def candidate_counts
-  #   x = empty_cell_ids2.map { |cell_id| board.state[:cells2][cell_id] }.flatten.each_with_object({}) do |cand, counts| counts[cand] ||= 0; counts[cand] += 1 end
-  #   debugger if x != candidate_counts_orig
-  #   x
-  # end
+  def candidate_counts
+    empty_cells.map do |cell|
+      cell.candidates
+    end.flatten.each_with_object({}) do |cand, counts|
+      counts[cand] ||= 0
+      counts[cand] += 1
+    end
+  end
 
   def valid?
     has_9_cells? && all_non_emptys_are_unique?
@@ -117,14 +102,18 @@ class House
   private
 
   def has_9_cells?
+    valid = cells.length == 9
     unless cells.length == 9
       errors << ("#{self.class::HOUSE_TYPE} #{id} does not have 9 cells")
     end
+    valid
   end
 
   def all_non_emptys_are_unique?
-    unless filled_values.length == filled_values.uniq.length
+    valid = filled_values.length == filled_values.uniq.length
+    unless valid
       errors << ("#{self.class::HOUSE_TYPE} #{id} does not have uniq values")
     end
+    valid
   end
 end

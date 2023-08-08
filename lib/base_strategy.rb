@@ -7,7 +7,7 @@ module Strategy
     end
 
     def self.apply(board)
-      board.empty_cell_ids.each do |id|
+      board.unsolved_cell_ids.each do |id|
         execute(board, id)
       end
     end
