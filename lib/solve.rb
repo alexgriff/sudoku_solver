@@ -34,10 +34,8 @@ class Solve
   end
 
   def fill_cells(board, strategy_name: nil)
-    fillable_cells = board.empty_cells.select(&:has_one_remaining_candidate?)
-
-    while fillable_cells.any?
-      fillable_cells.each do |cell|
+    while board.fillable_cells.any?
+      board.fillable_cells.each do |cell|
         board.reducer.dispatch(
           Action.new(
             type: Action::FILL_CELL,
@@ -47,7 +45,6 @@ class Solve
           )
         )
       end
-      fillable_cells = board.empty_cells.select(&:has_one_remaining_candidate?)
     end
   end
 end

@@ -56,6 +56,10 @@ class Board
     empty_cells.map(&:id)
   end
 
+  def fillable_cells
+    empty_cells.select(&:has_one_remaining_candidate?)
+  end
+
   def solved?
     state[:cells].all?(&:filled?)
   end
