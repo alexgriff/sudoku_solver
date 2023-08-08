@@ -1,6 +1,6 @@
 class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
   def self.execute(board, cell_id)
-    cell = board.find_cell(cell_id)
+    cell = Cell.from_state(id: cell_id, state: board.state[:cells2][cell_id])
     row = Row.for_cell(board, cell)
     col = Column.for_cell(board, cell)
     box = Box.for_cell(board, cell)
@@ -27,15 +27,29 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
 
           third_box.cells_with_candidates([cand]).each do |third_box_cell|
             if cand_row_ids.include?(third_box_cell.row_id)
-              board.reducer.dispatch(
-                Action.new(
-                  type: Action::UPDATE_CANDIDATES,
-                  cell_id: third_box_cell.id,
-                  new_candidates: third_box_cell.candidates - [cand],
-                  strategy: name,
-                  claiming_box_id: "Box-#{third_box.id}|Row-#{row.id}|#{cand}"
+              new_candidates = third_box_cell.candidates - [cand]
+              claiming_box_id = "Box-#{third_box.id}|Row-#{row.id}|#{cand}"
+              if new_candidates.length == 1
+                board.reducer.dispatch(
+                  Action.new(
+                    type: Action::FILL_CELL,
+                    cell_id: third_box_cell.id,
+                    value: new_candidates.first,
+                    strategy: name,
+                    claiming_box_id: claiming_box_id
+                  )
                 )
-              )
+              else
+                board.reducer.dispatch(
+                  Action.new(
+                    type: Action::UPDATE_CANDIDATES,
+                    cell_id: third_box_cell.id,
+                    new_candidates: new_candidates,
+                    strategy: name,
+                    claiming_box_id: claiming_box_id
+                  )
+                )
+              end
             end
           end
         end
@@ -57,15 +71,30 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
 
           third_box.cells_with_candidates([cand]).each do |third_box_cell|
             if cand_col_ids.include?(third_box_cell.column_id)
-              board.reducer.dispatch(
-                Action.new(
-                  type: Action::UPDATE_CANDIDATES,
-                  cell_id: third_box_cell.id,
-                  new_candidates: third_box_cell.candidates - [cand],
-                  strategy: name,
-                  claiming_box_id: "Box-#{third_box.id}|Col-#{col.id}|#{cand}"
+              new_candidates = third_box_cell.candidates - [cand]
+              claiming_box_id = "Box-#{third_box.id}|Col-#{col.id}|#{cand}"
+
+              if new_candidates.length == 1
+                board.reducer.dispatch(
+                  Action.new(
+                    type: Action::FILL_CELL,
+                    cell_id: third_box_cell.id,
+                    value: new_candidates.first,
+                    strategy: name,
+                    claiming_box_id: claiming_box_id
+                  )
                 )
-              )
+              else
+                board.reducer.dispatch(
+                  Action.new(
+                    type: Action::UPDATE_CANDIDATES,
+                    cell_id: third_box_cell.id,
+                    new_candidates: new_candidates,
+                    strategy: name,
+                    claiming_box_id: claiming_box_id
+                  )
+                )
+              end
             end
           end
         end

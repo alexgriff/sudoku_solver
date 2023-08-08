@@ -55,13 +55,23 @@ class Board
   def empty_cell_ids
     empty_cells.map(&:id)
   end
+  
+  # def empty_cell_ids2
+  #   state[:cells2].each_index.select do |i|
+  #     state[:cells2][i].length > 1
+  #   end
+  # end
 
   def fillable_cells
     empty_cells.select(&:has_one_remaining_candidate?)
   end
 
+  # def solved?
+  #   state[:cells].all?(&:filled?)
+  # end
+
   def solved?
-    state[:cells].all?(&:filled?)
+    state[:cells2].all? { |state_cell| state_cell.length == 1 }
   end
 
   def touched?
@@ -176,7 +186,7 @@ def summary
     initial_filled_cell_count = history.where(init_board: true).length
     initial_filled_cell_count_msg = "Filled cells at start: #{initial_filled_cell_count}"
 
-    initial_solveable_cell_count = history.where(strategy: :naked_single).length
+    initial_solveable_cell_count = history.where(strategy: Strategy::NakedSingle.name).length
     initial_solveable_cell_count_msg = "Cells initially solveable 'by sudoku': #{initial_solveable_cell_count}"
 
     hidden_single_cell_count = history.where(strategy: Strategy::HiddenSingle.name).length
@@ -210,7 +220,7 @@ def summary
       strategy: Strategy::LockedCandidatesClaiming.name,
       type: Action::UPDATE_CANDIDATES,
     ).map(&:claiming_box_id).uniq.length
-    claiming_lines_msg = "Lines with 'claimed' candidate from bpx intersecting 2 locked candidate lines: #{claiming_lines}"
+    claiming_lines_msg = "Lines with 'claimed' candidate from box intersecting 2 locked candidate lines: #{claiming_lines}"
 
     solveable_after_claiming_lines_cells_count = history.where(
       type: Action::FILL_CELL,

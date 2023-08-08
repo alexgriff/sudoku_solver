@@ -1,6 +1,6 @@
 class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
   def self.execute(board, cell_id)
-    cell = board.find_cell(cell_id)
+    cell = Cell.from_state(id: cell_id, state: board.state[:cells2][cell_id])
     box = Box.for_cell(board, cell)
     potentially_aligned_cands = box.candidate_counts.select { |k, v| v == 2 || v == 3 }.keys
     potentially_aligned_cands_cell_has = cell.candidates & potentially_aligned_cands
@@ -21,15 +21,28 @@ class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
         new_candidates = outside_cell.candidates - [candidate]
         
         if new_candidates != outside_cell.candidates
-          board.reducer.dispatch(
-            Action.new(
-              type: Action::UPDATE_CANDIDATES,
-              cell_id: outside_cell_id,
-              new_candidates: new_candidates,
-              strategy: name,
-              locked_alignment_id: "Box-#{box.id}|#{line_house.class.to_s}-#{line_house.id}|#{candidate}"
+          locked_alignment_id = "Box-#{box.id}|#{line_house.class.to_s}-#{line_house.id}|#{candidate}"
+          if new_candidates.length == 1
+            board.reducer.dispatch(
+              Action.new(
+                type: Action::FILL_CELL,
+                cell_id: outside_cell_id,
+                value: new_candidates.first,
+                strategy: name,
+                locked_alignment_id: locked_alignment_id
+              )
             )
-          )
+          else
+            board.reducer.dispatch(
+              Action.new(
+                type: Action::UPDATE_CANDIDATES,
+                cell_id: outside_cell_id,
+                new_candidates: new_candidates,
+                strategy: name,
+                locked_alignment_id: locked_alignment_id
+              )
+            )
+          end
         end
       end
     end

@@ -1,6 +1,7 @@
 class Strategy::HiddenSingle < Strategy::BaseStrategy
   def self.execute(board, cell_id)
-    cell = board.find_cell(cell_id)
+    cell = Cell.from_state(id: cell_id, state: board.state[:cells2][cell_id])
+
     if cell.candidates.length > 1
     uniq_in_row = (cell.candidates & Row.for_cell(board, cell).uniq_candidates).first
       uniq_in_col = (cell.candidates & Column.for_cell(board, cell).uniq_candidates).first

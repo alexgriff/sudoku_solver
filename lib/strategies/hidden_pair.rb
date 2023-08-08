@@ -1,6 +1,6 @@
 class Strategy::HiddenPair < Strategy::BaseStrategy
   def self.execute(board, cell_id)
-    cell = board.find_cell(cell_id)
+    cell = Cell.from_state(id: cell_id, state: board.state[:cells2][cell_id])
     # are any 2 of my candidates found in one other cell only
     if cell.candidates.length >= 2
       row = Row.for_cell(board, cell)

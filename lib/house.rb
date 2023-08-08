@@ -52,23 +52,42 @@ class House
   def empty_cell_ids
     empty_cells.map(&:id)
   end
+  
+  def empty_cell_ids2
+    cell_ids.select { |id| board.state[:cells2][id].length > 1 }
+  end
 
   def filled_cells
     cells.select(&:filled?)
   end
 
+  def other_cell_ids(filtered_cell_ids)
+    cell_ids - filtered_cell_ids
+  end
+
   def other_cells(filtered_cell_ids)
-    (cell_ids - filtered_cell_ids).map { |id| board.find_cell(id) } 
+    other_cell_ids(filtered_cell_ids).map { |id| board.find_cell(id) } 
   end
 
   def cells_with_candidates(cands)
     empty_cells.select { |cell| (cands & cell.candidates).length == cands.length }
   end
 
+  def cell_ids_with_candidates(cands)
+    empty_cell_ids2.select { |cell_id| (cands & board.state[:cells2][cell_id]).length == cands.length }
+  end
+
   def other_cells_with_candidates(filtered_cell_ids, cands)
     empty_cells.select do |cell|
-      other_cells(filtered_cell_ids).include?(cell) &&
+      other_cell_ids(filtered_cell_ids).include?(cell.id) &&
       cells_with_candidates(cands).include?(cell)
+    end
+  end
+
+  def other_cells_ids_with_candidates(filtered_cell_ids, cands)
+    empty_cell_ids.select do |id|
+      other_cell_ids(filtered_cell_ids).include?(id)
+      cell_ids_with_candidates(cands).include?(id)
     end
   end
 
@@ -84,6 +103,12 @@ class House
                   counts[cand] += 1
                end
   end
+  
+  # def candidate_counts
+  #   x = empty_cell_ids2.map { |cell_id| board.state[:cells2][cell_id] }.flatten.each_with_object({}) do |cand, counts| counts[cand] ||= 0; counts[cand] += 1 end
+  #   debugger if x != candidate_counts_orig
+  #   x
+  # end
 
   def valid?
     has_9_cells? && all_non_emptys_are_unique?

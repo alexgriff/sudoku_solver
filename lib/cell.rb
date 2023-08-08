@@ -2,6 +2,22 @@ class Cell
   EMPTY = '.'
   ALL_CANDIDATES = (1..9).to_a
 
+  def self.from_state(id:, state:)
+    value = EMPTY
+    candidates = state
+
+    if state.length == 1
+      value = state.last
+      candidates = []
+    end
+    
+    new(
+      id: id,
+      value: value,
+      candidates: state
+    )
+  end
+
   attr_reader :id, :value, :candidates
 
   def initialize(id:, candidates: nil, value: EMPTY)
