@@ -61,10 +61,6 @@ class Board
     end
   end
 
-  def solved?
-    state.is_solved?
-  end
-
   def valid?
     errors.clear
 
