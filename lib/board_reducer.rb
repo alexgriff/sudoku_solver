@@ -26,7 +26,7 @@ class Board::Reducer
       when Action::FILL_CELL, Action::UPDATE_CELL
         cell = board.get_cell(action.cell_id)
         new_values = action.respond_to?(:values) ? action.values : [action.value]
-        if (board.state[:cells][cell.id] != new_values) || cell.filled?
+        if cell.empty? && (board.state[:cells][cell.id] != new_values)
           true
         else
           state
