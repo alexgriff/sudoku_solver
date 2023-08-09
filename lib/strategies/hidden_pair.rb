@@ -15,14 +15,10 @@ class Strategy::HiddenPair < Strategy::BaseStrategy
         end
         
         hidden_pair_cells.each do |paired_cell|
-          board.reducer.dispatch(
-            Action.new(
-              type: Action::UPDATE_CELL,
-              cell_id: paired_cell.id,
-              paired_cell_id: cell.id,
-              strategy: name,
-              values: cand_pair
-            )
+          board.update_cell(
+            paired_cell.id,
+            cand_pair,
+            {strategy: name, pair: [cell.id, paired_cell.id].sort}
           )
         end
       end

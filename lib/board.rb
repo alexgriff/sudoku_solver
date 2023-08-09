@@ -310,7 +310,7 @@ def summary
     hidden_pairs = history.where(
       strategy: Strategy::HiddenPair.name,
       type: Action::UPDATE_CELL
-    ).map(&:paired_cell_id).uniq.length
+    ).map(&:pair).uniq.length
     hidden_pairs_msg = "Hidden pairs: #{hidden_pairs}"
 
     total_count = (

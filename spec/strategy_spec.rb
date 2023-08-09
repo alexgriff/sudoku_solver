@@ -139,9 +139,9 @@ describe Strategy do
       strategy.apply(board)
       expect(board.get_cell(24).value).to eq(3)
 
-      action = board.reducer.history.find(
+      action = board.history.find(
         cell_id: 24,
-        type: Action::UPDATE_CELL,
+        type: Action::FILL_CELL,
         strategy: Strategy::LockedCandidatesPointing.name
       )
       expect(action).to be_truthy
@@ -177,9 +177,9 @@ describe Strategy do
       strategy.apply(board)
       expect(board.get_cell(19).value).to eq(4)
 
-      action = board.reducer.history.find(
+      action = board.history.find(
         cell_id: 19,
-        type: Action::UPDATE_CELL,
+        type: Action::FILL_CELL,
         strategy: Strategy::LockedCandidatesClaiming.name
       )
       expect(action).to be_truthy
@@ -211,11 +211,10 @@ describe Strategy do
 
     it 'updates the candidates of the cell that cant be one of the hidden pair candidates' do
       expect(board.get_cell(44).candidates).to eq([1, 6, 9])
-      
       strategy.apply(board)
       expect(board.get_cell(44).candidates).to eq([1, 9])
 
-      action = board.reducer.history.find(
+      action = board.history.find(
         cell_id: 44,
         type: Action::UPDATE_CELL,
         strategy: Strategy::HiddenPair.name

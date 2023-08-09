@@ -25,14 +25,10 @@ class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
         new_candidates = outside_box_cell.candidates - [cand]
         
         if new_candidates != outside_box_cell.candidates
-          board.reducer.dispatch(
-            Action.new(
-              type: Action::UPDATE_CELL,
-              cell_id: outside_box_cell.id,
-              values: new_candidates,
-              strategy: name,
-              locked_alignment_id: "Box-#{box.id}|#{line_house.class.to_s}-#{line_house.id}|#{cand}",
-            )
+          board.update_cell(
+            outside_box_cell.id,
+            new_candidates,
+            {strategy: name, locked_alignment_id: "Box-#{box.id}|#{line_house.class.to_s}-#{line_house.id}|#{cand}"}
           )
         end
       end

@@ -32,14 +32,10 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
             if locked_cand_row_ids.include?(third_box_cell.row_id)
               new_candidates = third_box_cell.candidates - [cand]
               if new_candidates != third_box_cell.candidates
-                board.reducer.dispatch(
-                  Action.new(
-                    type: Action::UPDATE_CELL,
-                    cell_id: third_box_cell.id,
-                    strategy: name,
-                    claiming_box_id: "Box-#{third_box.id}|Row-#{row.id}|#{cand}",
-                    values: new_candidates
-                  )
+                board.update_cell(
+                  third_box_cell.id,
+                  new_candidates,
+                  {strategy: name, claiming_box_id: "Box-#{third_box.id}|Row-#{row.id}|#{cand}"}
                 )
               end
             end
@@ -65,14 +61,10 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
             if locked_cand_col_ids.include?(third_box_cell.column_id)
               new_candidates = third_box_cell.candidates - [cand]
               if new_candidates != third_box_cell.candidates
-                board.reducer.dispatch(
-                  Action.new(
-                    type: Action::UPDATE_CELL,
-                    cell_id: third_box_cell.id,
-                    strategy: name,
-                    claiming_box_id: "Box-#{third_box.id}|Col-#{col.id}|#{cand}",
-                    values: new_candidates
-                  )
+                board.update_cell(
+                  third_box_cell.id,
+                  new_candidates,
+                  {strategy: name, claiming_box_id: "Box-#{third_box.id}|Col-#{col.id}|#{cand}"}
                 )
               end
             end
