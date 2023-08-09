@@ -87,6 +87,18 @@ class Board::Reducer
       @history[index]
     end
 
+    def all
+      @history.dup
+    end
+
+    def last(n=1)
+      @history.last(n)
+    end
+
+    def length
+      @history.length
+    end
+
     def find(**kwargs)
       where(**kwargs).first
     end

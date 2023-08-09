@@ -61,18 +61,28 @@ class Board
         )
       )
       all_seen_empty_cell_ids_for(cell_id).each do |seen_cell_id|
-        update_cell(
-          seen_cell_id,
-          get_cell(seen_cell_id).candidates - candidates,
-          action_opts.merge(cascade: true)
-        )
+        # Because the board state can change from the previous iteration of this loop,
+        # all cells empty when the loop started may not still be empty when the next iteration runs.
+        # Although sending an 'empty' update action doesnt alter the board state,
+        # as an optimization check if you should still send the next action.
+        # As another optimization take no action when the 2 cells share no candidates in common
+
+        seen_cell = get_cell(seen_cell_id)
+        if seen_cell.empty? && (seen_cell.candidates & candidates).any?
+          update_cell(
+            seen_cell_id,
+            seen_cell.candidates - candidates,
+            action_opts.merge(cascade: cell.id)
+          )
+        end
       end
     else
       reducer.dispatch(
         Action.new(
           type: Action::UPDATE_CELL,
           cell_id: cell_id,
-          values: candidates
+          values: candidates,
+          **action_opts
         )
       )
     end
@@ -249,19 +259,22 @@ class Board
   end
 
 def summary
-    initial_filled_cell_count = history.where(init_board: true).length
+    initial_filled_cell_count = history.where(type: Action::INIT_FILL_CELL).length
     initial_filled_cell_count_msg = "Filled cells at start: #{initial_filled_cell_count}"
 
-    initial_solveable_cell_count = history.where(strategy: Strategy::NakedSingle.name).length
+    initial_solveable_cell_count = history.where(type: Action::FILL_CELL, strategy: Strategy::NakedSingle.name).length
+    # TODO: this needs to be updated to look for naked singles _before_ any other strategies only
+    # and then list naked singles that happen on subsquent passes
     initial_solveable_cell_count_msg = "Cells initially solveable 'by sudoku': #{initial_solveable_cell_count}"
 
-    hidden_single_cell_count = history.where(strategy: Strategy::HiddenSingle.name).length
+    # TODO: some of thise may have changed with other refactors - assess
+    hidden_single_cell_count = history.where(type: Action::FILL_CELL, strategy: Strategy::HiddenSingle.name).length
     hidden_single_cell_count_msg = "Hidden singles: #{hidden_single_cell_count}"
 
     naked_pairs = history.where(
       strategy: Strategy::NakedPair.name,
-      type: Action::UPDATE_CANDIDATES,
-    ).map(&:naked_pair_cell_id).uniq.length
+      type: Action::UPDATE_CELL,
+    ).map(&:pair).uniq.length
     naked_pairs_msg = "Naked pairs: #{naked_pairs}"
 
     solveable_after_naked_pair_cells_count = history.where(
@@ -272,7 +285,7 @@ def summary
 
     aligned_candidates_in_box = history.where(
       strategy: Strategy::LockedCandidatesPointing.name,
-      type: Action::UPDATE_CANDIDATES,
+      type: Action::UPDATE_CELL,
     ).map(&:locked_alignment_id).uniq.length
     aligned_candidates_in_box_msg = "Lines with locked, aligned candidates in same box: #{aligned_candidates_in_box}"
 
@@ -284,7 +297,7 @@ def summary
 
     claiming_lines = history.where(
       strategy: Strategy::LockedCandidatesClaiming.name,
-      type: Action::UPDATE_CANDIDATES,
+      type: Action::UPDATE_CELL,
     ).map(&:claiming_box_id).uniq.length
     claiming_lines_msg = "Lines with 'claimed' candidate from box intersecting 2 locked candidate lines: #{claiming_lines}"
 
@@ -296,7 +309,7 @@ def summary
 
     hidden_pairs = history.where(
       strategy: Strategy::HiddenPair.name,
-      type: Action::UPDATE_CANDIDATES
+      type: Action::UPDATE_CELL
     ).map(&:paired_cell_id).uniq.length
     hidden_pairs_msg = "Hidden pairs: #{hidden_pairs}"
 

@@ -1,6 +1,40 @@
 describe Strategy do
-  # some strategy examples taken from:
+  # most strategy examples taken from:
   # https://hodoku.sourceforge.net/en/techniques.php
+
+  describe Strategy::NakedSingle do
+    let(:strategy) { Strategy::NakedSingle }
+    let(:board) do
+      # Cell 14 (Box 1, Row 1, Col 5) has 6 as it's single candidate
+      txt = <<~SUDOKU
+      . . . | 5 . 7 | . . .
+      . 1 9 | . 4 . | 2 7 .
+      . . 3 | . . . | 9 . .
+     -------|-------|-------
+      . . 6 | . . . | 3 . .
+      4 . . | 8 . 3 | . . 5
+      . . 2 | . . . | 8 . .
+     -------|-------|-------
+      . . . | . 7 . | . . .
+      . . . | 2 . 8 | . . .
+      . 9 . | . 1 . | . 6 .
+      SUDOKU
+
+      Board.from_txt(txt)
+    end
+
+    it 'solves the cell with a naked single' do
+      expect(board.get_cell(14).candidates).to eq([6])
+      strategy.apply(board)
+      expect(board.get_cell(14).value).to eq(6)
+      action = board.history.find(
+        cell_id: 14,
+        type: Action::FILL_CELL,
+        strategy: Strategy::NakedSingle.name
+      )
+      expect(action).to be_truthy
+    end
+  end
 
   describe Strategy::HiddenSingle do
     let(:strategy) { Strategy::HiddenSingle }
@@ -31,7 +65,7 @@ describe Strategy do
       expect(board.get_cell(21).value).to eq(6)
       action = board.history.find(
         cell_id: 21,
-        type: Action::UPDATE_CELL,
+        type: Action::FILL_CELL,
         strategy: Strategy::HiddenSingle.name
       )
       expect(action).to be_truthy
@@ -69,7 +103,7 @@ describe Strategy do
 
       action = board.history.find(
         cell_id: 64,
-        type: Action::UPDATE_CELL,
+        type: Action::FILL_CELL,
         strategy: Strategy::NakedPair.name
       )
       expect(action).to be_truthy

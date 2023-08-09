@@ -103,9 +103,9 @@ describe Board do
         expect(action).to be_truthy
       end
 
-      it 'marks cascading actions with cascade flag' do
+      it 'marks cascading actions with cascade value indicating the cell id it casacded from' do
         board.update_cell(14, [6], {foo: 'bar'})
-        action = board.history.find(cell_id: 75, cascade: true)
+        action = board.history.find(cell_id: 12, cascade: 14)
         expect(action).to be_truthy
       end
     end

@@ -8,14 +8,7 @@ class Strategy::HiddenSingle < Strategy::BaseStrategy
         (cell.candidates & Box.for_cell(board, cell).uniq_candidates).first
       )
       if uniq_candidate
-        board.dispatch(
-          Action.new(
-            type: Action::UPDATE_CELL,
-            cell_id: cell_id,
-            strategy: name,
-            values: [uniq_candidate]
-          )
-        )
+        board.update_cell(cell_id,  [uniq_candidate], {strategy: name})
       end
     end
   end

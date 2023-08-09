@@ -16,14 +16,10 @@ class Strategy::NakedPair < Strategy::BaseStrategy
         non_paired_cells.each do |non_paired_cell|
           new_values = non_paired_cell.candidates - naked_pair_cands
           if new_values
-            board.dispatch(
-              Action.new(
-                type: Action::UPDATE_CELL,
-                cell_id: non_paired_cell.id,
-                values: new_values,
-                naked_pair_cell_id: cell.id,
-                strategy: name
-              )
+            board.update_cell(
+              non_paired_cell.id,
+              new_values,
+              {strategy: name, pair: [cell.id, paired_cell_id].sort}
             )
           end
         end

@@ -10,6 +10,7 @@ module Strategy
       board.empty_cell_ids.each do |id|
         execute(board, id)
       end
+      true
     end
   end
 end
