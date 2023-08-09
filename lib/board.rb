@@ -16,7 +16,7 @@ class Board
     new(data)
   end
 
-  attr_reader :state, :columns, :rows, :boxes, :errors
+  attr_reader :state, :history, :columns, :rows, :boxes, :errors
 
   def initialize(initial_data)
     @columns = (0..SIZE-1).to_a.map { |id| Column.new(id: id, board: self) }
@@ -25,6 +25,7 @@ class Board
     @errors = []
     
     @reducer = Board::Reducer.new(self)
+    @history = reducer.history
     @state = {}
     reducer.dispatch(Action.new(type: Action::INIT))
     
@@ -83,8 +84,12 @@ class Board
     true
   end
 
-  def start_pass
+  def register_next_pass
     reducer.dispatch(Action.new(type: Action::NEW_PASS))
+  end
+
+  def register_done
+    reducer.dispatch(Action.new(type: Action::DONE, status: solved?))
   end
 
   def cells
@@ -156,6 +161,16 @@ class Board
     errors.empty?
   end
 
+  def summary
+    Summary.new(history).summarize
+  end
+
+  def inspect
+    # printing the whole state object is too annoying and unwieldy
+    "#<#{self.class.name}:0x#{object_id.to_s(16).rjust(16, '0')}>"
+  end
+
+  # these print methods are ugly, but ¯\_(ツ)_/¯
   def print
     top_3 = rows.slice(0...3)
     top_3.each do |row|
@@ -234,98 +249,8 @@ class Board
     nil
   end
 
-  def inspect
-    "#<#{self.class.name}:0x#{object_id.to_s(16).rjust(16, '0')}>"
-  end
-
-  def history
-    reducer.history
-  end
-
-def summary
-    initial_data = history.find(type: Action::NEW_BOARD_SYNC).initial_data
-    initial_filled_cell_count = initial_data.reject { |v| v == Cell::EMPTY }.length
-    initial_filled_cell_count_msg = "Filled cells at start: #{initial_filled_cell_count}"
-
-    initial_solveable_cell_count = history.where(type: Action::FILL_CELL, strategy: Strategy::NakedSingle.name).length
-    # TODO: this needs to be updated to look for naked singles _before_ any other strategies only
-    # and then list naked singles that happen on subsquent passes
-    initial_solveable_cell_count_msg = "Cells initially solveable 'by sudoku': #{initial_solveable_cell_count}"
-
-    # TODO: some of thise may have changed with other refactors - assess
-    hidden_single_cell_count = history.where(type: Action::FILL_CELL, strategy: Strategy::HiddenSingle.name).length
-    hidden_single_cell_count_msg = "Hidden singles: #{hidden_single_cell_count}"
-
-    naked_pairs = history.where(
-      strategy: Strategy::NakedPair.name,
-      type: Action::UPDATE_CELL,
-    ).map(&:pair).uniq.length
-    naked_pairs_msg = "Naked pairs: #{naked_pairs}"
-
-    solveable_after_naked_pair_cells_count = history.where(
-      type: Action::FILL_CELL,
-      strategy: Strategy::NakedPair.name
-    ).length
-    solveable_after_naked_pair_cells_count_msg = "Cells solveable 'by sudoku' after identifying naked pair: #{solveable_after_naked_pair_cells_count}"
-
-    aligned_candidates_in_box = history.where(
-      strategy: Strategy::LockedCandidatesPointing.name,
-      type: Action::UPDATE_CELL,
-    ).map(&:locked_alignment_id).uniq.length
-    aligned_candidates_in_box_msg = "Lines with locked, aligned candidates in same box: #{aligned_candidates_in_box}"
-
-    solveable_after_aligned_candidates_cells_count = history.where(
-      type: Action::FILL_CELL,
-      strategy: Strategy::LockedCandidatesPointing.name
-    ).length
-    solveable_after_aligned_candidates_cells_count_msg = "Cells solveable 'by sudoku' after identifying locked, aligned candidates: #{solveable_after_aligned_candidates_cells_count}"
-
-    claiming_lines = history.where(
-      strategy: Strategy::LockedCandidatesClaiming.name,
-      type: Action::UPDATE_CELL,
-    ).map(&:claiming_box_id).uniq.length
-    claiming_lines_msg = "Lines with 'claimed' candidate from box intersecting 2 locked candidate lines: #{claiming_lines}"
-
-    solveable_after_claiming_lines_cells_count = history.where(
-      type: Action::FILL_CELL,
-      strategy: Strategy::LockedCandidatesClaiming.name
-    ).length
-    solveable_after_claiming_lines_cells_count_msg = "Cells solveable 'by sudoku' after identifying 'claiming' line/box: #{solveable_after_claiming_lines_cells_count}"
-
-    hidden_pairs = history.where(
-      strategy: Strategy::HiddenPair.name,
-      type: Action::UPDATE_CELL
-    ).map(&:pair).uniq.length
-    hidden_pairs_msg = "Hidden pairs: #{hidden_pairs}"
-
-    total_count = (
-      initial_filled_cell_count +
-      initial_solveable_cell_count +
-      hidden_single_cell_count +
-      solveable_after_naked_pair_cells_count +
-      solveable_after_aligned_candidates_cells_count +
-      solveable_after_claiming_lines_cells_count
-    )
-
-    [
-      "\n",
-      "Solved: #{solved?}",
-      initial_filled_cell_count_msg,
-      initial_solveable_cell_count_msg,
-      hidden_single_cell_count_msg,
-      naked_pairs_msg,
-      solveable_after_naked_pair_cells_count_msg,
-      aligned_candidates_in_box_msg,
-      solveable_after_aligned_candidates_cells_count_msg,
-      claiming_lines_msg,
-      solveable_after_claiming_lines_cells_count_msg,
-      hidden_pairs_msg,
-      "Passes: #{state[:passes]}",
-      total_count
-    ].join("\n")
-  end
-
   private
+
   attr_reader :reducer
   attr_writer :errors
 end

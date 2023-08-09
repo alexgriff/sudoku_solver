@@ -28,7 +28,7 @@ strategies = [
 
 Solve.new(
   strategies: strategies,
-  display: true,
+  with_display: true,
   with_summary: true
 ).solve(board)
 

@@ -4,6 +4,7 @@ class Action
   FILL_CELL = :fill_cell
   UPDATE_CELL = :update_cell
   NEW_PASS = :new_pass
+  DONE = :done
   @@id = 1
   
   attr_reader :type, :id

@@ -8,22 +8,25 @@ class Solve
     Strategy::HiddenPair
   ]
   
-  attr_reader :strategies, :display, :with_summary
+  attr_reader :strategies, :with_display, :with_summary
 
-  def initialize(strategies: BASIC_STRATEGIES, display: false, with_summary: false)
+  def initialize(strategies: BASIC_STRATEGIES, with_display: false, with_summary: false)
     @strategies = strategies
-    @display = display
+    @with_display = with_display
     @with_summary = with_summary
   end
   
   def solve(board)    
-    board.start_pass
+    board.register_next_pass
+
     strategies.each do |strategy|
       strategy.apply(board)
     end
 
     if board.solved? || !board.touched?
-      board.print if display
+      board.register_done
+
+      board.print if with_display
       puts(board.summary) if with_summary
       board.solved?
     else
