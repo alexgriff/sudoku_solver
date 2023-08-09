@@ -38,7 +38,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
                     cell_id: third_box_cell.id,
                     strategy: name,
                     claiming_box_id: "Box-#{third_box.id}|Row-#{row.id}|#{cand}",
-                    possible_values: new_candidates
+                    values: new_candidates
                   )
                 )
               end
@@ -71,7 +71,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
                     cell_id: third_box_cell.id,
                     strategy: name,
                     claiming_box_id: "Box-#{third_box.id}|Col-#{col.id}|#{cand}",
-                    possible_values: new_candidates
+                    values: new_candidates
                   )
                 )
               end

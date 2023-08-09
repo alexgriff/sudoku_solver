@@ -11,7 +11,7 @@ class Strategy::NakedSingle < Strategy::BaseStrategy
               type: Action::UPDATE_CELL,
               cell_id: cell_id,
               strategy: name,
-              possible_values: [cell.value]
+              values: [cell.value]
             )
           )
         end

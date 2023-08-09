@@ -29,7 +29,7 @@ describe Strategy do
 
       strategy.apply(board)
       expect(board.get_cell(21).value).to eq(6)
-      action = board.reducer.history.find(
+      action = board.history.find(
         cell_id: 21,
         type: Action::UPDATE_CELL,
         strategy: Strategy::HiddenSingle.name
@@ -67,7 +67,7 @@ describe Strategy do
       strategy.apply(board)
       expect(board.get_cell(64).value).to eq(7)
 
-      action = board.reducer.history.find(
+      action = board.history.find(
         cell_id: 64,
         type: Action::UPDATE_CELL,
         strategy: Strategy::NakedPair.name

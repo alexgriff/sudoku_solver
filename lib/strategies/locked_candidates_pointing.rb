@@ -29,7 +29,7 @@ class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
             Action.new(
               type: Action::UPDATE_CELL,
               cell_id: outside_box_cell.id,
-              possible_values: new_candidates,
+              values: new_candidates,
               strategy: name,
               locked_alignment_id: "Box-#{box.id}|#{line_house.class.to_s}-#{line_house.id}|#{cand}",
             )

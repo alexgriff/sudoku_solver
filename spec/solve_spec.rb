@@ -82,7 +82,7 @@ describe Solve do
   it 'can solve a series of simple sudokus' do
     boards = File.read('spec/fixtures/simples.txt').split("\n\n").map { |txt| Board.from_txt(txt) }
     solved = boards.map { |board| Solve.new.solve(board) }
-    # debugger
+
     solved.each.with_index do |status, i|
       expect("#{i} - #{status}").to eq("#{i} - true")
     end

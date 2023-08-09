@@ -21,7 +21,7 @@ class Strategy::HiddenPair < Strategy::BaseStrategy
               cell_id: paired_cell.id,
               paired_cell_id: cell.id,
               strategy: name,
-              possible_values: cand_pair
+              values: cand_pair
             )
           )
         end

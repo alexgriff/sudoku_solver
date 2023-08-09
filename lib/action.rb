@@ -1,8 +1,10 @@
 class Action
   INIT = :init
-  INIT_CELL = :init_cell
-  NEW_PASS = :new_pass
+  INIT_FILL_CELL = :init_fill_cell
+  INIT_UPDATE_CELL = :init_update_cell
+  FILL_CELL = :fill_cell
   UPDATE_CELL = :update_cell
+  NEW_PASS = :new_pass
   @@id = 1
   
   attr_reader :type

@@ -63,4 +63,51 @@ describe Board do
       )
     end
   end
+
+  describe '#update_cell' do
+    let(:board) do
+      txt = <<~SUDOKU
+      . . . | 5 . 7 | . . .
+      . 1 9 | . 4 . | 2 7 .
+      . . 3 | . . . | 9 . .
+     -------|-------|-------
+      . . 6 | . . . | 3 . .
+      4 . . | 8 . 3 | . . 5
+      . . 2 | . . . | 8 . .
+     -------|-------|-------
+      . . . | . 7 . | . . .
+      . . . | 2 . 8 | . . .
+      . 9 . | . 1 . | . 6 .
+      SUDOKU
+
+      Board.from_txt(txt)
+    end
+    context 'when a cell is updated to a solved state' do
+      it 'dispatches a series of action to update other seen cells' do
+        board.update_cell(14, [6])
+        expect(board.boxes[1].cells.map(&:candidates).flatten.uniq).not_to include(6)
+      end
+
+      it 'cascades to solve other naked singles' do
+        board.update_cell(14, [6])
+        expect(board.get_cell(12).value).to eq 3
+        expect(board.get_cell(21).value).to eq 1
+        expect(board.get_cell(17).value).to eq 8
+        expect(board.get_cell(9).value).to eq 5
+        expect(board.get_cell(75).value).to eq 4
+      end
+
+      it 'passes along the action opts to the action' do
+        board.update_cell(14, [6], {foo: 'bar'})
+        action = board.history.find(cell_id: 14, foo: 'bar')
+        expect(action).to be_truthy
+      end
+
+      it 'marks cascading actions with cascade flag' do
+        board.update_cell(14, [6], {foo: 'bar'})
+        action = board.history.find(cell_id: 75, cascade: true)
+        expect(action).to be_truthy
+      end
+    end
+  end
 end
