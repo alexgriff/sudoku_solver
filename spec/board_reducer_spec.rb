@@ -117,7 +117,8 @@ describe Board::Reducer do
             values: [1,2,3,4]
           )
         )
-        prev_state.each.with_index do |cell, i|
+        prev_state.each.with_index do |cell,
+          i|
           unless i == 6
             expect(cell).to eq(prev_state[i])
           end

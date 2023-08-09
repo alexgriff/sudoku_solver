@@ -1,8 +1,6 @@
 class House
   def self.for_cell(board, cell)
-    @klass_cache ||= {}
-    cache_key = "#{board.object_id}-#{cell.id}"
-    @klass_cache[cache_key] = board.send(house_method).find do |house|
+    board.send(house_method).find do |house|
       house.id == cell.send(house_id_method)
     end
   end

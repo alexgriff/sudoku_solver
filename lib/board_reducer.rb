@@ -49,12 +49,32 @@ class Board::Reducer
     case action.type
     when Action::INIT
       (0..(Board::NUM_CELLS - 1)).to_a.map { |i| Cell::ALL_CANDIDATES.dup }
-    when Action::INIT_FILL_CELL, Action::FILL_CELL, Action::INIT_UPDATE_CELL, Action::UPDATE_CELL
+    when Action::NEW_BOARD_SYNC
+      empty_cell_id_to_seen_values_map = action.initial_data.each_with_object({}).with_index do |(val, res), i|
+        if val == Cell::EMPTY
+          res[i] = board.all_seen_cell_ids_for(i).map { |id| action.initial_data[id] }.reject { |v| v == Cell::EMPTY }
+        end
+        res
+      end
+
+      state.map.with_index do |cell, i|
+        filled_values_cell_can_see = empty_cell_id_to_seen_values_map[i]
+        if filled_values_cell_can_see
+          cell - filled_values_cell_can_see
+        else
+          [action.initial_data[i]]
+        end
+      end
+    when Action::FILL_CELL, Action::UPDATE_CELL
       if board.get_cell(action.cell_id).empty?
-        state_copy = state.dup
         new_values = action.respond_to?(:values) ? action.values : [action.value]
-        state_copy[action.cell_id] = new_values
-        state_copy
+        if state[action.cell_id] != new_values
+          state_copy = state.dup
+          state_copy[action.cell_id] = new_values
+          state_copy
+        else
+          state
+        end
       else
         state
       end
@@ -67,7 +87,14 @@ class Board::Reducer
     case action.type
     when Action::INIT
       {}
-    when Action::INIT_FILL_CELL, Action::FILL_CELL
+    when Action::NEW_BOARD_SYNC
+      action.initial_data.each_with_object({}).with_index do |(v, res), i|
+        if v != Cell::EMPTY
+          res[i] = v
+        end
+        res
+      end
+    when Action::FILL_CELL
       state.merge({action.cell_id => action.value})
     else
       state

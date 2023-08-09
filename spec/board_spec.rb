@@ -64,6 +64,39 @@ describe Board do
     end
   end
 
+  context 'initializing a board' do
+    let(:txt) do
+      <<~SUDOKU
+      5 . . | 8 . 2 | . . 7
+      . . . | . . . | . . .
+      . 2 7 | . 4 . | 9 8 .
+     -------|-------|-------
+      . . . | 7 5 6 | . . .
+      . 6 . | 1 9 4 | . 5 .
+      . 1 . | . . . | . 6 .
+     -------|-------|-------
+      . 9 2 | . 6 . | 3 4 .
+      . . . | . . . | . . .
+      . . 6 | 2 . 1 | 5 . .
+      SUDOKU
+    end
+
+    it 'correctly accounts for initial solved cells' do
+      board = Board.from_txt(txt)
+      # solved is a hash of {cell_index => value}
+      expect(board.state[:solved][0]).to eq(5)
+
+      # cells is an array of array indicating candidates. 1 cand only == solved
+      expect(board.state[:cells][0]).to eq([5])
+
+      # no other cell that cell 0 can see should have 5 as a candidate
+      seen_cell_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 19, 20, 27, 36, 45, 54, 63, 72]
+      seen_cell_ids.each do |seen_cell_id|
+        expect(board.state[:cells][seen_cell_id]).not_to include(5)
+      end
+    end
+  end
+
   describe '#update_cell' do
     let(:board) do
       txt = <<~SUDOKU

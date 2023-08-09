@@ -28,17 +28,12 @@ class Board
     @state = {}
     reducer.dispatch(Action.new(type: Action::INIT))
     
-    initial_data.each.with_index do |char, i|
-      if char != Cell::EMPTY
-        init_cell(
-          Action.new(
-            type: Action::INIT_FILL_CELL,
-            cell_id: i,
-            value: char.to_i
-          )
-        )        
-      end
-    end
+    reducer.dispatch(
+      Action.new(
+        type: Action::NEW_BOARD_SYNC,
+        initial_data: initial_data.map { |char| char == Cell::EMPTY ? char : char.to_i }
+      )
+    )
   end
 
   def set_state(state)
@@ -59,7 +54,7 @@ class Board
           **action_opts
         )
       )
-      all_seen_empty_cell_ids_for(cell_id).each do |seen_cell_id|
+      all_seen_empty_cell_ids_with_candidates_for(cell_id, candidates).each do |seen_cell_id|
         # Because the board state can change from the previous iteration of this loop,
         # all cells empty when the loop started may not still be empty when the next iteration runs.
         # Although sending an 'empty' update action doesnt alter the board state,
@@ -67,7 +62,7 @@ class Board
         # As another optimization take no action when the 2 cells share no candidates in common
 
         seen_cell = get_cell(seen_cell_id)
-        if seen_cell.empty? && (seen_cell.candidates & candidates).any?
+        if seen_cell.empty? && (seen_cell.candidates & candidates).length > 0
           update_cell(
             seen_cell_id,
             seen_cell.candidates - candidates,
@@ -86,21 +81,6 @@ class Board
       )
     end
     true
-  end
-
-  def init_cell(action)
-    action_cell = get_cell(action.cell_id)
-    reducer.dispatch(action)
-
-    all_seen_empty_cell_ids_for(action.cell_id).each do |seen_cell_id|
-      reducer.dispatch(
-        Action.new(
-          type: Action::INIT_UPDATE_CELL,
-          cell_id: seen_cell_id,
-          values: get_cell(seen_cell_id).candidates - [action.value],
-        )
-      )
-    end
   end
 
   def start_pass
@@ -142,12 +122,6 @@ class Board
     ]
   end
 
-  def all_seen_cells_for(cell)
-    all_seen_cell_ids_for(cell.id).map do |cell_id|
-      get_cell(cell_id)
-    end
-  end
-
   def all_seen_cell_ids_for(cell_id)
     (houses_for_cell(get_cell(cell_id)).map do |house|
       house.cell_ids
@@ -157,6 +131,13 @@ class Board
   def all_seen_empty_cell_ids_for(cell_id)
     all_seen_cell_ids_for(cell_id).select do |id|
       get_cell(id).empty?
+    end
+  end
+
+  def all_seen_empty_cell_ids_with_candidates_for(cell_id, cands)
+    all_seen_cell_ids_for(cell_id).select do |id|
+      seen_cell = get_cell(id)
+      seen_cell.empty? && (seen_cell.candidates & cands).length > 0
     end
   end
 
@@ -262,7 +243,8 @@ class Board
   end
 
 def summary
-    initial_filled_cell_count = history.where(type: Action::INIT_FILL_CELL).length
+    initial_data = history.find(type: Action::NEW_BOARD_SYNC).initial_data
+    initial_filled_cell_count = initial_data.reject { |v| v == Cell::EMPTY }.length
     initial_filled_cell_count_msg = "Filled cells at start: #{initial_filled_cell_count}"
 
     initial_solveable_cell_count = history.where(type: Action::FILL_CELL, strategy: Strategy::NakedSingle.name).length
