@@ -19,9 +19,11 @@ class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
     end
 
     cand_to_line_map.each do |cand, line_house|
-      line_cells_outside_box = line_house.empty_other_cells(box.cell_ids)     
+      line_cell_ids_outside_box = line_house.empty_other_cell_ids(box.cell_ids)
 
-      line_cells_outside_box.each do |outside_box_cell|
+      line_cell_ids_outside_box.each do |outside_box_cell_id|
+        # get a fresh cell each iteration in case the previous iteration updates the board
+        outside_box_cell = board.get_cell(outside_box_cell_id)
         new_candidates = outside_box_cell.candidates - [cand]
         
         if new_candidates != outside_box_cell.candidates

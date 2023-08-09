@@ -53,7 +53,11 @@ class House
   end
   
   def empty_other_cells(filtered_out_cell_ids)
-    (empty_cell_ids - filtered_out_cell_ids).map { |cell_id| board.get_cell(cell_id) } 
+    empty_other_cell_ids.map { |cell_id| board.get_cell(cell_id) }
+  end
+
+  def empty_other_cell_ids(filtered_out_cell_ids)
+    empty_cell_ids - filtered_out_cell_ids
   end
 
   def filled_cells
@@ -70,6 +74,10 @@ class House
   
   def cells_with_candidates(cands)
     empty_cells.select { |cell| (cands & cell.candidates).length == cands.length }
+  end
+
+  def cell_ids_with_candidates(cands)
+    cells_with_candidates(cands).map(&:id)
   end
 
   def other_cells_with_candidates(filtered_out_cell_ids, cands)

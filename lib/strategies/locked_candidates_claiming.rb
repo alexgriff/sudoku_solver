@@ -28,7 +28,10 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
           third_box_id = (other_box_ids - [matched_box_id]).first
           third_box = board.boxes[third_box_id]
 
-          third_box.cells_with_candidates([cand]).each do |third_box_cell|
+          third_box.cell_ids_with_candidates([cand]).each do |third_box_cell_id|
+            # get a fresh cell each iteration in case the previous iteration updates the board
+            third_box_cell = board.get_cell(third_box_cell_id)
+
             if locked_cand_row_ids.include?(third_box_cell.row_id)
               new_candidates = third_box_cell.candidates - [cand]
               if new_candidates != third_box_cell.candidates
@@ -57,7 +60,10 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
           third_box_id = (other_box_ids - [matched_box_id]).first
           third_box = board.boxes[third_box_id]
 
-          third_box.cells_with_candidates([cand]).each do |third_box_cell|
+          third_box.cell_ids_with_candidates([cand]).each do |third_box_cell_id|
+            # get a fresh cell each iteration in case the previous iteration updates the board
+            third_box_cell = board.get_cell(third_box_cell_id)
+
             if locked_cand_col_ids.include?(third_box_cell.column_id)
               new_candidates = third_box_cell.candidates - [cand]
               if new_candidates != third_box_cell.candidates

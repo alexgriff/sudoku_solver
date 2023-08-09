@@ -17,8 +17,7 @@ class Solve
   end
   
   def solve(board)    
-    board.reducer.dispatch(Action.new(type: Action::NEW_PASS))
-
+    board.start_pass
     strategies.each do |strategy|
       strategy.apply(board)
     end

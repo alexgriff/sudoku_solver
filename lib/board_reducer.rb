@@ -103,6 +103,11 @@ class Board::Reducer
       where(**kwargs).first
     end
 
+    def after_id(action_id)
+      start_index = @history.index { |action| action.id == action_id}
+      @history[start_index..-1]
+    end
+
     def where(**kwargs)
       @history.select do |action|
         kwargs.all? do |key, val|

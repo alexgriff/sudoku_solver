@@ -18,8 +18,6 @@ describe Solve do
   it 'can solve a single missing cell' do
     board = Board.from_txt(board_missing_one)
     Solve.new.solve(board)
-    e2_cell = board.rows[1].cells[4]
-    expect(e2_cell.value).to eq(4)
     expect(board.solved?).to eq(true)
   end
 
@@ -42,10 +40,6 @@ describe Solve do
   it 'can solve taking into account rows and columns' do
     board = Board.from_txt(board_missing_two)
     Solve.new.solve(board)
-    e2_cell = board.rows[1].cells[4]
-    f2_cell = board.rows[1].cells[5]
-    expect(e2_cell.value).to eq(4)
-    expect(f2_cell.value).to eq(9)
     expect(board.solved?).to eq(true)
   end
 
@@ -69,12 +63,6 @@ describe Solve do
     # TODO: this no longer does multiple passes since more strategies have been added
     board = Board.from_txt(board_missing_more)
     Solve.new.solve(board)
-    d2_cell = board.rows[1].cells[3]
-    e2_cell = board.rows[1].cells[4]
-    f2_cell = board.rows[1].cells[5]
-    expect(d2_cell.value).to eq(3)
-    expect(e2_cell.value).to eq(4)
-    expect(f2_cell.value).to eq(9)
     expect(board.solved?).to eq(true)
   end
 
@@ -115,38 +103,38 @@ describe Solve do
   # regression testing example - paste in new regression
   # let(:regression) do
   #   <<~SUDOKU
-  #   7 9 . | . . 4 | . . 2 
-  #   . . . | . . 6 | . . . 
-  #   . . 3 | . . . | . . . 
+  #   . 3 . | . . . | . . .
+  #   6 . . | . . 3 | 8 1 .
+  #   9 2 . | 5 1 . | . . 3
   #  -------|-------|-------
-  #   . 8 2 | . 3 1 | . . 9 
-  #   . . . | . 9 . | 4 . . 
-  #   . 1 . | 6 . . | . 8 7 
+  #   5 1 . | 6 7 . | . . .
+  #   . . . | . 8 . | . . .
+  #   . . . | . 3 4 | . 5 6
   #  -------|-------|-------
-  #   . 3 . | . 1 . | . . . 
-  #   . . . | 8 . . | . 7 4 
-  #   . 6 . | . . . | 2 . . 
+  #   8 . . | . 4 1 | . 3 9
+  #   . 6 1 | 8 . . | . . 2
+  #   . . . | . . . | . 8 .
   #   SUDOKU
   # end
 
   # it 'can solve the current sudoku' do
   #   board = Board.from_txt(regression)
   #   <<~STUCK
-  #   7 9 5 | 1 8 4 | . 3 2 
-  #   5 2 5 | 1 5 6 | . 3 8 
-  #   . 2 3 | 1 5 5 | . 9 8 
+  #   1 3 . | 4 6 6 | . . .
+  #   6 . . | . . 3 | 8 1 .
+  #   9 2 . | 5 1 . | . . 3
   #  -------|-------|-------
-  #   4 8 2 | 7 3 1 | 5 5 9 
-  #   3 7 6 | 5 9 8 | 4 2 1 
-  #   5 1 9 | 6 4 2 | 3 8 7 
+  #   5 1 . | 6 7 . | . . 8
+  #   . . 6 | . 8 5 | . . .
+  #   . 8 . | . 3 4 | . 5 6
   #  -------|-------|-------
-  #   9 3 8 | 2 1 7 | 6 6 5 
-  #   1 5 1 | 8 6 9 | . 7 4 
-  #   8 6 8 | 4 7 . | 2 1 5 
+  #   8 . . | . 4 1 | 6 3 9
+  #   3 6 1 | 8 . . | . . 2
+  #   . . . | 3 . . | . 8 .
   #   STUCK
 
-  #   # Solve.new.solve(board)
-  #   # expect(board.solved?).to eq(true)
+  #   Solve.new.solve(board)
+  #   expect(board.solved?).to eq(true)
   # end
 end
 

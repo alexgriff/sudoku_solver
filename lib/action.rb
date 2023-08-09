@@ -7,7 +7,7 @@ class Action
   NEW_PASS = :new_pass
   @@id = 1
   
-  attr_reader :type
+  attr_reader :type, :id
 
   def initialize(type:, **kwargs)
     @id = @@id

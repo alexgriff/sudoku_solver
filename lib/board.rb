@@ -43,7 +43,6 @@ class Board
 
   def set_state(state)
     @state = state
-
     raise "Board is invalid: #{errors.join("\n")}" unless valid?
   end
 
@@ -102,6 +101,10 @@ class Board
         )
       )
     end
+  end
+
+  def start_pass
+    reducer.dispatch(Action.new(type: Action::NEW_PASS))
   end
 
   def cells
