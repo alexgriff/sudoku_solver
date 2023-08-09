@@ -34,7 +34,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
             if locked_cand_row_ids.include?(third_box_cell.row_id)
               new_candidates = third_box_cell.candidates - [cand]
               if new_candidates != third_box_cell.candidates
-                board.update_cell(
+                board.state.register_change(
                   third_box_cell.id,
                   new_candidates,
                   {strategy: name, claiming_box_id: "Box-#{third_box.id}|Row-#{row.id}|#{cand}"}
@@ -65,7 +65,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
             if locked_cand_col_ids.include?(third_box_cell.column_id)
               new_candidates = third_box_cell.candidates - [cand]
               if new_candidates != third_box_cell.candidates
-                board.update_cell(
+                board.state.register_change(
                   third_box_cell.id,
                   new_candidates,
                   {strategy: name, claiming_box_id: "Box-#{third_box.id}|Col-#{col.id}|#{cand}"}

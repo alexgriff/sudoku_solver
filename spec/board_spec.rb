@@ -83,16 +83,12 @@ describe Board do
 
     it 'correctly accounts for initial solved cells' do
       board = Board.from_txt(txt)
-      # solved is a hash of {cell_index => value}
-      expect(board.state[:solved][0]).to eq(5)
-
-      # cells is an array of array indicating candidates. 1 cand only == solved
-      expect(board.state[:cells][0]).to eq([5])
+      expect(board.state.get_cell(0).value).to eq(5)
 
       # no other cell that cell 0 can see should have 5 as a candidate
       seen_cell_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 19, 20, 27, 36, 45, 54, 63, 72]
       seen_cell_ids.each do |seen_cell_id|
-        expect(board.state[:cells][seen_cell_id]).not_to include(5)
+        expect(board.state.get_cell(seen_cell_id).candidates).not_to include(5)
       end
     end
   end
@@ -117,12 +113,12 @@ describe Board do
     end
     context 'when a cell is updated to a solved state' do
       it 'dispatches a series of action to update other seen cells' do
-        board.update_cell(14, [6])
+        board.state.register_change(14, [6])
         expect(board.boxes[1].cell_ids_with_candidates([6]).length).to eq(0)
       end
 
       it 'cascades to solve other naked singles' do
-        board.update_cell(14, [6])
+        board.state.register_change(14, [6])
         expect(board.get_cell(12).value).to eq 3
         expect(board.get_cell(21).value).to eq 1
         expect(board.get_cell(17).value).to eq 8
@@ -131,13 +127,13 @@ describe Board do
       end
 
       it 'passes along the action opts to the action' do
-        board.update_cell(14, [6], {foo: 'bar'})
+        board.state.register_change(14, [6], {foo: 'bar'})
         action = board.history.find(cell_id: 14, foo: 'bar')
         expect(action).to be_truthy
       end
 
       it 'marks cascading actions with cascade value indicating the cell id it casacded from' do
-        board.update_cell(14, [6], {foo: 'bar'})
+        board.state.register_change(14, [6], {foo: 'bar'})
         action = board.history.find(cell_id: 12, cascade: 14)
         expect(action).to be_truthy
       end

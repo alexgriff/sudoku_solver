@@ -17,7 +17,7 @@ class Strategy::NakedPair < Strategy::BaseStrategy
 
           new_values = non_paired_cell.candidates - naked_pair_cands
           if new_values
-            board.update_cell(
+            board.state.register_change(
               non_paired_cell.id,
               new_values,
               {strategy: name, pair: [cell.id, paired_cell_id].sort}

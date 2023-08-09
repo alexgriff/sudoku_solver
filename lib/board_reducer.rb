@@ -1,22 +1,7 @@
 class Board::Reducer
-  attr_reader :board, :history
-  
-  def initialize(board)
-    @board = board
-    @history = Board::History.new
-    dispatch(Action.new(type: Action::INIT))
-  end
-
-  def dispatch(action)
-    history << action
-    board.set_state(
-      {
-        touched: touched_reducer(board.state[:touched], action),
-        passes: passes_reducer(board.state[:passes], action),
-        cells: cells_reducer(board.state[:cells], action),
-        solved: solved_reducer(board.state[:solved], action)
-      }
-    )
+  attr_reader :board_state
+  def initialize(board_state)
+    @board_state = board_state
   end
 
   def touched_reducer(state, action)
@@ -24,9 +9,11 @@ class Board::Reducer
       when Action::INIT, Action::NEW_PASS
         false
       when Action::FILL_CELL, Action::UPDATE_CELL
-        cell = board.get_cell(action.cell_id)
+        cell = board_state.get_cell(action.cell_id)
         new_values = action.respond_to?(:values) ? action.values : [action.value]
-        if cell.empty? && (board.state[:cells][cell.id] != new_values)
+        # this breaks encapsulation since the touced reducer has to reach into
+        # the cells part of the state, could pass cells thru instead... hmmm....
+        if cell.empty? && (board_state.instance_variable_get(:@cells)[cell.id] != new_values)
           true
         else
           state
@@ -83,7 +70,7 @@ class Board::Reducer
   def new_board_sync_cell_state(state, action)
     empty_cell_id_to_seen_values_map = action.initial_data.each_with_object({}).with_index do |(val, res), i|
       if val == Cell::EMPTY
-        res[i] = board.all_seen_cell_ids_for(i).map { |id| action.initial_data[id] }.reject { |v| v == Cell::EMPTY }
+        res[i] = board_state.board.all_seen_cell_ids_for(i).map { |id| action.initial_data[id] }.reject { |v| v == Cell::EMPTY }
       end
       res
     end
@@ -99,7 +86,7 @@ class Board::Reducer
   end
 
   def update_cell_state(state, action)
-    cell = board.get_cell(action.cell_id)
+    cell = board_state.get_cell(action.cell_id)
     new_values = action.respond_to?(:values) ? action.values : [action.value]
     if cell.empty? && new_values != state[action.cell_id]
       state.map.with_index do |v, i|

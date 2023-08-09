@@ -15,20 +15,20 @@ class Solve
     @with_display = with_display
     @with_summary = with_summary
   end
-  
-  def solve(board)    
-    board.register_next_pass
+
+  def solve(board)
+    board.state.register_next_pass
 
     strategies.each do |strategy|
       strategy.apply(board)
     end
 
-    if board.solved? || !board.touched?
-      board.register_done
+    if board.state.is_solved? || !board.state.has_been_touched?
+      board.state.register_done
 
       board.print if with_display
       puts(board.summary) if with_summary
-      board.solved?
+      board.state.is_solved?
     else
       solve(board)
     end

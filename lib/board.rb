@@ -25,80 +25,17 @@ class Board
 
     @errors = []
     
-    @state = {}
-    @reducer = Board::Reducer.new(self)
-    @history = reducer.history
-
-    reducer.dispatch(
-      Action.new(
-        type: Action::NEW_BOARD_SYNC,
-        initial_data: initial_data.map { |char| char == Cell::EMPTY ? char : char.to_i }
-      )
-    )
+    @history = Board::History.new
+    @state = Board::State.new(self)
+    state.register_starting_state(initial_data.map { |char| char == Cell::EMPTY ? char : char.to_i })
   end
 
-  def set_state(state)
-    @state = state
-    raise "Board is invalid: #{errors.join("\n")}" unless valid?
-  end
-
-  def update_cell(cell_id, candidates, action_opts={})
-    cell = get_cell(cell_id)
-    solving = cell.empty? && candidates.length == 1
-
-    if solving
-      reducer.dispatch(
-        Action.new(
-          type: Action::FILL_CELL,
-          cell_id: cell_id,
-          value: candidates.first,
-          **action_opts
-        )
-      )
-      all_seen_empty_cell_ids_with_candidates_for(cell_id, candidates).each do |seen_cell_id|
-        seen_cell = get_cell(seen_cell_id)
-        # Because the board state can change from a previous iteration of this loop, all cells that were empty
-        # with the given candidates when the loop started may not be in that state when the next iteration runs.
-        # Although sending a now-'empty' action would result in a no-op, we can make a (small-ish) optimization by
-        # checking the new state of the cell before dispatching any new actions
-        if seen_cell.empty? && seen_cell.has_any_of_candidates?(candidates)
-          update_cell(
-            seen_cell_id,
-            seen_cell.candidates - candidates,
-            action_opts.merge(cascade: cell.id)
-          )
-        end
-      end
-    else
-      reducer.dispatch(
-        Action.new(
-          type: Action::UPDATE_CELL,
-          cell_id: cell_id,
-          values: candidates,
-          **action_opts
-        )
-      )
-    end
-    true
-  end
-
-  def register_next_pass
-    reducer.dispatch(Action.new(type: Action::NEW_PASS))
-  end
-
-  def register_done
-    reducer.dispatch(Action.new(type: Action::DONE, status: solved?))
+  def get_cell(cell_id)
+    state.get_cell(cell_id)
   end
 
   def cells
     (0..NUM_CELLS-1).to_a.map { |i| get_cell(i) }
-  end
-
-  def get_cell(cell_id)
-    Cell.from_state(
-      id: cell_id,
-      state: {value: state[:solved][cell_id], candidates: state[:cells][cell_id] }
-    )
   end
 
   def empty_cells
@@ -107,14 +44,6 @@ class Board
 
   def empty_cell_ids
     empty_cells.map(&:id)
-  end
-
-  def solved?
-    cells.all? { |cell| cell.filled? }
-  end
-
-  def touched?
-    state[:touched]
   end
 
   def houses_for_cell(cell)
@@ -142,6 +71,10 @@ class Board
       seen_cell = get_cell(id)
       seen_cell.empty? && seen_cell.has_any_of_candidates?(cands)
     end
+  end
+
+  def solved?
+    state.is_solved?
   end
 
   def valid?
@@ -252,6 +185,5 @@ class Board
 
   private
 
-  attr_reader :reducer
   attr_writer :errors
 end

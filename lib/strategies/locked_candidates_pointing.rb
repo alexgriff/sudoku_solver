@@ -26,7 +26,7 @@ class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
         new_candidates = outside_box_cell.candidates - [cand]
         
         if new_candidates != outside_box_cell.candidates
-          board.update_cell(
+          board.state.register_change(
             outside_box_cell.id,
             new_candidates,
             {strategy: name, locked_alignment_id: "Box-#{box.id}|#{line_house.class.to_s}-#{line_house.id}|#{cand}"}

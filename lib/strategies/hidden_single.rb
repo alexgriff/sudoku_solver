@@ -8,7 +8,7 @@ class Strategy::HiddenSingle < Strategy::BaseStrategy
         (cell.intersecting_candidates(Box.for_cell(board, cell).uniq_candidates)).first
       )
       if uniq_candidate
-        board.update_cell(cell_id,  [uniq_candidate], {strategy: name})
+        board.state.register_change(cell_id,  [uniq_candidate], {strategy: name})
       end
     end
   end
