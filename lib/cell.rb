@@ -39,12 +39,16 @@ class Cell
     !empty?
   end
 
-  def has_one_remaining_candidate?
-    candidates.length == 1
+  def has_any_of_candidates?(cands)
+    intersecting_candidates(cands).length > 0
   end
 
-  def has_candidate?(candidate)
-    candidates.include? candidate
+  def has_all_of_candidates?(cands)
+    intersecting_candidates(cands).length == cands.length
+  end
+
+  def intersecting_candidates(cands)
+    (candidates & cands)
   end
 
   def candidate_permutations(n)

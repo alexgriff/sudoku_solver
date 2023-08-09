@@ -16,13 +16,10 @@ class Strategy::HiddenPair < Strategy::BaseStrategy
         end
         
         hidden_pair_cell_ids.each do |paired_cell_id|
-          # get a fresh cell each iteration in case the previous iteration updates the board
-          paired_cell = board.get_cell(paired_cell_id)
-
           board.update_cell(
-            paired_cell.id,
+            paired_cell_id,
             cand_pair,
-            {strategy: name, pair: [cell.id, paired_cell.id].sort}
+            {strategy: name, pair: [cell.id, paired_cell_id].sort}
           )
         end
       end

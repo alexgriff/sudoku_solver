@@ -2,11 +2,11 @@ class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
   def self.execute(board, cell_id)
     cell = board.get_cell(cell_id)
     box = Box.for_cell(board, cell)
-    cand_with_multiple_in_box = box.candidate_counts.select { |k, v| v == 2 || v == 3 }.keys
-    cell_cands_present_in_other_box_cells = cell.candidates & cand_with_multiple_in_box
+    cands_with_multiple_in_box = box.candidate_counts.select { |k, v| v == 2 || v == 3 }.keys
+    cell_cands_present_in_other_box_cells = cell.intersecting_candidates(cands_with_multiple_in_box)
     
     cand_to_line_map = cell_cands_present_in_other_box_cells.each_with_object({}) do |cand, res|
-      all_box_cell_ids_with_cand = box.empty_cell_ids.select { |cell_id| board.get_cell(cell_id).has_candidate?(cand) }
+      all_box_cell_ids_with_cand = box.empty_cell_ids.select { |cell_id| board.get_cell(cell_id).has_any_of_candidates?([cand]) }
       
       # are all the cands in the same row
       if all_box_cell_ids_with_cand.all? { |box_cell_id| board.get_cell(box_cell_id).row_id == cell.row_id }
@@ -22,7 +22,6 @@ class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
       line_cell_ids_outside_box = line_house.empty_other_cell_ids(box.cell_ids)
 
       line_cell_ids_outside_box.each do |outside_box_cell_id|
-        # get a fresh cell each iteration in case the previous iteration updates the board
         outside_box_cell = board.get_cell(outside_box_cell_id)
         new_candidates = outside_box_cell.candidates - [cand]
         

@@ -47,7 +47,7 @@ class House
   end
   
   def cell_ids_with_candidates(cands)
-    empty_cell_ids.select { |cell_id| (cands & board.get_cell(cell_id).candidates).length == cands.length }
+    empty_cell_ids.select { |cell_id| board.get_cell(cell_id).has_all_of_candidates?(cands) }
   end
 
   def other_cell_ids_with_candidates(filtered_cell_ids, cands)

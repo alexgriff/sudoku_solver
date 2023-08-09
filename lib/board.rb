@@ -56,14 +56,12 @@ class Board
         )
       )
       all_seen_empty_cell_ids_with_candidates_for(cell_id, candidates).each do |seen_cell_id|
-        # Because the board state can change from the previous iteration of this loop,
-        # all cells empty when the loop started may not still be empty when the next iteration runs.
-        # Although sending an 'empty' update action doesnt alter the board state,
-        # as an optimization check if you should still send the next action.
-        # As another optimization take no action when the 2 cells share no candidates in common
-
         seen_cell = get_cell(seen_cell_id)
-        if seen_cell.empty? && (seen_cell.candidates & candidates).length > 0
+        # Because the board state can change from a previous iteration of this loop, all cells that were empty
+        # with the given candidates when the loop started may not be in that state when the next iteration runs.
+        # Although sending a now-'empty' action would result in a no-op, we can make a (small-ish) optimization by
+        # checking the new state of the cell before dispatching any new actions
+        if seen_cell.empty? && seen_cell.has_any_of_candidates?(candidates)
           update_cell(
             seen_cell_id,
             seen_cell.candidates - candidates,
@@ -142,7 +140,7 @@ class Board
   def all_seen_empty_cell_ids_with_candidates_for(cell_id, cands)
     all_seen_cell_ids_for(cell_id).select do |id|
       seen_cell = get_cell(id)
-      seen_cell.empty? && (seen_cell.candidates & cands).length > 0
+      seen_cell.empty? && seen_cell.has_any_of_candidates?(cands)
     end
   end
 

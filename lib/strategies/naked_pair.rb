@@ -13,7 +13,6 @@ class Strategy::NakedPair < Strategy::BaseStrategy
         interesecting_houses = board.houses_for_cell(cell) & board.houses_for_cell(paired_cell)
         non_paired_cell_ids = interesecting_houses.map(&:empty_cell_ids).flatten - [cell.id, paired_cell.id]
         non_paired_cell_ids.each do |non_paired_cell_id|
-          # get a fresh cell each iteration in case the previous iteration updates the board
           non_paired_cell = board.get_cell(non_paired_cell_id)
 
           new_values = non_paired_cell.candidates - naked_pair_cands

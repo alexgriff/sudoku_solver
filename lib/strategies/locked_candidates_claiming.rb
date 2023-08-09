@@ -5,8 +5,8 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
     col = Column.for_cell(board, cell)
     box = Box.for_cell(board, cell)
     
-    cand_with_multiple_in_box = box.candidate_counts.select { |k, v| v >= 2 }.keys
-    cell_cands_present_in_other_box_cells = cell.candidates & cand_with_multiple_in_box
+    cands_with_multiple_in_box = box.candidate_counts.select { |k, v| v >= 2 }.keys
+    cell_cands_present_in_other_box_cells = cell.intersecting_candidates(cands_with_multiple_in_box)
     
     # find candidate that is only in 2 rows/cols in box
     cell_cands_present_in_other_box_cells.each do |cand|
@@ -29,7 +29,6 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
           third_box = board.boxes[third_box_id]
 
           third_box.cell_ids_with_candidates([cand]).each do |third_box_cell_id|
-            # get a fresh cell each iteration in case the previous iteration updates the board
             third_box_cell = board.get_cell(third_box_cell_id)
 
             if locked_cand_row_ids.include?(third_box_cell.row_id)
@@ -61,7 +60,6 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
           third_box = board.boxes[third_box_id]
 
           third_box.cell_ids_with_candidates([cand]).each do |third_box_cell_id|
-            # get a fresh cell each iteration in case the previous iteration updates the board
             third_box_cell = board.get_cell(third_box_cell_id)
 
             if locked_cand_col_ids.include?(third_box_cell.column_id)
