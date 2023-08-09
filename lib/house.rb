@@ -34,34 +34,30 @@ class House
     end
   end
 
-  # def cells
-  #   cell_ids.map { |id| board.get_cell(id) }
-  # end
-  
   def empty_cell_ids
     cell_ids.select { |cell_id| board.get_cell(cell_id).empty? }
   end
 
-  def empty_other_cell_ids(filtered_out_cell_ids)
-    empty_cell_ids - filtered_out_cell_ids
+  def empty_other_cell_ids(filtered_cell_ids)
+    empty_cell_ids - filtered_cell_ids
   end
 
-  def other_cell_ids(filtered_out_cell_ids)
-    cell_ids - filtered_out_cell_ids
+  def other_cell_ids(filtered_cell_ids)
+    cell_ids - filtered_cell_ids
   end
   
   def cell_ids_with_candidates(cands)
     empty_cell_ids.select { |cell_id| (cands & board.get_cell(cell_id).candidates).length == cands.length }
   end
 
-  def other_cell_ids_with_candidates(filtered_out_cell_ids, cands)
-    other_cell_ids(filtered_out_cell_ids).select do |cell_id|
+  def other_cell_ids_with_candidates(filtered_cell_ids, cands)
+    other_cell_ids(filtered_cell_ids).select do |cell_id|
       cell_ids_with_candidates(cands).include?(cell_id)
     end
   end
 
-  def any_other_cells_with_candidates?(filtered_out_cell_ids, cands)
-    other_cell_ids_with_candidates(filtered_out_cell_ids, cands).any?
+  def any_other_cells_with_candidates?(filtered_cell_ids, cands)
+    other_cell_ids_with_candidates(filtered_cell_ids, cands).length > 0
   end
 
   def uniq_candidates
