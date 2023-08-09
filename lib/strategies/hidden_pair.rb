@@ -1,12 +1,12 @@
 class Strategy::HiddenPair < Strategy::BaseStrategy
   def self.execute(board, cell_id)
-    cell = board.get_cell(cell_id)
+    cell = board.state.get_cell(cell_id)
     # are any 2 of my candidates found in one other cell only
     if cell.candidates.length >= 2
       cell.candidate_permutations(2).each do |cand_pair|    
         hidden_pair_cell_ids = board.houses_for_cell(cell).each_with_object([]) do |house, res|
           paired_cell_id = house.other_cell_ids_with_candidates([cell.id], cand_pair).find do |potential_paired_cell_id|
-            potential_paired_cell = board.get_cell(potential_paired_cell_id)
+            potential_paired_cell = board.state.get_cell(potential_paired_cell_id)
             potential_paired_cell.candidates.length > 2 &&
             !house.any_other_cells_with_candidates?([cell.id, potential_paired_cell.id], [cand_pair[0]]) &&
             !house.any_other_cells_with_candidates?([cell.id, potential_paired_cell.id], [cand_pair[1]])

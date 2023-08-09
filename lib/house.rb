@@ -35,7 +35,7 @@ class House
   end
 
   def empty_cell_ids
-    cell_ids.select { |cell_id| board.get_cell(cell_id).empty? }
+    cell_ids.select { |cell_id| board.state.get_cell(cell_id).empty? }
   end
 
   def empty_other_cell_ids(filtered_cell_ids)
@@ -47,7 +47,7 @@ class House
   end
   
   def cell_ids_with_candidates(cands)
-    empty_cell_ids.select { |cell_id| board.get_cell(cell_id).has_all_of_candidates?(cands) }
+    empty_cell_ids.select { |cell_id| board.state.get_cell(cell_id).has_all_of_candidates?(cands) }
   end
 
   def other_cell_ids_with_candidates(filtered_cell_ids, cands)
@@ -66,7 +66,7 @@ class House
   
   def candidate_counts
     empty_cell_ids.map do |cell_id|
-      board.get_cell(cell_id).candidates
+      board.state.get_cell(cell_id).candidates
     end.flatten.each_with_object({}) do |cand, counts|
       counts[cand] ||= 0
       counts[cand] += 1
@@ -80,7 +80,7 @@ class House
   private
 
   def all_non_emptys_are_unique?
-    filled_values = cell_ids.map { |id| board.get_cell(id).value }.reject { |v| v == Cell::EMPTY }
+    filled_values = cell_ids.map { |id| board.state.get_cell(id).value }.reject { |v| v == Cell::EMPTY }
     valid = filled_values.length == filled_values.uniq.length
     unless valid
       errors << ("#{self.class::HOUSE_TYPE} #{id} does not have uniq values")

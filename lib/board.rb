@@ -30,20 +30,8 @@ class Board
     state.register_starting_state(initial_data.map { |char| char == Cell::EMPTY ? char : char.to_i })
   end
 
-  def get_cell(cell_id)
-    state.get_cell(cell_id)
-  end
-
-  def cells
-    (0..NUM_CELLS-1).to_a.map { |i| get_cell(i) }
-  end
-
-  def empty_cells
-    cells.select(&:empty?)
-  end
-
   def empty_cell_ids
-    empty_cells.map(&:id)
+    (0..NUM_CELLS-1).to_a.select { |i| state.get_cell(i).empty? }
   end
 
   def houses_for_cell(cell)
@@ -55,20 +43,20 @@ class Board
   end
 
   def all_seen_cell_ids_for(cell_id)
-    (houses_for_cell(get_cell(cell_id)).map do |house|
+    (houses_for_cell(Cell.new(id: cell_id)).map do |house|
       house.cell_ids
     end.flatten) - [cell_id]
   end
   
   def all_seen_empty_cell_ids_for(cell_id)
     all_seen_cell_ids_for(cell_id).select do |id|
-      get_cell(id).empty?
+      state.get_cell(id).empty?
     end
   end
 
   def all_seen_empty_cell_ids_with_candidates_for(cell_id, cands)
     all_seen_cell_ids_for(cell_id).select do |id|
-      seen_cell = get_cell(id)
+      seen_cell = state.get_cell(id)
       seen_cell.empty? && seen_cell.has_any_of_candidates?(cands)
     end
   end
@@ -105,7 +93,7 @@ class Board
   def print
     top_3 = rows.slice(0...3)
     top_3.each do |row|
-      cell_values = row.cell_ids.map { |id| get_cell(id).value }
+      cell_values = row.cell_ids.map { |id| state.get_cell(id).value }
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
@@ -114,7 +102,7 @@ class Board
     puts('-------|-------|-------')
     middle_3 = rows.slice(3...6)
     middle_3.each do |row|
-      cell_values = row.cell_ids.map { |id| get_cell(id).value }
+      cell_values = row.cell_ids.map { |id| state.get_cell(id).value }
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
@@ -123,7 +111,7 @@ class Board
     puts('-------|-------|-------')
     bottom_3 = rows.slice(6..-1)
     bottom_3.each do |row|
-      cell_values = row.cell_ids.map { |id| get_cell(id).value }
+      cell_values = row.cell_ids.map { |id| state.get_cell(id).value }
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
@@ -136,7 +124,7 @@ class Board
     top_3 = rows.slice(0...3)
     top_3.each do |row|
       cell_values = row.cell_ids.map do |cell_id|
-        cell = get_cell(cell_id)
+        cell = state.get_cell(cell_id)
         if cell.filled?
           "#{cell.id.to_s.ljust(2)}= #{cell.value}".ljust(18)
         else
@@ -152,7 +140,7 @@ class Board
     middle_3 = rows.slice(3...6)
     middle_3.each do |row|
       cell_values = row.cell_ids.map do |cell_id|
-        cell = get_cell(cell_id)
+        cell = state.get_cell(cell_id)
         if cell.filled?
           "#{cell.id}= #{cell.value}".ljust(18)
         else
@@ -168,7 +156,7 @@ class Board
     bottom_3 = rows.slice(6..-1)
     bottom_3.each do |row|
       cell_values = row.cell_ids.map do |cell_id|
-        cell = get_cell(cell_id)
+        cell = state.get_cell(cell_id)
         if cell.filled?
           "#{cell.id}= #{cell.value}".ljust(18)
         else

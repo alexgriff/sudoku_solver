@@ -110,7 +110,8 @@ class Board::State
         )
       )
     end
-    true
+    
+    raise unless board.valid?
   end
 
   private

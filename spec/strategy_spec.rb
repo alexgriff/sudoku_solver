@@ -24,9 +24,9 @@ describe Strategy do
     end
 
     it 'solves the cell with a naked single' do
-      expect(board.get_cell(14).candidates).to eq([6])
+      expect(board.state.get_cell(14).candidates).to eq([6])
       strategy.apply(board)
-      expect(board.get_cell(14).value).to eq(6)
+      expect(board.state.get_cell(14).value).to eq(6)
       action = board.history.find(
         cell_id: 14,
         type: Action::FILL_CELL,
@@ -59,10 +59,10 @@ describe Strategy do
     end
 
     it 'updates the cell with a hidden single' do
-      expect(board.get_cell(21).candidates).to eq([4, 6, 9])
+      expect(board.state.get_cell(21).candidates).to eq([4, 6, 9])
 
       strategy.apply(board)
-      expect(board.get_cell(21).value).to eq(6)
+      expect(board.state.get_cell(21).value).to eq(6)
       action = board.history.find(
         cell_id: 21,
         type: Action::FILL_CELL,
@@ -96,10 +96,10 @@ describe Strategy do
     end
 
     it 'updates the candiates of the cell that cant be one of the naked pair candidates' do
-      expect(board.get_cell(64).candidates).to eq([3, 7])
+      expect(board.state.get_cell(64).candidates).to eq([3, 7])
 
       strategy.apply(board)
-      expect(board.get_cell(64).value).to eq(7)
+      expect(board.state.get_cell(64).value).to eq(7)
 
       action = board.history.find(
         cell_id: 64,
@@ -134,10 +134,10 @@ describe Strategy do
     end
 
     it "updates the candidates of cells in the same aligned row/col that can't be the locked candidate" do
-      expect(board.get_cell(24).candidates).to eq([3, 5])
+      expect(board.state.get_cell(24).candidates).to eq([3, 5])
 
       strategy.apply(board)
-      expect(board.get_cell(24).value).to eq(3)
+      expect(board.state.get_cell(24).value).to eq(3)
 
       action = board.history.find(
         cell_id: 24,
@@ -172,10 +172,10 @@ describe Strategy do
     end
 
     it 'updates the candidates of the cells in the box that must have the candidate in the free row/col' do
-      expect(board.get_cell(19).candidates).to eq([4, 7])
+      expect(board.state.get_cell(19).candidates).to eq([4, 7])
       
       strategy.apply(board)
-      expect(board.get_cell(19).value).to eq(4)
+      expect(board.state.get_cell(19).value).to eq(4)
 
       action = board.history.find(
         cell_id: 19,
@@ -210,9 +210,9 @@ describe Strategy do
     end
 
     it 'updates the candidates of the cell that cant be one of the hidden pair candidates' do
-      expect(board.get_cell(44).candidates).to eq([1, 6, 9])
+      expect(board.state.get_cell(44).candidates).to eq([1, 6, 9])
       strategy.apply(board)
-      expect(board.get_cell(44).candidates).to eq([1, 9])
+      expect(board.state.get_cell(44).candidates).to eq([1, 9])
 
       action = board.history.find(
         cell_id: 44,
