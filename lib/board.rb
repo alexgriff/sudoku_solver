@@ -174,7 +174,7 @@ class Board
   def print
     top_3 = rows.slice(0...3)
     top_3.each do |row|
-      cell_values = row.cells.map(&:value)
+      cell_values = row.cell_ids.map { |id| get_cell(id).value }
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
@@ -183,7 +183,7 @@ class Board
     puts('-------|-------|-------')
     middle_3 = rows.slice(3...6)
     middle_3.each do |row|
-      cell_values = row.cells.map(&:value)
+      cell_values = row.cell_ids.map { |id| get_cell(id).value }
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
@@ -192,7 +192,7 @@ class Board
     puts('-------|-------|-------')
     bottom_3 = rows.slice(6..-1)
     bottom_3.each do |row|
-      cell_values = row.cells.map(&:value)
+      cell_values = row.cell_ids.map { |id| get_cell(id).value }
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
@@ -204,7 +204,8 @@ class Board
   def debug_print
     top_3 = rows.slice(0...3)
     top_3.each do |row|
-      cell_values = row.cells.map do |cell|
+      cell_values = row.cell_ids.map do |cell_id|
+        cell = get_cell(cell_id)
         if cell.filled?
           "#{cell.id.to_s.ljust(2)}= #{cell.value}".ljust(18)
         else
@@ -219,7 +220,8 @@ class Board
     puts('----------------------------------------------------------|----------------------------------------------------------|---------------------------------------------------------')
     middle_3 = rows.slice(3...6)
     middle_3.each do |row|
-            cell_values = row.cells.map do |cell|
+      cell_values = row.cell_ids.map do |cell_id|
+        cell = get_cell(cell_id)
         if cell.filled?
           "#{cell.id}= #{cell.value}".ljust(18)
         else
@@ -234,7 +236,8 @@ class Board
     puts('----------------------------------------------------------|----------------------------------------------------------|---------------------------------------------------------')
     bottom_3 = rows.slice(6..-1)
     bottom_3.each do |row|
-            cell_values = row.cells.map do |cell|
+      cell_values = row.cell_ids.map do |cell_id|
+        cell = get_cell(cell_id)
         if cell.filled?
           "#{cell.id}= #{cell.value}".ljust(18)
         else

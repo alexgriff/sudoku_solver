@@ -18,7 +18,7 @@ describe Board do
 
     it 'can generate rows columns and boxes from formatted string' do
       board = Board.from_txt(txt)
-      expect(board.rows.map { |row| row.cells.map(&:value) }).to eq(
+      expect(board.rows.map { |row| row.cell_ids.map { |id| board.get_cell(id).value } }).to eq(
         [
           [Cell::EMPTY, 8, 4, Cell::EMPTY, 5, Cell::EMPTY, 9, 1, Cell::EMPTY],
           [5, Cell::EMPTY, Cell::EMPTY, 8, 9, Cell::EMPTY, Cell::EMPTY, Cell::EMPTY, 2],
@@ -33,7 +33,7 @@ describe Board do
         ]
       )
 
-      expect(board.columns.map { |col| col.cells.map(&:value) }).to eq(
+      expect(board.columns.map  { |col| col.cell_ids.map { |id| board.get_cell(id).value } }).to eq(
         [
           [Cell::EMPTY, 5, Cell::EMPTY, Cell::EMPTY, 8, Cell::EMPTY, Cell::EMPTY, 1, 3],
           [8, Cell::EMPTY, Cell::EMPTY, Cell::EMPTY, 5, 2, Cell::EMPTY, 4, Cell::EMPTY],
@@ -47,7 +47,7 @@ describe Board do
         ]
       )
 
-      expect(board.boxes.map { |box| box.cells.map(&:value) }).to eq(
+      expect(board.boxes.map  { |box| box.cell_ids.map { |id| board.get_cell(id).value } }).to eq(
         [
           [Cell::EMPTY, 8, 4, 5, Cell::EMPTY, Cell::EMPTY, Cell::EMPTY, Cell::EMPTY, 7],
           [Cell::EMPTY, 5, Cell::EMPTY, 8, 9, Cell::EMPTY, Cell::EMPTY, Cell::EMPTY, 2],
@@ -118,7 +118,7 @@ describe Board do
     context 'when a cell is updated to a solved state' do
       it 'dispatches a series of action to update other seen cells' do
         board.update_cell(14, [6])
-        expect(board.boxes[1].cells.map(&:candidates).flatten.uniq).not_to include(6)
+        expect(board.boxes[1].cell_ids_with_candidates([6]).length).to eq(0)
       end
 
       it 'cascades to solve other naked singles' do

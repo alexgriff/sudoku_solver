@@ -10,17 +10,17 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
     
     # find candidate that is only in 2 rows/cols in box
     cell_cands_present_in_other_box_cells.each do |cand|
-      box_cells_with_cand = box.cells_with_candidates([cand])
-      locked_cand_row_ids = box_cells_with_cand.map(&:row_id).uniq
-      locked_cand_col_ids = box_cells_with_cand.map(&:column_id).uniq
+      box_cell_ids_with_cand = box.cell_ids_with_candidates([cand])
+      locked_cand_row_ids = box_cell_ids_with_cand.map { |id| board.get_cell(id).row_id }.uniq
+      locked_cand_col_ids = box_cell_ids_with_cand.map { |id| board.get_cell(id).column_id }.uniq
       
       # if in only 2 rows is there another box with same cand row ids
       if locked_cand_row_ids.length == 2
         other_box_ids = row.box_ids - [box.id]
         matched_box_id = other_box_ids.find do |other_box_id|
           other_box = board.boxes[other_box_id]
-          cand_cells_other_box = other_box.cells_with_candidates([cand])
-          locked_cand_row_ids == cand_cells_other_box.map(&:row_id).uniq
+          cand_cell_ids_other_box = other_box.cell_ids_with_candidates([cand])
+          locked_cand_row_ids == cand_cell_ids_other_box.map { |id| board.get_cell(id).row_id }.uniq
         end
         
         # if so, third box cant have the cand in those rows
@@ -51,8 +51,8 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
         other_box_ids = col.box_ids - [box.id]
         matched_box_id = other_box_ids.find do |other_box_id|
           other_box = board.boxes[other_box_id]
-          cand_cells_other_box = other_box.cells_with_candidates([cand])
-          locked_cand_col_ids == cand_cells_other_box.map(&:column_id).uniq
+          cand_cell_ids_other_box = other_box.cell_ids_with_candidates([cand])
+          locked_cand_col_ids == cand_cell_ids_other_box.map { |id| board.get_cell(id).column_id }.uniq
         end
 
         # if so, third box cant have the cand in those cols
