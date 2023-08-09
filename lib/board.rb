@@ -22,13 +22,13 @@ class Board
     @columns = (0..SIZE-1).to_a.map { |id| Column.new(id: id, board: self) }
     @rows = (0..SIZE-1).to_a.map { |id| Row.new(id: id, board: self)}
     @boxes = (0..SIZE-1).to_a.map { |id| Box.new(id: id, board: self) }
+
     @errors = []
     
+    @state = {}
     @reducer = Board::Reducer.new(self)
     @history = reducer.history
-    @state = {}
-    reducer.dispatch(Action.new(type: Action::INIT))
-    
+
     reducer.dispatch(
       Action.new(
         type: Action::NEW_BOARD_SYNC,

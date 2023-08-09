@@ -4,6 +4,7 @@ class Board::Reducer
   def initialize(board)
     @board = board
     @history = History.new
+    dispatch(Action.new(type: Action::INIT))
   end
 
   def dispatch(action)
@@ -22,12 +23,13 @@ class Board::Reducer
     case action.type
       when Action::INIT, Action::NEW_PASS
         false
-      when Action::UPDATE_CELL
+      when Action::FILL_CELL, Action::UPDATE_CELL
         cell = board.get_cell(action.cell_id)
-        if (board.state[:cells][cell.id] == action.values) || cell.filled?
-          state
-        else
+        new_values = action.respond_to?(:values) ? action.values : [action.value]
+        if (board.state[:cells][cell.id] != new_values) || cell.filled?
           true
+        else
+          state
         end
       else
         state
@@ -50,34 +52,9 @@ class Board::Reducer
     when Action::INIT
       (0..(Board::NUM_CELLS - 1)).to_a.map { |i| Cell::ALL_CANDIDATES.dup }
     when Action::NEW_BOARD_SYNC
-      empty_cell_id_to_seen_values_map = action.initial_data.each_with_object({}).with_index do |(val, res), i|
-        if val == Cell::EMPTY
-          res[i] = board.all_seen_cell_ids_for(i).map { |id| action.initial_data[id] }.reject { |v| v == Cell::EMPTY }
-        end
-        res
-      end
-
-      state.map.with_index do |cell, i|
-        filled_values_cell_can_see = empty_cell_id_to_seen_values_map[i]
-        if filled_values_cell_can_see
-          cell - filled_values_cell_can_see
-        else
-          [action.initial_data[i]]
-        end
-      end
+      new_board_sync_cell_state(state, action)
     when Action::FILL_CELL, Action::UPDATE_CELL
-      if board.get_cell(action.cell_id).empty?
-        new_values = action.respond_to?(:values) ? action.values : [action.value]
-        if state[action.cell_id] != new_values
-          state_copy = state.dup
-          state_copy[action.cell_id] = new_values
-          state_copy
-        else
-          state
-        end
-      else
-        state
-      end
+      update_cell_state(state, action)
     else
       state
     end
@@ -101,48 +78,84 @@ class Board::Reducer
     end
   end
 
-  class History
-    def initialize()
-      @history = []
+  private
+
+  def new_board_sync_cell_state(state, action)
+    empty_cell_id_to_seen_values_map = action.initial_data.each_with_object({}).with_index do |(val, res), i|
+      if val == Cell::EMPTY
+        res[i] = board.all_seen_cell_ids_for(i).map { |id| action.initial_data[id] }.reject { |v| v == Cell::EMPTY }
+      end
+      res
     end
 
-    def <<(next_action)
-      @history << next_action
+    state.map.with_index do |cell, i|
+      filled_values_cell_can_see = empty_cell_id_to_seen_values_map[i]
+      if filled_values_cell_can_see
+        cell - filled_values_cell_can_see
+      else
+        [action.initial_data[i]]
+      end
     end
+  end
 
-    def [](index)
-      @history[index]
+  def update_cell_state(state, action)
+    cell = board.get_cell(action.cell_id)
+    new_values = action.respond_to?(:values) ? action.values : [action.value]
+    if cell.empty? && new_values != state[action.cell_id]
+      state.map.with_index do |v, i|
+        if i == action.cell_id
+          action.respond_to?(:values) ? action.values : [action.value]
+        else
+          v
+        end
+      end
+    else
+      state
     end
+  end
+end
 
-    def all
-      @history.dup
-    end
+class History
+  def initialize()
+    @history = []
+  end
 
-    def last(n=1)
-      @history.last(n)
-    end
+  def <<(next_action)
+    @history << next_action
+  end
 
-    def length
-      @history.length
-    end
+  def [](index)
+    @history[index]
+  end
 
-    def find(**kwargs)
-      where(**kwargs).first
-    end
+  def all
+    @history.dup
+  end
 
-    def after_id(action_id)
-      start_index = @history.index { |action| action.id == action_id}
-      @history[start_index..-1]
-    end
+  def last(n=1)
+    @history.last(n)
+  end
 
-    def where(**kwargs)
-      @history.select do |action|
-        kwargs.all? do |key, val|
-          if val == nil
-            !action.respond_to?(key) || !action.send(key)
-          else
-            action.respond_to?(key) ? action.send(key) == val : false
-          end
+  def length
+    @history.length
+  end
+
+  def find(**kwargs)
+    where(**kwargs).first
+  end
+
+  def after_id(action_id)
+    start_index = @history.index { |action| action.id == action_id }
+    @history[start_index..-1]
+  end
+
+  def where(**kwargs)
+    @history.select do |action|
+      kwargs.all? do |key, val|
+        if val == nil
+          !action.respond_to?(key) || !action.send(key)
+        else
+          action.respond_to?(key) ? action.send(key) == val : false
         end
       end
     end

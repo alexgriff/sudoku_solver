@@ -3,7 +3,6 @@ class Cell
   ALL_CANDIDATES = (1..9).to_a
 
   def self.from_state(id:, state:)
-
     new(
       id: id,
       value: state[:value] || EMPTY,
