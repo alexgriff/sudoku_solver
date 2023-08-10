@@ -25,8 +25,11 @@ class Board
 
     @errors = []
 
-    @state = Board::State.new(self)
-    state.register_starting_state(initial_data.map { |char| char == Cell::EMPTY ? char : char.to_i })
+    @state = Board::State.new
+    state.register_starting_state(
+      initial_data.map { |char| char == Cell::EMPTY ? char : char.to_i },
+      (0...initial_data.length).to_a.each_with_object({}) { |id, res| res[id] = all_seen_cell_ids_for(id) }
+    )
   end
 
   def empty_cell_ids

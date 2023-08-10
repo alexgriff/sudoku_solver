@@ -70,7 +70,7 @@ class Board::Reducer
   def new_board_sync_cell_state(state, action)
     empty_cell_id_to_seen_values_map = action.initial_data.each_with_object({}).with_index do |(val, res), i|
       if val == Cell::EMPTY
-        res[i] = board_state.board.all_seen_cell_ids_for(i).map { |id| action.initial_data[id] }.reject { |v| v == Cell::EMPTY }
+        res[i] = action.seen_cell_ids_map[i].map { |id| action.initial_data[id] }.reject { |v| v == Cell::EMPTY }
       end
       res
     end

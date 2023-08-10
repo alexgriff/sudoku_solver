@@ -113,12 +113,12 @@ describe Board do
     end
     context 'when a cell is updated to a solved state' do
       it 'dispatches a series of action to update other seen cells' do
-        board.state.register_change(14, [6])
+        board.state.register_change(board, 14, [6])
         expect(board.boxes[1].cell_ids_with_candidates([6]).length).to eq(0)
       end
 
       it 'cascades to solve other naked singles' do
-        board.state.register_change(14, [6])
+        board.state.register_change(board, 14, [6])
         expect(board.state.get_cell(12).value).to eq 3
         expect(board.state.get_cell(21).value).to eq 1
         expect(board.state.get_cell(17).value).to eq 8
@@ -127,13 +127,13 @@ describe Board do
       end
 
       it 'passes along the action opts to the action' do
-        board.state.register_change(14, [6], {foo: 'bar'})
+        board.state.register_change(board, 14, [6], {foo: 'bar'})
         action = board.state.history.find(cell_id: 14, foo: 'bar')
         expect(action).to be_truthy
       end
 
       it 'marks cascading actions with cascade value indicating the cell id it casacded from' do
-        board.state.register_change(14, [6], {foo: 'bar'})
+        board.state.register_change(board, 14, [6], {foo: 'bar'})
         action = board.state.history.find(cell_id: 12, cascade: 14)
         expect(action).to be_truthy
       end

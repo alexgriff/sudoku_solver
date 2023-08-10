@@ -17,6 +17,7 @@ class Strategy::HiddenPair < Strategy::BaseStrategy
         
         hidden_pair_cell_ids.each do |paired_cell_id|
           board.state.register_change(
+            board,
             paired_cell_id,
             cand_pair,
             {strategy: name, pair: [cell.id, paired_cell_id].sort}

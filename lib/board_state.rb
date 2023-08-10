@@ -1,13 +1,12 @@
 class Board::State
-  attr_reader :board, :history
+  attr_reader :history
 
-  def initialize(board)
+  def initialize
     @touched = nil
     @passes = nil
     @solved = nil
     @cells = nil
 
-    @board = board
     @history = Board::History.new
     @reducer = Board::Reducer.new(self)
 
@@ -50,16 +49,17 @@ class Board::State
     dispatch(Action.new(type: Action::DONE, status: is_solved?))
   end
 
-  def register_starting_state(initial_data)
+  def register_starting_state(initial_data, seen_cell_ids_map)
     dispatch(
       Action.new(
         type: Action::NEW_BOARD_SYNC,
-        initial_data: initial_data
+        initial_data: initial_data,
+        seen_cell_ids_map: seen_cell_ids_map,
       )
     )
   end
 
-  def register_change(cell_id, candidates, action_opts={})
+  def register_change(board, cell_id, candidates, action_opts={})
     cell = get_cell(cell_id)
     solving = cell.empty? && candidates.length == 1
 
@@ -80,6 +80,7 @@ class Board::State
         # checking the new state of the cell before dispatching any new actions
         if seen_cell.empty? && seen_cell.has_any_of_candidates?(candidates)
           register_change(
+            board,
             seen_cell_id,
             seen_cell.candidates - candidates,
             action_opts.merge(cascade: cell.id)

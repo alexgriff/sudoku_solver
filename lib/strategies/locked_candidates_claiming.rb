@@ -35,6 +35,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
               new_candidates = third_box_cell.candidates - [cand]
               if new_candidates != third_box_cell.candidates
                 board.state.register_change(
+                  board,
                   third_box_cell.id,
                   new_candidates,
                   {strategy: name, claiming_box_id: "Box-#{third_box.id}|Row-#{row.id}|#{cand}"}
@@ -66,6 +67,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
               new_candidates = third_box_cell.candidates - [cand]
               if new_candidates != third_box_cell.candidates
                 board.state.register_change(
+                  board,
                   third_box_cell.id,
                   new_candidates,
                   {strategy: name, claiming_box_id: "Box-#{third_box.id}|Col-#{col.id}|#{cand}"}
