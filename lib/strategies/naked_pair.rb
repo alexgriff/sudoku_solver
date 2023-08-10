@@ -4,7 +4,7 @@ class Strategy::NakedPair < Strategy::BaseStrategy
     if cell.candidates.length == 2
       naked_pair_cands = cell.candidates
 
-      paired_cell_id = board.all_seen_empty_cell_ids_for(cell.id).find do |seen_cell_id|
+      paired_cell_id = board.all_empty_cell_ids_seen_by(cell.id).find do |seen_cell_id|
         board.state.get_cell(seen_cell_id).candidates == naked_pair_cands
       end
 

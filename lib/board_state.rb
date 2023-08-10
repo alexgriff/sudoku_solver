@@ -82,7 +82,7 @@ class Board::State
           **action_opts
         )
       )
-      board.all_seen_empty_cell_ids_with_candidates_for(cell_id, candidates).each do |seen_cell_id|
+      board.all_empty_cell_ids_with_any_of_candidates_seen_by(cell_id, candidates).each do |seen_cell_id|
         seen_cell = get_cell(seen_cell_id)
         # Because the board state can change from a previous iteration of this loop, all cells that were empty
         # with the given candidates when the loop started may not be in that state when the next iteration runs.
@@ -108,10 +108,14 @@ class Board::State
       )
     end
     
-    raise Board::State::InvalidError unless board.valid?
+    raise Board::State::InvalidError.new(board) unless board.valid?
   end
 
-  class InvalidError < StandardError; end
+  class InvalidError < StandardError
+    def initialize(board)
+      super(board.errors.join("\n"))
+    end
+  end
 
   private
 

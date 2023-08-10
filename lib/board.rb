@@ -28,7 +28,7 @@ class Board
     @state = Board::State.new
     state.register_starting_state(
       initial_data.map { |char| char == Cell::EMPTY ? char : char.to_i },
-      (0...initial_data.length).to_a.each_with_object({}) { |id, res| res[id] = all_seen_cell_ids_for(id) }
+      (0...initial_data.length).to_a.each_with_object({}) { |id, res| res[id] = all_cell_ids_seen_by(id) }
     )
   end
 
@@ -36,36 +36,35 @@ class Board
     (0..NUM_CELLS-1).to_a.select { |i| state.get_cell(i).empty? }
   end
 
-  def all_seen_cell_ids_for(cell_id)
+  def all_cell_ids_seen_by(cell_id)
     (Cell.new(id: cell_id).houses(self).map do |house|
       house.cell_ids
     end.flatten) - [cell_id]
   end
   
-  def all_seen_empty_cell_ids_for(cell_id)
-    all_seen_cell_ids_for(cell_id).select do |id|
+  def all_empty_cell_ids_seen_by(cell_id)
+    all_cell_ids_seen_by(cell_id).select do |id|
       state.get_cell(id).empty?
     end
   end
 
-  def all_seen_empty_cell_ids_with_candidates_for(cell_id, cands)
-    all_seen_cell_ids_for(cell_id).select do |id|
-      seen_cell = state.get_cell(id)
-      seen_cell.empty? && seen_cell.has_any_of_candidates?(cands)
+  def all_empty_cell_ids_with_any_of_candidates_seen_by(cell_id, cands)
+    all_empty_cell_ids_seen_by(cell_id).select do |id|
+      state.get_cell(id).has_any_of_candidates?(cands)
     end
   end
 
   def valid?
-    errors.clear
+    @errors.clear
 
     rows.each do |row|
-      self.errors += row.errors unless row.valid?
+      @errors += row.errors unless row.valid?
     end
     columns.each do |col|
-      self.errors += col.errors unless col.valid?
+      @errors += col.errors unless col.valid?
     end
     boxes.each do |box|
-      self.errors += box.errors unless box.valid?
+      @errors += box.errors unless box.valid?
     end
     errors.empty?
   end
@@ -160,8 +159,4 @@ class Board
     end
     nil
   end
-
-  private
-
-  attr_writer :errors
 end

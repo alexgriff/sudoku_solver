@@ -77,7 +77,7 @@ class House
     filled_values = cell_ids.map { |id| board.state.get_cell(id).value }.reject { |v| v == Cell::EMPTY }
     valid = filled_values.length == filled_values.uniq.length
     unless valid
-      errors << ("#{self.class::HOUSE_TYPE} #{id} does not have uniq values")
+      errors << ("#{self.class::HOUSE_TYPE.capitalize} #{id} does not have uniq values")
     end
     valid
   end
