@@ -16,7 +16,7 @@ class Board
     new(data)
   end
 
-  attr_reader :state, :history, :columns, :rows, :boxes, :errors
+  attr_reader :boxes, :columns, :rows, :state, :errors
 
   def initialize(initial_data)
     @columns = (0..SIZE-1).to_a.map { |id| Column.new(id: id, board: self) }
@@ -24,8 +24,7 @@ class Board
     @boxes = (0..SIZE-1).to_a.map { |id| Box.new(id: id, board: self) }
 
     @errors = []
-    
-    @history = Board::History.new
+
     @state = Board::State.new(self)
     state.register_starting_state(initial_data.map { |char| char == Cell::EMPTY ? char : char.to_i })
   end
@@ -77,7 +76,7 @@ class Board
   end
 
   def summary
-    Summary.new(history).summarize
+    Summary.new(state.history).summarize
   end
 
   def inspect

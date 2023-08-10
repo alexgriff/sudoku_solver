@@ -27,7 +27,7 @@ describe Strategy do
       expect(board.state.get_cell(14).candidates).to eq([6])
       strategy.apply(board)
       expect(board.state.get_cell(14).value).to eq(6)
-      action = board.history.find(
+      action = board.state.history.find(
         cell_id: 14,
         type: Action::FILL_CELL,
         strategy: Strategy::NakedSingle.name
@@ -63,7 +63,7 @@ describe Strategy do
 
       strategy.apply(board)
       expect(board.state.get_cell(21).value).to eq(6)
-      action = board.history.find(
+      action = board.state.history.find(
         cell_id: 21,
         type: Action::FILL_CELL,
         strategy: Strategy::HiddenSingle.name
@@ -101,7 +101,7 @@ describe Strategy do
       strategy.apply(board)
       expect(board.state.get_cell(64).value).to eq(7)
 
-      action = board.history.find(
+      action = board.state.history.find(
         cell_id: 64,
         type: Action::FILL_CELL,
         strategy: Strategy::NakedPair.name
@@ -139,7 +139,7 @@ describe Strategy do
       strategy.apply(board)
       expect(board.state.get_cell(24).value).to eq(3)
 
-      action = board.history.find(
+      action = board.state.history.find(
         cell_id: 24,
         type: Action::FILL_CELL,
         strategy: Strategy::LockedCandidatesPointing.name
@@ -177,7 +177,7 @@ describe Strategy do
       strategy.apply(board)
       expect(board.state.get_cell(19).value).to eq(4)
 
-      action = board.history.find(
+      action = board.state.history.find(
         cell_id: 19,
         type: Action::FILL_CELL,
         strategy: Strategy::LockedCandidatesClaiming.name
@@ -214,7 +214,7 @@ describe Strategy do
       strategy.apply(board)
       expect(board.state.get_cell(44).candidates).to eq([1, 9])
 
-      action = board.history.find(
+      action = board.state.history.find(
         cell_id: 44,
         type: Action::UPDATE_CELL,
         strategy: Strategy::HiddenPair.name

@@ -128,13 +128,13 @@ describe Board do
 
       it 'passes along the action opts to the action' do
         board.state.register_change(14, [6], {foo: 'bar'})
-        action = board.history.find(cell_id: 14, foo: 'bar')
+        action = board.state.history.find(cell_id: 14, foo: 'bar')
         expect(action).to be_truthy
       end
 
       it 'marks cascading actions with cascade value indicating the cell id it casacded from' do
         board.state.register_change(14, [6], {foo: 'bar'})
-        action = board.history.find(cell_id: 12, cascade: 14)
+        action = board.state.history.find(cell_id: 12, cascade: 14)
         expect(action).to be_truthy
       end
     end

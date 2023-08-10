@@ -1,5 +1,5 @@
 class Board::State
-  attr_reader :board
+  attr_reader :board, :history
 
   def initialize(board)
     @touched = nil
@@ -7,8 +7,10 @@ class Board::State
     @solved = nil
     @cells = nil
 
-    @reducer = Board::Reducer.new(self)
     @board = board
+    @history = Board::History.new
+    @reducer = Board::Reducer.new(self)
+
     dispatch(Action.new(type: Action::INIT))
   end
 
@@ -49,7 +51,7 @@ class Board::State
   end
 
   def dispatch(action)
-    board.history << action
+    history << action
     set_touched(reducer.touched_reducer(@touched, action))
     set_passes(reducer.passes_reducer(@passes, action))
     set_solved(reducer.solved_reducer(@solved, action))
