@@ -34,28 +34,12 @@ class Board::State
     @passes
   end
 
-  def set_touched(touched_state)
-    @touched = touched_state
-  end
-  
-  def set_passes(passes_state)
-    @passes = passes_state
-  end
-  
-  def set_solved(solved_state)
-    @solved = solved_state
-  end
-  
-  def set_cells(cells_state)
-    @cells = cells_state
-  end
-
   def dispatch(action)
     history << action
-    set_touched(reducer.touched_reducer(@touched, action))
-    set_passes(reducer.passes_reducer(@passes, action))
-    set_solved(reducer.solved_reducer(@solved, action))
-    set_cells(reducer.cells_reducer(@cells, action))
+    self.touched = reducer.touched_reducer(@touched, action)
+    self.passes = reducer.passes_reducer(@passes, action)
+    self.solved = reducer.solved_reducer(@solved, action)
+    self.cells = reducer.cells_reducer(@cells, action)
   end
 
   def register_next_pass
@@ -119,5 +103,6 @@ class Board::State
   private
 
   attr_reader :reducer
+  attr_writer :touched, :passes, :solved, :cells
 end
 
