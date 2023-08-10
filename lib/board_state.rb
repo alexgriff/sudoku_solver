@@ -8,7 +8,6 @@ class Board::State
     @cells = nil
 
     @history = Board::History.new
-    @reducer = Board::Reducer.new(self)
 
     dispatch(Action.new(type: Action::INIT))
   end
@@ -35,10 +34,10 @@ class Board::State
 
   def dispatch(action)
     history << action
-    self.touched = reducer.touched_reducer(@touched, action)
-    self.passes = reducer.passes_reducer(@passes, action)
-    self.solved = reducer.solved_reducer(@solved, action)
-    self.cells = reducer.cells_reducer(@cells, action)
+    self.touched = Board::Reducer.touched_reducer({touched: @touched, cells: @cells}, action)
+    self.passes = Board::Reducer.passes_reducer(@passes, action)
+    self.solved = Board::Reducer.solved_reducer(@solved, action)
+    self.cells = Board::Reducer.cells_reducer(@cells, action)
   end
 
   def register_next_pass
@@ -103,7 +102,6 @@ class Board::State
 
   private
 
-  attr_reader :reducer
   attr_writer :touched, :passes, :solved, :cells
 end
 

@@ -19,4 +19,10 @@ class Action
     end
     @@id += 1
   end
+
+  def get_values
+    raise unless type == FILL_CELL ||  type == UPDATE_CELL
+
+    respond_to?(:values) ? values : [value]
+  end
 end

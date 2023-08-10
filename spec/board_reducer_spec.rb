@@ -17,7 +17,8 @@ describe Board::Reducer do
     Board.from_txt(txt)
   end
   
-  describe 'touched_reducer' do
+  # TODO rewrite reducer specs, some of this should be board specs
+  describe '.touched_reducer' do
     it 'is false initially after cells are inited from board' do
       expect(board.state.has_been_touched?).to be false
     end
@@ -53,7 +54,7 @@ describe Board::Reducer do
     end
   end
 
-  describe 'cells_reducer' do
+  describe '.cells_reducer' do
     context 'UPDATE_CELL action' do
       it 'updates the representation of the cell in state in response to action' do
         board.state.register_change(board, 4, [9])
