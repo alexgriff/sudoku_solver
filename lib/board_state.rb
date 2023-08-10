@@ -65,9 +65,10 @@ class Board::State
     if solving
       dispatch(
         Action.new(
-          type: Action::FILL_CELL,
+          type: Action::UPDATE_CELL,
           cell_id: cell_id,
-          value: candidates.first,
+          values: [candidates.first],
+          solves: true,
           **action_opts
         )
       )

@@ -140,7 +140,7 @@ describe Board do
         expect(action).to be_truthy
       end
 
-      it 'marks cascading actions with cascade value indicating the cell id it casacded from' do
+      it 'marks cascading actions with cascade value indicating the cell id it cascaded from' do
         board.state.register_change(board, 14, [6], {foo: 'bar'})
         action = board.state.history.find(cell_id: 12, cascade: 14)
         expect(action).to be_truthy

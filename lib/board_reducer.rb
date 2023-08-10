@@ -3,8 +3,8 @@ class Board::Reducer
     case action.type
       when Action::INIT, Action::NEW_BOARD_SYNC, Action::NEW_PASS
         false
-      when Action::FILL_CELL, Action::UPDATE_CELL       
-        if state[:cells][action.cell_id].length > 1 && (state[:cells][action.cell_id] != action.get_values)
+      when Action::UPDATE_CELL
+        if state[:cells][action.cell_id].length > 1 && (state[:cells][action.cell_id] != action.values)
           true
         else
           state[:touched]
@@ -47,11 +47,11 @@ class Board::Reducer
         end
       end
 
-    when Action::FILL_CELL, Action::UPDATE_CELL
+    when Action::UPDATE_CELL
       if state[action.cell_id].length > 1
         state.map.with_index do |v, i|
           if i == action.cell_id
-            action.get_values
+            action.values
           else
             v
           end
@@ -76,8 +76,12 @@ class Board::Reducer
         end
         res
       end
-    when Action::FILL_CELL
-      state.merge({action.cell_id => action.value})
+    when Action::UPDATE_CELL
+      if action.solves
+        state.merge({action.cell_id => action.values.first})
+      else
+        state
+      end
     else
       state
     end

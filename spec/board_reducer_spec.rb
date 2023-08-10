@@ -100,17 +100,6 @@ describe Board::Reducer do
         Board::Reducer.cells_reducer(
           initial_state,
           Action.new(
-            type: Action::FILL_CELL,
-            cell_id: 0,
-            value: 6
-          )
-        )
-      ).to eq([[6], [1,2,3,4,5,6,7,8,9], [1,2,3,4,5,6,7,8,9]])
-      
-      expect(
-        Board::Reducer.cells_reducer(
-          initial_state,
-          Action.new(
             type: Action::UPDATE_CELL,
             cell_id: 0,
             values: [1,6]
@@ -159,14 +148,15 @@ describe Board::Reducer do
       ).to eq({0 => 4, 2 => 1})
     end
    
-    it 'updates in response to a FILL_CELL action only' do
+    it 'updates in response to UPDATE_CELL actions with a only' do
       expect(
         Board::Reducer.solved_reducer(
           {},
           Action.new(
-            type: Action::FILL_CELL,
+            type: Action::UPDATE_CELL,
             cell_id: 10,
-            value: 6
+            values: [6],
+            solves: true
           )
         )
       ).to eq({10 => 6})

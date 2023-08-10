@@ -1,7 +1,6 @@
 class Action
   INIT = :init
   NEW_BOARD_SYNC = :new_board_sync
-  FILL_CELL = :fill_cell
   UPDATE_CELL = :update_cell
   NEW_PASS = :new_pass
   DONE = :done
@@ -20,14 +19,7 @@ class Action
     @@id += 1
   end
 
-  def get_values
-    case self.type
-    when FILL_CELL
-      [value]
-    when UPDATE_CELL
-      values
-    else
-      raise 'not implemented'
-    end
+  def method_missing(_method_name)
+    false
   end
 end

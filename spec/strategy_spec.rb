@@ -29,7 +29,7 @@ describe Strategy do
       expect(board.state.get_cell(14).value).to eq(6)
       action = board.state.history.find(
         cell_id: 14,
-        type: Action::FILL_CELL,
+        type: Action::UPDATE_CELL,
         strategy: Strategy::NakedSingle.name
       )
       expect(action).to be_truthy
@@ -65,7 +65,7 @@ describe Strategy do
       expect(board.state.get_cell(21).value).to eq(6)
       action = board.state.history.find(
         cell_id: 21,
-        type: Action::FILL_CELL,
+        type: Action::UPDATE_CELL,
         strategy: Strategy::HiddenSingle.name
       )
       expect(action).to be_truthy
@@ -103,7 +103,7 @@ describe Strategy do
 
       action = board.state.history.find(
         cell_id: 64,
-        type: Action::FILL_CELL,
+        type: Action::UPDATE_CELL,
         strategy: Strategy::NakedPair.name
       )
       expect(action).to be_truthy
@@ -141,7 +141,7 @@ describe Strategy do
 
       action = board.state.history.find(
         cell_id: 24,
-        type: Action::FILL_CELL,
+        type: Action::UPDATE_CELL,
         strategy: Strategy::LockedCandidatesPointing.name
       )
       expect(action).to be_truthy
@@ -179,7 +179,7 @@ describe Strategy do
 
       action = board.state.history.find(
         cell_id: 19,
-        type: Action::FILL_CELL,
+        type: Action::UPDATE_CELL,
         strategy: Strategy::LockedCandidatesClaiming.name
       )
       expect(action).to be_truthy

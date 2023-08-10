@@ -48,11 +48,11 @@ class Summary
   end
 
   def naked_single_cell_count
-    history.where(type: Action::FILL_CELL, strategy: Strategy::NakedSingle.name).length
+    history.where(solves: true, strategy: Strategy::NakedSingle.name).length
   end
 
   def hidden_single_cell_count
-    history.where(type: Action::FILL_CELL, strategy: Strategy::HiddenSingle.name).length
+    history.where(solves: true, strategy: Strategy::HiddenSingle.name).length
   end
 
   def num_naked_pairs
@@ -63,7 +63,7 @@ class Summary
   end
 
   def solved_by_naked_pair_cell_count
-    history.where(type: Action::FILL_CELL, strategy: Strategy::NakedPair.name).length
+    history.where(solves: true, strategy: Strategy::NakedPair.name).length
   end
 
   def num_locked_pointing_lines
@@ -74,7 +74,7 @@ class Summary
   end
 
   def solved_by_locked_pointing_cell_count
-    history.where(type: Action::FILL_CELL, strategy: Strategy::LockedCandidatesPointing.name).length
+    history.where(solves: true, strategy: Strategy::LockedCandidatesPointing.name).length
   end
   
   def num_claimed_lines
@@ -85,7 +85,7 @@ class Summary
   end
 
   def solved_by_claiming_lines_cell_count
-    history.where(type: Action::FILL_CELL, strategy: Strategy::LockedCandidatesClaiming.name).length
+    history.where(solves: true, strategy: Strategy::LockedCandidatesClaiming.name).length
   end
 
   def num_hidden_pairs
