@@ -3,9 +3,9 @@ class Strategy::HiddenSingle < Strategy::BaseStrategy
     cell = board.state.get_cell(cell_id)
     if cell.candidates.length > 1
       uniq_candidate = (
-        (cell.intersecting_candidates(Row.for_cell(board, cell).uniq_candidates)).first ||
-        (cell.intersecting_candidates(Column.for_cell(board, cell).uniq_candidates)).first ||
-        (cell.intersecting_candidates(Box.for_cell(board, cell).uniq_candidates)).first
+        (cell.intersecting_candidates(cell.row(board).uniq_candidates)).first ||
+        (cell.intersecting_candidates(cell.column(board).uniq_candidates)).first ||
+        (cell.intersecting_candidates(cell.box(board).uniq_candidates)).first
       )
       if uniq_candidate
         board.state.register_change(cell_id,  [uniq_candidate], {strategy: name})

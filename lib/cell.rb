@@ -11,15 +11,35 @@ class Cell
   end
 
   def row_id
-    @row_id ||= id / 9
+    @row_id ||= id / Board::SIZE
+  end
+
+  def row(board)
+    board.rows[row_id]
   end
 
   def column_id
-    @column_id ||= id % 9
+    @column_id ||= id % Board::SIZE
+  end
+
+  def column(board)
+    board.columns[column_id]
   end
 
   def box_id
     @box_id ||= column_id / 3 + row_id / 3 * 3
+  end
+
+  def box(board)
+    board.boxes[box_id]
+  end
+
+  def houses(board)
+    [
+      row(board),
+      column(board),
+      box(board)
+    ]
   end
 
   def empty?

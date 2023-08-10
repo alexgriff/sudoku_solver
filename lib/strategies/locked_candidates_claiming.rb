@@ -1,9 +1,9 @@
 class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
   def self.execute(board, cell_id)
     cell = board.state.get_cell(cell_id)
-    row = Row.for_cell(board, cell)
-    col = Column.for_cell(board, cell)
-    box = Box.for_cell(board, cell)
+    row = cell.row(board)
+    col = cell.column(board)
+    box = cell.box(board)
     
     cands_with_multiple_in_box = box.candidate_counts.select { |k, v| v >= 2 }.keys
     cell_cands_present_in_other_box_cells = cell.intersecting_candidates(cands_with_multiple_in_box)

@@ -1,7 +1,7 @@
 class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
   def self.execute(board, cell_id)
     cell = board.state.get_cell(cell_id)
-    box = Box.for_cell(board, cell)
+    box = cell.box(board)
     cands_with_multiple_in_box = box.candidate_counts.select { |k, v| v == 2 || v == 3 }.keys
     cell_cands_present_in_other_box_cells = cell.intersecting_candidates(cands_with_multiple_in_box)
     

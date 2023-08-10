@@ -33,16 +33,8 @@ class Board
     (0..NUM_CELLS-1).to_a.select { |i| state.get_cell(i).empty? }
   end
 
-  def houses_for_cell(cell)
-    [
-      Row.for_cell(self, cell),
-      Column.for_cell(self, cell),
-      Box.for_cell(self, cell),
-    ]
-  end
-
   def all_seen_cell_ids_for(cell_id)
-    (houses_for_cell(Cell.new(id: cell_id)).map do |house|
+    (Cell.new(id: cell_id).houses(self).map do |house|
       house.cell_ids
     end.flatten) - [cell_id]
   end

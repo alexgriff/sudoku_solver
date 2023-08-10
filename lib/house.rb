@@ -1,10 +1,4 @@
 class House
-  def self.for_cell(board, cell)
-    board.send(house_method).find do |house|
-      house.id == cell.send(house_id_method)
-    end
-  end
-
   def self.house_method
     case self::HOUSE_TYPE
       when :row
