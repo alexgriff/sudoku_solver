@@ -20,6 +20,6 @@ class Action
   end
 
   def method_missing(_method_name)
-    false
+    nil
   end
 end
