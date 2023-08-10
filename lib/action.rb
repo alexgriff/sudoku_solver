@@ -21,8 +21,13 @@ class Action
   end
 
   def get_values
-    raise unless type == FILL_CELL ||  type == UPDATE_CELL
-
-    respond_to?(:values) ? values : [value]
+    case self.type
+    when FILL_CELL
+      [value]
+    when UPDATE_CELL
+      values
+    else
+      raise 'not implemented'
+    end
   end
 end

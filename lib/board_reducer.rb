@@ -1,7 +1,7 @@
 class Board::Reducer
   def self.touched_reducer(state, action)
     case action.type
-      when Action::INIT, Action::NEW_PASS
+      when Action::INIT, Action::NEW_BOARD_SYNC, Action::NEW_PASS
         false
       when Action::FILL_CELL, Action::UPDATE_CELL       
         if state[:cells][action.cell_id].length > 1 && (state[:cells][action.cell_id] != action.get_values)
@@ -10,7 +10,7 @@ class Board::Reducer
           state[:touched]
         end
       else
-        state[:cells]
+        state[:touched]
     end
   end
 
@@ -48,7 +48,7 @@ class Board::Reducer
       end
 
     when Action::FILL_CELL, Action::UPDATE_CELL
-      if state[action.cell_id].length > 1 && action.get_values != state[action.cell_id]
+      if state[action.cell_id].length > 1
         state.map.with_index do |v, i|
           if i == action.cell_id
             action.get_values

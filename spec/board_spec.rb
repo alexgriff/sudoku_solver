@@ -65,8 +65,8 @@ describe Board do
   end
 
   context 'initializing a board' do
-    let(:txt) do
-      <<~SUDOKU
+    let(:board) do
+      txt = <<~SUDOKU
       5 . . | 8 . 2 | . . 7
       . . . | . . . | . . .
       . 2 7 | . 4 . | 9 8 .
@@ -79,10 +79,10 @@ describe Board do
       . . . | . . . | . . .
       . . 6 | 2 . 1 | 5 . .
       SUDOKU
+      Board.from_txt(txt)
     end
 
     it 'correctly accounts for initial solved cells' do
-      board = Board.from_txt(txt)
       expect(board.state.get_cell(0).value).to eq(5)
 
       # no other cell that cell 0 can see should have 5 as a candidate
@@ -90,6 +90,14 @@ describe Board do
       seen_cell_ids.each do |seen_cell_id|
         expect(board.state.get_cell(seen_cell_id).candidates).not_to include(5)
       end
+    end
+
+    it 'initially is not marked as touched' do
+      expect(board.state.has_been_touched?).to be false
+    end
+
+    it 'initially is not marked as solved' do
+      expect(board.state.is_solved?).to be false
     end
   end
 
