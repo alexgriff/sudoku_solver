@@ -1,15 +1,25 @@
 class Board::State
+  def self.clone_from(other_state)
+    new(
+      other_state.instance_variable_get(:@touched),
+      other_state.instance_variable_get(:@passes),
+      other_state.instance_variable_get(:@solved).dup,
+      other_state.instance_variable_get(:@cells).dup,
+      true
+    )
+  end
+
   attr_reader :history
 
-  def initialize
-    @touched = nil
-    @passes = nil
-    @solved = nil
-    @cells = nil
+  def initialize(touched=nil, passes=nil, solved=nil, cells=nil, cloning=false)
+    @touched = touched
+    @passes = passes
+    @solved = solved
+    @cells = cells
 
     @history = Board::History.new
 
-    dispatch(Action.new(type: Action::INIT))
+    dispatch(Action.new(type: cloning ? Action::CLONE : Action::INIT))
   end
 
   def get_cell(id)

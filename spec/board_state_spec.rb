@@ -1,27 +1,25 @@
 describe Board::State do
+  let(:board) do
+    txt = <<~SUDOKU
+    . . . | 5 . 7 | . . .
+    . 1 9 | . 4 . | 2 7 .
+    . . 3 | . . . | 9 . .
+   -------|-------|-------
+    . . 6 | . . . | 3 . .
+    4 . . | 8 . 3 | . . 5
+    . . 2 | . . . | 8 . .
+   -------|-------|-------
+    . . . | . 7 . | . . .
+    . . . | 2 . 8 | . . .
+    . 9 . | . 1 . | . 6 .
+    SUDOKU
+
+    Board.from_txt(txt)
+  end
+
+  let(:state) { board.state }
 
   describe '#register_change' do
-    let(:board) do
-      txt = <<~SUDOKU
-      . . . | 5 . 7 | . . .
-      . 1 9 | . 4 . | 2 7 .
-      . . 3 | . . . | 9 . .
-     -------|-------|-------
-      . . 6 | . . . | 3 . .
-      4 . . | 8 . 3 | . . 5
-      . . 2 | . . . | 8 . .
-     -------|-------|-------
-      . . . | . 7 . | . . .
-      . . . | 2 . 8 | . . .
-      . 9 . | . 1 . | . 6 .
-      SUDOKU
-
-      Board.from_txt(txt)
-    end
-
-    let(:state) { board.state }
-
-
     context 'when a cell is updated to a solved state' do
       it 'dispatches a series of action to update other seen cells' do
         expect(state.get_cell(0).candidates).to eq([2,6,8])
@@ -60,6 +58,21 @@ describe Board::State do
         action = state.history.find(cell_id: 12, cascade: 14)
         expect(action).to be_truthy
       end
+    end
+  end
+
+  describe '.clone_from' do
+    it 'can create a clone of an existing state' do
+      # put the board in an arbitrary state
+      Strategy::NakedSingle.apply(board)
+      clone = Board::State.clone_from(board.state)
+
+      expect(board.state.instance_variable_get(:@touched)).to eq(clone.instance_variable_get(:@touched))
+      expect(board.state.instance_variable_get(:@passes)).to eq(clone.instance_variable_get(:@passes))
+      expect(board.state.instance_variable_get(:@solved)).to eq(clone.instance_variable_get(:@solved))
+      expect(board.state.instance_variable_get(:@cells)).to eq(clone.instance_variable_get(:@cells))
+
+      expect(clone.history.all.first.type).to eq(Action::CLONE)
     end
   end
 end

@@ -4,6 +4,7 @@ class Action
   UPDATE_CELL = :update_cell
   NEW_PASS = :new_pass
   DONE = :done
+  CLONE = :clone
   @@id = 1
   
   attr_reader :type, :id
