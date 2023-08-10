@@ -59,6 +59,12 @@ describe Board::State do
         expect(action).to be_truthy
       end
     end
+
+    it 'raises if the board is put into an invalid state' do
+      expect {
+        state.register_change(board, 0, [9])
+      }.to raise_error(Board::State::InvalidError)
+    end
   end
 
   describe '.clone_from' do

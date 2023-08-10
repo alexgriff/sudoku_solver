@@ -108,8 +108,10 @@ class Board::State
       )
     end
     
-    raise unless board.valid?
+    raise Board::State::InvalidError unless board.valid?
   end
+
+  class InvalidError < StandardError; end
 
   private
 
