@@ -35,11 +35,7 @@ class Board::History
   def where(**kwargs)
     @history.select do |action|
       kwargs.all? do |key, val|
-        if val == nil
-          !action.respond_to?(key) || !action.send(key)
-        else
-          action.respond_to?(key) ? action.send(key) == val : false
-        end
+        action.send(key) == val
       end
     end
   end
