@@ -12,7 +12,7 @@ class Board::Reducer
         cell = board_state.get_cell(action.cell_id)
         new_values = action.respond_to?(:values) ? action.values : [action.value]
         # this breaks encapsulation since the touced reducer has to reach into
-        # the cells part of the state, could pass cells thru instead... hmmm....
+        # the cells part of the state, could pass thru state like {touched:, cells:}... hmmm....
         if cell.empty? && (board_state.instance_variable_get(:@cells)[cell.id] != new_values)
           true
         else
@@ -39,9 +39,9 @@ class Board::Reducer
     when Action::INIT
       (0..(Board::NUM_CELLS - 1)).to_a.map { |i| Cell::ALL_CANDIDATES.dup }
     when Action::NEW_BOARD_SYNC
-      new_board_sync_cell_state(state, action)
+      new_board_sync_cells_reducer(state, action)
     when Action::FILL_CELL, Action::UPDATE_CELL
-      update_cell_state(state, action)
+      update_cell_reducer(state, action)
     else
       state
     end
@@ -67,7 +67,7 @@ class Board::Reducer
 
   private
 
-  def new_board_sync_cell_state(state, action)
+  def new_board_sync_cells_reducer(state, action)
     empty_cell_id_to_seen_values_map = action.initial_data.each_with_object({}).with_index do |(val, res), i|
       if val == Cell::EMPTY
         res[i] = action.seen_cell_ids_map[i].map { |id| action.initial_data[id] }.reject { |v| v == Cell::EMPTY }
@@ -85,7 +85,7 @@ class Board::Reducer
     end
   end
 
-  def update_cell_state(state, action)
+  def update_cell_reducer(state, action)
     cell = board_state.get_cell(action.cell_id)
     new_values = action.respond_to?(:values) ? action.values : [action.value]
     if cell.empty? && new_values != state[action.cell_id]
