@@ -79,7 +79,6 @@ describe Solve do
     boards = File.read("spec/fixtures/easys.txt").split("\n\n").map { |txt| Board.from_txt(txt) }
     solved = boards.map { |board| Solve.new.solve(board) }
     solved.each.with_index do |status, i|
-      # debugger if boards[i].id == "148c632971e7351d85fb4b1d1cf7e42f964cf86d6faedc2248f5d05616d710ea"
       expect("#{i} - #{status}").to eq("#{i} - true")
     end
   end
@@ -91,6 +90,22 @@ describe Solve do
       expect("#{i} - #{status}").to eq("#{i} - true")
     end
   end
+
+  # Toggle on when adding a new feature
+  # it "can solve a _large_ series of sudokus" do
+  #   # 300 intermediate puzzles, will like to make this random difficulty in future
+  #   boards = File.read("spec/fixtures/speed_test.txt").split("\n\n").map { |txt| Board.from_txt(txt) }
+  #   solved = boards.map do |board|
+  #     begin
+  #       Solve.new.solve(board)
+  #     rescue => err
+  #       puts board.id
+  #     end
+  #   end
+  #   solved.each.with_index do |status, i|
+  #     expect("#{i} - #{status}").to eq("#{i} - true")
+  #   end
+  # end
   
   # it "can solve a series of expert sudokus" do
   #   boards = File.read("spec/fixtures/experts.txt").split("\n\n").map { |txt| Board.from_txt(txt) }
@@ -101,41 +116,27 @@ describe Solve do
   # end
 
   # regression testing example - paste in new regression
-  # let(:regression) do
-  #   <<~SUDOKU
-  #   . 3 . | . . . | . . .
-  #   6 . . | . . 3 | 8 1 .
-  #   9 2 . | 5 1 . | . . 3
-  #  -------|-------|-------
-  #   5 1 . | 6 7 . | . . .
-  #   . . . | . 8 . | . . .
-  #   . . . | . 3 4 | . 5 6
-  #  -------|-------|-------
-  #   8 . . | . 4 1 | . 3 9
-  #   . 6 1 | 8 . . | . . 2
-  #   . . . | . . . | . 8 .
-  #   SUDOKU
-  # end
+#   let(:regression) do
+#     <<~SUDOKU
+#     . . 9 | . . 7 | . 6 .
+#     5 . . | . 3 2 | 4 . .
+#     . 4 . | 9 . . | . . 5
+#    -------|-------|-------
+#     4 7 . | . . . | 6 . .
+#     . 6 . | . 2 . | . 1 .
+#     . . 2 | . . . | . 5 4
+#    -------|-------|-------
+#     9 . . | . . 6 | . 7 .
+#     . . 7 | 2 9 . | . . 6
+#     . 2 . | 8 . . | 1 . .
+#     SUDOKU
+#   end
 
-  # it 'can solve the current sudoku' do
-  #   board = Board.from_txt(regression)
-  #   <<~STUCK
-  #   1 3 . | 4 6 6 | . . .
-  #   6 . . | . . 3 | 8 1 .
-  #   9 2 . | 5 1 . | . . 3
-  #  -------|-------|-------
-  #   5 1 . | 6 7 . | . . 8
-  #   . . 6 | . 8 5 | . . .
-  #   . 8 . | . 3 4 | . 5 6
-  #  -------|-------|-------
-  #   8 . . | . 4 1 | 6 3 9
-  #   3 6 1 | 8 . . | . . 2
-  #   . . . | 3 . . | . 8 .
-  #   STUCK
-
-  #   Solve.new.solve(board)
-  #   expect(board.state.is_solved?).to eq(true)
-  # end
+#   it 'can solve the current sudoku' do
+#     board = Board.from_txt(regression)
+#     Solve.new.solve(board)
+#     expect(board.state.is_solved?).to eq(true)
+#   end
 end
 
 

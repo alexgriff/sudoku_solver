@@ -106,8 +106,7 @@ class Board::State
         )
       )
     end
-    
-    debugger unless board.valid?
+
     raise Board::State::InvalidError.new(board) unless board.valid?
   end
 

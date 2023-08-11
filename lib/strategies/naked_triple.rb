@@ -1,7 +1,7 @@
 class Strategy::NakedTriple < Strategy::BaseStrategy
-  extend Strategy::NakedGroupN
+  extend Strategy::NakedSubsetN
 
   def self.execute(board, cell_id)
-    naked_group_n(3, board, cell_id)
+    naked_subset_n(3, board, cell_id)
   end
 end
