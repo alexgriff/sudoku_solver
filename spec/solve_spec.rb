@@ -79,6 +79,7 @@ describe Solve do
     boards = File.read("spec/fixtures/easys.txt").split("\n\n").map { |txt| Board.from_txt(txt) }
     solved = boards.map { |board| Solve.new.solve(board) }
     solved.each.with_index do |status, i|
+      # debugger if boards[i].id == "148c632971e7351d85fb4b1d1cf7e42f964cf86d6faedc2248f5d05616d710ea"
       expect("#{i} - #{status}").to eq("#{i} - true")
     end
   end
