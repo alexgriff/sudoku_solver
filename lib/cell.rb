@@ -59,7 +59,7 @@ class Cell
   end
 
   def intersecting_candidates(cands)
-    (candidates & cands)
+    candidates.intersection(cands)
   end
 
   def candidate_permutations(n)
