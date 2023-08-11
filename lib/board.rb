@@ -16,9 +16,10 @@ class Board
     new(data)
   end
 
-  attr_reader :boxes, :columns, :rows, :state, :errors
+  attr_reader :boxes, :columns, :rows, :state, :errors, :id
 
   def initialize(initial_data)
+    @id = Digest::SHA256.hexdigest(initial_data.to_s)
     @columns = (0..SIZE-1).to_a.map { |id| Column.new(id: id, board: self) }
     @rows = (0..SIZE-1).to_a.map { |id| Row.new(id: id, board: self)}
     @boxes = (0..SIZE-1).to_a.map { |id| Box.new(id: id, board: self) }
@@ -55,7 +56,7 @@ class Board
   end
 
   def valid?
-    @errors.clear
+    @errors = []
 
     rows.each do |row|
       @errors += row.errors unless row.valid?

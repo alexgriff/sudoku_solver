@@ -3,7 +3,6 @@ describe Strategy do
   # https://hodoku.sourceforge.net/en/techniques.php
 
   describe Strategy::NakedSingle do
-    let(:strategy) { Strategy::NakedSingle }
     let(:board) do
       # Cell 14 (Box 1, Row 1, Col 5) has 6 as it's single candidate
       txt = <<~SUDOKU
@@ -25,7 +24,7 @@ describe Strategy do
 
     it 'solves the cell with a naked single' do
       expect(board.state.get_cell(14).candidates).to eq([6])
-      strategy.apply(board)
+      Strategy::NakedSingle.apply(board)
       expect(board.state.get_cell(14).value).to eq(6)
       action = board.state.history.find(
         cell_id: 14,
@@ -37,8 +36,6 @@ describe Strategy do
   end
 
   describe Strategy::HiddenSingle do
-    let(:strategy) { Strategy::HiddenSingle }
-
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_singles.php#h1
       # 6 is uniq candidate in Box 1 / Row 2 / Col 3
@@ -61,7 +58,7 @@ describe Strategy do
     it 'updates the cell with a hidden single' do
       expect(board.state.get_cell(21).candidates).to eq([4, 6, 9])
 
-      strategy.apply(board)
+      Strategy::HiddenSingle.apply(board)
       expect(board.state.get_cell(21).value).to eq(6)
       action = board.state.history.find(
         cell_id: 21,
@@ -73,8 +70,6 @@ describe Strategy do
   end
   
   describe Strategy::NakedPair do
-    let(:strategy) { Strategy::NakedPair }
-
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_naked.php
       # Row 7 has a naked pair of (3, 9) in Cols 2 & 3,
@@ -98,7 +93,7 @@ describe Strategy do
     it 'updates the candiates of the cell that cant be one of the naked pair candidates' do
       expect(board.state.get_cell(64).candidates).to eq([3, 7])
 
-      strategy.apply(board)
+      Strategy::NakedPair.apply(board)
       expect(board.state.get_cell(64).value).to eq(7)
 
       action = board.state.history.find(
@@ -111,8 +106,6 @@ describe Strategy do
   end
 
   describe Strategy::LockedCandidatesPointing do
-    let(:strategy) { Strategy::LockedCandidatesPointing }
-
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_intersections.php
       # Box 0, Row 2 locks 5 as a candidate,
@@ -136,7 +129,7 @@ describe Strategy do
     it "updates the candidates of cells in the same aligned row/col that can't be the locked candidate" do
       expect(board.state.get_cell(24).candidates).to eq([3, 5])
 
-      strategy.apply(board)
+      Strategy::LockedCandidatesPointing.apply(board)
       expect(board.state.get_cell(24).value).to eq(3)
 
       action = board.state.history.find(
@@ -149,8 +142,6 @@ describe Strategy do
   end
 
   describe Strategy::LockedCandidatesClaiming do
-    let(:strategy) { Strategy::LockedCandidatesClaiming }
-
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_intersections.php
       # Boxes 1 and 2 have 7 as a candidate in Rows 0 & 2, thus 7 in Box 1 must be in Row 1.
@@ -174,7 +165,7 @@ describe Strategy do
     it 'updates the candidates of the cells in the box that must have the candidate in the free row/col' do
       expect(board.state.get_cell(19).candidates).to eq([4, 7])
       
-      strategy.apply(board)
+      Strategy::LockedCandidatesClaiming.apply(board)
       expect(board.state.get_cell(19).value).to eq(4)
 
       action = board.state.history.find(
@@ -187,8 +178,6 @@ describe Strategy do
   end
 
   describe Strategy::HiddenPair do
-    let(:strategy) { Strategy::HiddenPair }
-
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_hidden.php#h2
       # 1 & 9 are unique candidates in Col 8, (Rows 4 & 6),
@@ -211,7 +200,7 @@ describe Strategy do
 
     it 'updates the candidates of the cell that cant be one of the hidden pair candidates' do
       expect(board.state.get_cell(44).candidates).to eq([1, 6, 9])
-      strategy.apply(board)
+      Strategy::HiddenPair.apply(board)
       expect(board.state.get_cell(44).candidates).to eq([1, 9])
 
       action = board.state.history.find(
@@ -297,17 +286,17 @@ describe Strategy do
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_naked.php#n4
       txt = <<~SUDOKU
-      . 1 . | 7 2 . | 5 6 3
-      . 5 6 | . 3 . | 2 4 7
-      7 3 2 | 5 4 6 | 1 8 9
-     -------|-------|-------
-      6 9 3 | 2 8 7 | 4 1 5
-      2 4 7 | 6 1 5 | 9 3 8
-      5 8 1 | 3 9 4 | . . .
-     -------|-------|-------
-      . . . | . . 2 | . . .
-      . . . | . . . | . . 1
-      . . 5 | 8 7 . | . . .
+       . 1 . | 7 2 . | 5 6 3
+       . 5 6 | . 3 . | 2 4 7
+       7 3 2 | 5 4 6 | 1 8 9
+      -------|-------|-------
+       6 9 3 | 2 8 7 | 4 1 5
+       2 4 7 | 6 1 5 | 9 3 8
+       5 8 1 | 3 9 4 | . . .
+      -------|-------|-------
+       . . . | . . 2 | . . .
+       . . . | . . . | . . 1
+       . . 5 | 8 7 . | . . .
       SUDOKU
       Board.from_txt(txt)
     end
@@ -326,6 +315,46 @@ describe Strategy do
         type: Action::UPDATE_CELL,
         strategy: Strategy::NakedQuadruple.name,
         naked_buddies: [63, 65, 66, 68]
+      )
+      expect(action).to be_truthy
+    end
+  end
+
+  describe Strategy::HiddenTriple do
+    let(:board) do
+      # https://hodoku.sourceforge.net/en/tech_naked.php#n4
+      txt = <<~SUDOKU
+      5 . . | 6 2 . | . 3 7
+      . . 4 | 8 9 . | . . .
+      . . . | . 5 . | . . .
+     -------|-------|-------
+      9 3 . | . . . | . . .
+      . 2 . | . . . | 6 . 5
+      7 . . | . . . | . . 3
+     -------|-------|-------
+      . . . | . . 9 | . . .
+      . . . | . . . | 7 . .
+      6 8 . | 5 7 . | . . 2
+      SUDOKU
+      Board.from_txt(txt)
+    end
+
+    it 'updates the candidates of the cell that cant be one of the naked quad candidates' do
+      expect(board.state.get_cell(32).candidates).to eq([1,2,4,5,6,7,8])
+      expect(board.state.get_cell(50).candidates).to eq([1,2,4,5,6,8])
+      expect(board.state.get_cell(68).candidates).to eq([1,2,3,4,6,8])
+
+      Strategy::HiddenTriple.apply(board)
+
+      expect(board.state.get_cell(32).candidates).to eq([2,5,6])
+      expect(board.state.get_cell(50).candidates).to eq([2,5,6])
+      expect(board.state.get_cell(68).candidates).to eq([2,6])
+
+      action = board.state.history.find(
+        cell_id: 32,
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::HiddenTriple.name,
+        hidden_buddies: [32, 50, 68]
       )
       expect(action).to be_truthy
     end

@@ -7,7 +7,8 @@ class Solve
     Strategy::LockedCandidatesClaiming,
     Strategy::HiddenPair,
     Strategy::NakedTriple,
-    Strategy::NakedQuadruple
+    Strategy::NakedQuadruple,
+    Strategy::HiddenTriple
   ]
   
   attr_reader :strategies, :with_display, :with_summary

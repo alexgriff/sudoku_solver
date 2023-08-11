@@ -65,8 +65,8 @@ class House
   end
   
   def candidate_counts
-    empty_cell_ids.map do |cell_id|
-      board.state.get_cell(cell_id).candidates
+    empty_cell_ids.map do |id|
+      board.state.get_cell(id).candidates
     end.flatten.each_with_object({}) do |cand, counts|
       counts[cand] ||= 0
       counts[cand] += 1
@@ -74,6 +74,7 @@ class House
   end
 
   def valid?
+    @errors = []
     all_non_emptys_are_unique?
   end
 

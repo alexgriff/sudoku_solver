@@ -14,8 +14,8 @@ module Strategy
     end
   end
 
-  module NakedGroupN
-    def naked_group_n(n, board, cell_id)
+  module NakedSubsetN
+    def naked_subset_n(n, board, cell_id)
       cell = board.state.get_cell(cell_id)
 
       if cell.candidates.length == n
@@ -39,6 +39,40 @@ module Strategy
                     {strategy: name, naked_buddies: naked_buddy_ids.sort}
                   )
                 end
+            end
+          end
+        end
+      end
+    end
+  end
+
+
+  module HiddenSubsetN
+    def hidden_subset_n(n, board, cell_id)
+      cell = board.state.get_cell(cell_id)
+
+      # are any n of my candidates found in exactly n cells
+      if cell.candidates.length >= n
+        cell.houses(board).each do |house|
+          cell = board.state.get_cell(cell_id) # get a fresh cell at the start of the loop
+          next if (cell.candidates.intersection(house.uniq_candidates)).any? # a hidden single is handled separately
+          
+          cell.candidate_permutations(n).each do |cand_permutation|            
+            hidden_buddy_ids = house.cell_ids_with_any_of_candidates(cand_permutation)
+            if hidden_buddy_ids.length == n
+              hidden_buddy_ids.each do |hidden_buddy_id|
+                hidden_buddy_cell = board.state.get_cell(hidden_buddy_id)
+                new_values =  hidden_buddy_cell.candidates.intersection(cand_permutation)
+
+                if hidden_buddy_cell.candidates != new_values
+                  board.state.register_change(
+                    board,
+                    hidden_buddy_id,
+                    new_values,
+                    {strategy: name, hidden_buddies: hidden_buddy_ids.sort}
+                  )
+                end
+              end
             end
           end
         end

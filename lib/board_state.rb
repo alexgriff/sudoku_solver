@@ -71,7 +71,6 @@ class Board::State
   def register_change(board, cell_id, candidates, action_opts={})
     cell = get_cell(cell_id)
     solving = cell.empty? && candidates.length == 1
-
     if solving
       dispatch(
         Action.new(
@@ -107,7 +106,7 @@ class Board::State
         )
       )
     end
-    
+
     raise Board::State::InvalidError.new(board) unless board.valid?
   end
 
