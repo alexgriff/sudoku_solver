@@ -6,3 +6,4 @@ gem 'require_all'
 gem 'rspec'
 
 gem 'sinatra'
+gem 'puma'
