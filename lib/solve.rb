@@ -6,7 +6,8 @@ class Solve
     Strategy::LockedCandidatesPointing,
     Strategy::LockedCandidatesClaiming,
     Strategy::HiddenPair,
-    Strategy::NakedTriple
+    Strategy::NakedTriple,
+    Strategy::NakedQuadruple
   ]
   
   attr_reader :strategies, :with_display, :with_summary

@@ -104,7 +104,7 @@ describe Strategy do
       action = board.state.history.find(
         cell_id: 64,
         type: Action::UPDATE_CELL,
-        strategy: Strategy::NakedPair.name
+        strategy: Strategy::NakedPair.name,
       )
       expect(action).to be_truthy
     end
@@ -226,8 +226,6 @@ describe Strategy do
   describe Strategy::NakedTriple do
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_naked.php#n3
-      # 1 & 9 are unique candidates in Col 8, (Rows 4 & 6),
-      # but the cell in Row 4 has other candidates as well, which can be eliminated
       txt = <<~SUDOKU
       . . . | 2 9 4 | 3 8 .
       . . . | 1 7 8 | 6 4 .
@@ -272,11 +270,11 @@ describe Strategy do
       action = board.state.history.find(
         cell_id: 1,
         type: Action::UPDATE_CELL,
-        strategy: Strategy::NakedTriple.name
+        strategy: Strategy::NakedTriple.name,
+        naked_buddies: [10,28,37]
       )
       expect(action).to be_truthy
 
-      debugger
       expect(board1.state.get_cell(3).candidates & [1,2,6]).not_to be_empty
       expect(board1.state.get_cell(5).candidates & [1,2,6]).not_to be_empty
       expect(board1.state.get_cell(12).candidates & [1,2,6]).not_to be_empty
@@ -292,6 +290,44 @@ describe Strategy do
       expect(board1.state.get_cell(13).candidates & [1,2,6]).to be_empty
       expect(board1.state.get_cell(14).candidates & [1,2,6]).to be_empty
       expect(board1.state.get_cell(23).candidates & [1,2,6]).to be_empty
+    end
+  end
+
+  describe Strategy::NakedQuadruple do
+    let(:board) do
+      # https://hodoku.sourceforge.net/en/tech_naked.php#n4
+      txt = <<~SUDOKU
+      . 1 . | 7 2 . | 5 6 3
+      . 5 6 | . 3 . | 2 4 7
+      7 3 2 | 5 4 6 | 1 8 9
+     -------|-------|-------
+      6 9 3 | 2 8 7 | 4 1 5
+      2 4 7 | 6 1 5 | 9 3 8
+      5 8 1 | 3 9 4 | . . .
+     -------|-------|-------
+      . . . | . . 2 | . . .
+      . . . | . . . | . . 1
+      . . 5 | 8 7 . | . . .
+      SUDOKU
+      Board.from_txt(txt)
+    end
+
+    it 'updates the candidates of the cell that cant be one of the naked quad candidates' do
+      expect(board.state.get_cell(69).candidates & [3,4,8,9]).not_to be_empty
+      expect(board.state.get_cell(70).candidates & [3,4,8,9]).not_to be_empty
+
+      Strategy::NakedQuadruple.apply(board)
+
+      expect(board.state.get_cell(69).candidates & [3,4,8,9]).to be_empty
+      expect(board.state.get_cell(70).candidates & [3,4,8,9]).to be_empty
+
+      action = board.state.history.find(
+        cell_id: 69,
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::NakedQuadruple.name,
+        naked_buddies: [63, 65, 66, 68]
+      )
+      expect(action).to be_truthy
     end
   end
 end
