@@ -53,29 +53,12 @@ module Strategy
 
       # are any n of my candidates found in exactly n cells
       if cell.candidates.length >= n
-        cell.candidate_permutations(n).each do |cand_permutation|
-          cell.houses(board).each do |house|
-            next if (cell.candidates.intersection(house.uniq_candidates)).any?
-            # this ^ fixes the issue below, but is there a better way to do this?
-            # does this same idea (looking out for a hidden single) need to be applied elsewhere
-            # probs not - tho this could make u wanna look for all hidden ns altogether in one group
-
+        cell.houses(board).each do |house|
+          cell = board.state.get_cell(cell_id) # get a fresh cell at the start of the loop
+          next if (cell.candidates.intersection(house.uniq_candidates)).any? # a hidden single is handled separately
+          
+          cell.candidate_permutations(n).each do |cand_permutation|            
             hidden_buddy_ids = house.cell_ids_with_any_of_candidates(cand_permutation)
-            # issue is here ^, this is identifying a two cells like
-            # (2,5,6,8) and (1,5,6,8) as having in common the pair (1,6)
-            # (1 only shows up in board in this one cell, it should get picked up as hidden single on next pass)
-
-            # what i dont understand is how to specify how/why this rule is different
-            # in the pair vs triple/(etc) case. For ex, 3 cells like
-            # (4,5) (1,2,4,5) and (2,5,6) would be a hidden triple even tho each cell doesnt have all of the cands
-            # how to describe these rules as the same thing... they feel different, are they just different
-
-            # is it that in a hidden-n, you actually need to check that it's not a hidden-n-minus-one
-            # for example, you wouldn't want to mark the following as a hidden triple
-            # (1,2,4,5) (4,5) (4,5) either (1,4,5) or (2,4,5)
-
-            # so is the rule just that none of the hidden-n cells can have a uniq candidate, i think this would scale upward
-
             if hidden_buddy_ids.length == n
               hidden_buddy_ids.each do |hidden_buddy_id|
                 hidden_buddy_cell = board.state.get_cell(hidden_buddy_id)

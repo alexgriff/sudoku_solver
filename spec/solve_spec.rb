@@ -91,7 +91,6 @@ describe Solve do
     end
   end
 
-  # Toggle on when adding a new feature
   # it "can solve a _large_ series of sudokus" do
   #   # 300 intermediate puzzles, will like to make this random difficulty in future
   #   boards = File.read("spec/fixtures/speed_test.txt").split("\n\n").map { |txt| Board.from_txt(txt) }
