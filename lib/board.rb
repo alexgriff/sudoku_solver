@@ -79,34 +79,40 @@ class Board
   end
 
   # these print methods are ugly, but ¯\_(ツ)_/¯
-  def print
+  def display
+    txt = []
     top_3 = rows.slice(0...3)
     top_3.each do |row|
       cell_values = row.cell_ids.map { |id| state.get_cell(id).value }
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
-      puts(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
+      # puts(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
+      txt.push(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
     end
-    puts('-------|-------|-------')
+    # puts('-------|-------|-------')
+    txt.push('-------|-------|-------')
     middle_3 = rows.slice(3...6)
     middle_3.each do |row|
       cell_values = row.cell_ids.map { |id| state.get_cell(id).value }
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
-      puts(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
+      # puts(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
+      txt.push(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
     end
-    puts('-------|-------|-------')
+    # puts('-------|-------|-------')
+    txt.push('-------|-------|-------')
     bottom_3 = rows.slice(6..-1)
     bottom_3.each do |row|
       cell_values = row.cell_ids.map { |id| state.get_cell(id).value }
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
-      puts(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
+      # puts(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
+      txt.push(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
     end
-    nil
+    txt.join("\n")
   end
 
   def debug_print

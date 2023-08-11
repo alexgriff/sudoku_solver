@@ -7,7 +7,6 @@ class Summary
 
   def summarize
     [
-      "\n",
       "Solved: #{solved_status}",
       "Filled cells at start: #{initial_filled_cell_count}",
       "Cells solveable 'by sudoku' (naked single): #{naked_single_cell_count}",

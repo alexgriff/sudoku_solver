@@ -23,4 +23,15 @@ class Action
   def method_missing(_method_name)
     nil
   end
+
+  def as_json(options={})
+    instance_variables.each_with_object({}) do |ivar, obj|
+      ivar_name = ivar.to_s[1..-1]
+      obj[ivar_name] = send(ivar_name)
+    end
+  end
+
+  def to_json(*options)
+    as_json(*options).to_json(*options)
+  end
 end

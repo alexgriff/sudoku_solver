@@ -28,7 +28,7 @@ class Solve
     if board.state.is_solved? || !board.state.has_been_touched?
       board.state.register_done
 
-      board.print if with_display
+      puts(board.display) if with_display
       puts(board.summary) if with_summary
       board.state.is_solved?
     else
