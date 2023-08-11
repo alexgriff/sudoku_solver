@@ -36,7 +36,7 @@ module Strategy
                     board,
                     non_buddied_cell.id,
                     new_values,
-                    {strategy: name, naked_buddies: naked_buddy_ids.sort}
+                    {strategy: name, naked_buddies: naked_buddy_ids}
                   )
                 end
             end
@@ -69,7 +69,7 @@ module Strategy
                     board,
                     hidden_buddy_id,
                     new_values,
-                    {strategy: name, hidden_buddies: hidden_buddy_ids.sort}
+                    {strategy: name, hidden_buddies: hidden_buddy_ids}
                   )
                 end
               end
