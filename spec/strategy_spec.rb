@@ -222,4 +222,76 @@ describe Strategy do
       expect(action).to be_truthy
     end
   end
+
+  describe Strategy::NakedTriple do
+    let(:board) do
+      # https://hodoku.sourceforge.net/en/tech_naked.php#n3
+      # 1 & 9 are unique candidates in Col 8, (Rows 4 & 6),
+      # but the cell in Row 4 has other candidates as well, which can be eliminated
+      txt = <<~SUDOKU
+      . . . | 2 9 4 | 3 8 .
+      . . . | 1 7 8 | 6 4 .
+      4 8 . | 3 5 6 | 1 . .
+     -------|-------|-------
+      . . 4 | 8 3 7 | 5 . 1
+      . . . | 4 1 5 | 7 . .
+      5 . . | 6 2 9 | 8 3 4
+     -------|-------|-------
+      9 5 3 | 7 8 2 | 4 1 6
+      1 2 6 | 5 4 3 | 9 7 8
+      . 4 . | 9 6 1 | 2 5 3
+      SUDOKU
+      Board.from_txt(txt)
+    end
+
+    let(:board1) do
+      # https://hodoku.sourceforge.net/en/tech_naked.php#n3
+      txt = <<~SUDOKU
+      3 9 . | . . . | 7 . .
+      . . . | . . . | 6 5 .
+      5 . 7 | . . . | 3 4 9
+     -------|-------|-------
+      . 4 9 | 3 8 . | 5 . 6
+      6 . 1 | . 5 4 | 9 8 3
+      8 5 3 | . . . | 4 . .
+     -------|-------|-------
+      9 . . | 8 . . | 1 3 4
+      . . 2 | 9 4 . | 8 6 5
+      4 . . | . . . | 2 9 7
+      SUDOKU
+      Board.from_txt(txt)
+    end
+
+    it 'updates the candidates of the cell that cant be one of the naked triple candidates' do
+      expect(board.state.get_cell(1).candidates).to eq([1, 6, 7])
+
+      Strategy::NakedTriple.apply(board)
+
+      expect(board.state.get_cell(1).candidates).to eq([1, 7])
+
+      action = board.state.history.find(
+        cell_id: 1,
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::NakedTriple.name
+      )
+      expect(action).to be_truthy
+
+      debugger
+      expect(board1.state.get_cell(3).candidates & [1,2,6]).not_to be_empty
+      expect(board1.state.get_cell(5).candidates & [1,2,6]).not_to be_empty
+      expect(board1.state.get_cell(12).candidates & [1,2,6]).not_to be_empty
+      expect(board1.state.get_cell(13).candidates & [1,2,6]).not_to be_empty
+      expect(board1.state.get_cell(14).candidates & [1,2,6]).not_to be_empty
+      expect(board1.state.get_cell(23).candidates & [1,2,6]).not_to be_empty
+
+      Strategy::NakedTriple.apply(board1)
+
+      expect(board1.state.get_cell(3).candidates & [1,2,6]).to be_empty
+      expect(board1.state.get_cell(5).candidates & [1,2,6]).to be_empty
+      expect(board1.state.get_cell(12).candidates & [1,2,6]).to be_empty
+      expect(board1.state.get_cell(13).candidates & [1,2,6]).to be_empty
+      expect(board1.state.get_cell(14).candidates & [1,2,6]).to be_empty
+      expect(board1.state.get_cell(23).candidates & [1,2,6]).to be_empty
+    end
+  end
 end

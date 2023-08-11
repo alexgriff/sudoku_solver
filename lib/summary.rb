@@ -19,6 +19,8 @@ class Summary
       "Lines with 'claimed' candidate from box intersecting two locked candidate lines: #{num_claimed_lines}",
       "Cells solveable 'by sudoku' after identifying 'claiming' line/box: #{solved_by_claiming_lines_cell_count}",
       "Hidden pairs: #{num_hidden_pairs}",
+      "Naked triples: #{num_naked_triples}",
+      "Cells solveable 'by sudoku' after identifying naked triple: #{solved_by_naked_triple_cell_count}",
       "Passes: #{num_passes}",
       total_count
     ].compact.join("\n")
@@ -59,7 +61,7 @@ class Summary
     history.where(
       strategy: Strategy::NakedPair.name,
       type: Action::UPDATE_CELL,
-    ).map(&:pair).uniq.length
+    ).map(&:naked_buddies).uniq.length
   end
 
   def solved_by_naked_pair_cell_count
@@ -93,5 +95,16 @@ class Summary
       strategy: Strategy::HiddenPair.name,
       type: Action::UPDATE_CELL
     ).map(&:pair).uniq.length
+  end
+
+  def num_naked_triples
+    history.where(
+      strategy: Strategy::NakedTriple.name,
+      type: Action::UPDATE_CELL,
+    ).map(&:naked_buddies).uniq.length
+  end
+
+  def solved_by_naked_triple_cell_count
+    history.where(solves: true, strategy: Strategy::NakedTriple.name).length
   end
 end
