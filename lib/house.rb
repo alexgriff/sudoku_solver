@@ -40,18 +40,24 @@ class House
     cell_ids - filtered_cell_ids
   end
   
-  def cell_ids_with_candidates(cands)
+  def cell_ids_with_all_of_candidates(cands)
     empty_cell_ids.select { |cell_id| board.state.get_cell(cell_id).has_all_of_candidates?(cands) }
   end
-
-  def other_cell_ids_with_candidates(filtered_cell_ids, cands)
-    other_cell_ids(filtered_cell_ids).select do |cell_id|
-      cell_ids_with_candidates(cands).include?(cell_id)
-    end
+  
+  def cell_ids_with_any_of_candidates(cands)
+    empty_cell_ids.select { |cell_id| board.state.get_cell(cell_id).has_any_of_candidates?(cands) }
   end
 
-  def any_other_cells_with_candidates?(filtered_cell_ids, cands)
-    other_cell_ids_with_candidates(filtered_cell_ids, cands).length > 0
+  def other_cell_ids_with_all_of_candidates(filtered_cell_ids, cands)
+    cell_ids_with_all_of_candidates(cands) - filtered_cell_ids
+  end
+
+  def other_cell_ids_with_any_of_candidates(filtered_cell_ids, cands)
+    cell_ids_with_any_of_candidates(cands) - filtered_cell_ids
+  end
+
+  def has_other_cells_with_all_of_candidates?(filtered_cell_ids, cands)
+    other_cell_ids_with_all_of_candidates(filtered_cell_ids, cands).length > 0
   end
 
   def uniq_candidates

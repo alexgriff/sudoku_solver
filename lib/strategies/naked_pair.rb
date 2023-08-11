@@ -10,8 +10,8 @@ class Strategy::NakedPair < Strategy::BaseStrategy
 
       if paired_cell_id
         paired_cell = board.state.get_cell(paired_cell_id)
-        interesecting_houses = cell.houses(board) & paired_cell.houses(board)
-        non_paired_cell_ids = interesecting_houses.map(&:empty_cell_ids).flatten - [cell.id, paired_cell.id]
+        intersecting_houses = cell.houses(board) & paired_cell.houses(board)
+        non_paired_cell_ids = intersecting_houses.map(&:empty_cell_ids).flatten - [cell.id, paired_cell.id]
         non_paired_cell_ids.each do |non_paired_cell_id|
           non_paired_cell = board.state.get_cell(non_paired_cell_id)
 

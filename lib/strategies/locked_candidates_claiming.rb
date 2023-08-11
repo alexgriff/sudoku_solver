@@ -10,7 +10,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
     
     # find candidate that is only in 2 rows/cols in box
     cell_cands_present_in_other_box_cells.each do |cand|
-      box_cell_ids_with_cand = box.cell_ids_with_candidates([cand])
+      box_cell_ids_with_cand = box.cell_ids_with_all_of_candidates([cand])
       locked_cand_row_ids = box_cell_ids_with_cand.map { |id| board.state.get_cell(id).row_id }.uniq
       locked_cand_col_ids = box_cell_ids_with_cand.map { |id| board.state.get_cell(id).column_id }.uniq
       
@@ -19,7 +19,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
         other_box_ids = row.box_ids - [box.id]
         matched_box_id = other_box_ids.find do |other_box_id|
           other_box = board.boxes[other_box_id]
-          cand_cell_ids_other_box = other_box.cell_ids_with_candidates([cand])
+          cand_cell_ids_other_box = other_box.cell_ids_with_all_of_candidates([cand])
           locked_cand_row_ids == cand_cell_ids_other_box.map { |id| board.state.get_cell(id).row_id }.uniq
         end
         
@@ -28,7 +28,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
           third_box_id = (other_box_ids - [matched_box_id]).first
           third_box = board.boxes[third_box_id]
 
-          third_box.cell_ids_with_candidates([cand]).each do |third_box_cell_id|
+          third_box.cell_ids_with_all_of_candidates([cand]).each do |third_box_cell_id|
             third_box_cell = board.state.get_cell(third_box_cell_id)
 
             if locked_cand_row_ids.include?(third_box_cell.row_id)
@@ -51,7 +51,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
         other_box_ids = col.box_ids - [box.id]
         matched_box_id = other_box_ids.find do |other_box_id|
           other_box = board.boxes[other_box_id]
-          cand_cell_ids_other_box = other_box.cell_ids_with_candidates([cand])
+          cand_cell_ids_other_box = other_box.cell_ids_with_all_of_candidates([cand])
           locked_cand_col_ids == cand_cell_ids_other_box.map { |id| board.state.get_cell(id).column_id }.uniq
         end
 
@@ -60,7 +60,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
           third_box_id = (other_box_ids - [matched_box_id]).first
           third_box = board.boxes[third_box_id]
 
-          third_box.cell_ids_with_candidates([cand]).each do |third_box_cell_id|
+          third_box.cell_ids_with_all_of_candidates([cand]).each do |third_box_cell_id|
             third_box_cell = board.state.get_cell(third_box_cell_id)
 
             if locked_cand_col_ids.include?(third_box_cell.column_id)
