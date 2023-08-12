@@ -70,10 +70,6 @@ class Board
     errors.empty?
   end
 
-  def summary
-    Summary.new(state.history).summarize
-  end
-
   def inspect
     # printing the whole state object is too annoying and unwieldy
     "#<#{self.class.name}:0x#{object_id.to_s(16).rjust(16, '0')}>"

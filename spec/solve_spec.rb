@@ -21,6 +21,15 @@ describe Solve do
     expect(board.state.is_solved?).to eq(true)
   end
 
+  it 'can provide a summary of the solve' do
+    # value of this spec is mostly just ensuring nothing in Solve::Summary is broken
+    board = Board.from_txt(board_missing_one)
+    expect {
+      Solve.new(with_summary: true).solve(board)
+    }.to output(a_string_including("Solved: true"))
+     .to_stdout
+  end
+
   let(:board_missing_two) do
     <<~SUDOKU
        8 9 4 | 5 1 2 | 3 6 7

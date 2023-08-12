@@ -1,4 +1,4 @@
-class Summary
+class Solve::Summary
   attr_reader :history
 
   def initialize(history)
