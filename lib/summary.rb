@@ -24,7 +24,9 @@ class Summary
       "Naked quadruples: #{num_naked_quadruples}",
       "Cells solveable 'by sudoku' after identifying naked quadruple: #{solved_by_naked_quadruple_cell_count}",
       "Hidden triples: #{num_hidden_triples}",
-      "Cells solveable 'by sudoku' after identifying Hhdden triple: #{solved_by_hidden_triple_cell_count}",
+      "Cells solveable 'by sudoku' after identifying Hidden triple: #{solved_by_hidden_triple_cell_count}",
+      "X-Wings: #{num_x_wings}",
+      "Cells solveable 'by sudoku' after identifying X-wings: #{solved_by_x_wing_cell_count}",
       "Passes: #{num_passes}",
       total_count
     ].compact.join("\n")
@@ -41,7 +43,8 @@ class Summary
       solved_by_hidden_pair_cell_count +
       solved_by_naked_triple_cell_count +
       solved_by_naked_quadruple_cell_count +
-      solved_by_hidden_triple_cell_count
+      solved_by_hidden_triple_cell_count +
+      solved_by_x_wing_cell_count
     )
   end
 
@@ -140,5 +143,16 @@ class Summary
 
   def solved_by_hidden_triple_cell_count
     history.where(solves: true, strategy: Strategy::HiddenTriple.name).length
+  end
+
+  def num_x_wings
+    history.where(
+      strategy: Strategy::XWing.name,
+      type: Action::UPDATE_CELL,
+    ).map(&:x_wing_id).uniq.length
+  end
+
+  def solved_by_x_wing_cell_count
+    history.where(solves: true, strategy: Strategy::XWing.name).length
   end
 end

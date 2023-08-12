@@ -359,4 +359,37 @@ describe Strategy do
       expect(action).to be_truthy
     end
   end
+
+  describe Strategy::XWing do
+    let(:board) do
+      # https://hodoku.sourceforge.net/en/tech_naked.php#n4
+      txt = <<~SUDOKU
+      . 4 1 | 7 2 9 | . 3 .
+      7 6 9 | . . 3 | 4 . 2
+      . 3 2 | 6 4 . | 7 1 9
+     -------|-------|-------
+      4 . 3 | 9 . . | 1 7 .
+      6 . 7 | . . 4 | 9 . 3
+      1 9 5 | 3 7 . | . 2 4
+     -------|-------|-------
+      2 1 4 | 5 6 7 | 3 9 8
+      3 7 6 | . 9 . | 5 4 1
+      9 5 8 | 4 3 1 | 2 6 7
+      SUDOKU
+      Board.from_txt(txt)
+    end
+
+    it 'updates the candidates of the cell that cant be one of the naked quad candidates' do
+      expect(board.state.get_cell(31).candidates).to eq([5,8])
+      Strategy::XWing.apply(board)
+      expect(board.state.get_cell(31).value).to eq(8)
+
+      action = board.state.history.find(
+        cell_id: 31,
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::XWing.name,
+      )
+      expect(action).to be_truthy
+    end
+  end
 end

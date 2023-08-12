@@ -7,7 +7,8 @@ class Solve
     Strategy::HiddenPair,
     Strategy::NakedTriple,
     Strategy::NakedQuadruple,
-    Strategy::HiddenTriple
+    Strategy::HiddenTriple,
+    Strategy::XWing
   ]
   
   attr_reader :strategies, :with_display, :with_summary
