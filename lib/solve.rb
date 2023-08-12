@@ -1,6 +1,5 @@
 class Solve
   BASIC_STRATEGIES = [
-    Strategy::NakedSingle,
     Strategy::HiddenSingle,
     Strategy::NakedPair,
     Strategy::LockedCandidatesPointing,
@@ -21,6 +20,10 @@ class Solve
 
   def solve(board)
     board.state.register_next_pass
+
+    # on the first pass look for naked singles already present from the starting state,
+    # subsequent strategies account for completing naked singles discovered when the strategy is applied
+    Strategy::NakedSingle.apply(board) if board.state.current_pass == 1
 
     strategies.each do |strategy|
       strategy.apply(board)

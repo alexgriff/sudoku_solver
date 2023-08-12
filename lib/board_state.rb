@@ -25,7 +25,7 @@ class Board::State
   def get_cell(id)
     Cell.new(
       id: id,
-      value: @solved[id] || Cell::EMPTY,
+      value: @solved[id],
       candidates: @cells[id]
     )
   end

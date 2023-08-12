@@ -18,7 +18,6 @@ SUDOKU
 board = Board.from_txt(txt)
 
 strategies = [
-  Strategy::NakedSingle,
   Strategy::HiddenSingle,
   Strategy::NakedPair,
   Strategy::LockedCandidatesPointing,

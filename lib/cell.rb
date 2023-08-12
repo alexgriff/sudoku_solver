@@ -6,7 +6,7 @@ class Cell
 
   def initialize(id:, candidates: nil, value: EMPTY)
     @id = id
-    @value = value
+    @value = value || EMPTY
     @candidates = filled? ? [] : (candidates || ALL_CANDIDATES.dup)
   end
 
