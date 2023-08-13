@@ -15,15 +15,12 @@ class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
 
       if line_house
         line_house.other_cells_with_any_of_candidates(box.cells, [shared_cand]).each do |outside_current_box_cell|
-          new_candidates = outside_current_box_cell.candidates - [shared_cand]
-          if outside_current_box_cell.will_change?(new_candidates)
-            board.state.register_change(
-              board,
-              outside_current_box_cell,
-              new_candidates,
-              {strategy: name, locked_alignment_id: "Box-#{box.id}|Row-#{cell.row(board).id}|Locked-#{shared_cand}"}
-            )
-          end
+          board.state.register_change(
+            board,
+            outside_current_box_cell,
+            outside_current_box_cell.candidates - [shared_cand],
+            {strategy: name, locked_alignment_id: "Box-#{box.id}|Row-#{cell.row(board).id}|Locked-#{shared_cand}"}
+          )
         end
       end
     end

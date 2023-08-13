@@ -58,24 +58,25 @@ class Board::State
     )
   end
 
-  def register_change(board, cell, candidates, action_opts={})
-    solving = cell.empty? && candidates.length == 1
+  def register_change(board, cell, new_candidates, action_opts={})
+    return unless cell.will_change?(new_candidates)
+    solving = cell.empty? && new_candidates.length == 1
     if solving
       dispatch(
         Action.new(
           type: Action::UPDATE_CELL,
           cell_id: cell.id,
-          values: [candidates.first],
+          values: [new_candidates.first],
           solves: true,
           **action_opts
         )
       )
-      board.all_empty_cells_with_any_of_candidates_seen_by(cell, candidates).each do |seen_cell|
-        if seen_cell.empty? && seen_cell.has_any_of_candidates?(candidates)
+      board.all_empty_cells_with_any_of_candidates_seen_by(cell, new_candidates).each do |seen_cell|
+        if seen_cell.empty? && seen_cell.has_any_of_candidates?(new_candidates)
           register_change(
             board,
             seen_cell,
-            seen_cell.candidates - candidates,
+            seen_cell.candidates - new_candidates,
             action_opts.merge(cascade: cell.id)
           )
         end
@@ -85,7 +86,7 @@ class Board::State
         Action.new(
           type: Action::UPDATE_CELL,
           cell_id: cell.id,
-          values: candidates,
+          values: new_candidates,
           **action_opts
         )
       )

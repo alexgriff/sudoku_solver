@@ -26,15 +26,12 @@ module Strategy
 
           if naked_buddy_cells.length == n
             house.other_cells([naked_buddy_cells]).each do |non_buddied_cell|
-              new_candidates = non_buddied_cell.candidates - naked_buddy_candidates
-              if non_buddied_cell.will_change?(new_candidates)
-                board.state.register_change(
-                  board,
-                  non_buddied_cell,
-                  new_candidates,
-                  {strategy: name, naked_buddies: naked_buddy_cells.map(&:id)}
-                )
-              end
+              board.state.register_change(
+                board,
+                non_buddied_cell,
+                non_buddied_cell.candidates - naked_buddy_candidates,
+                {strategy: name, naked_buddies: naked_buddy_cells.map(&:id)}
+              )
             end
           end
         end
@@ -55,16 +52,12 @@ module Strategy
             hidden_buddys = house.cells_with_any_of_candidates(cand_permutation)
             if hidden_buddys.length == n
               hidden_buddys.each do |hidden_buddy_cell|
-                new_candidates =  hidden_buddy_cell.candidates.intersection(cand_permutation)
-
-                if hidden_buddy_cell.will_change?(new_candidates)
-                  board.state.register_change(
-                    board,
-                    hidden_buddy_cell,
-                    new_candidates,
-                    {strategy: name, hidden_buddies: hidden_buddys.map(&:id)}
-                  )
-                end
+                board.state.register_change(
+                  board,
+                  hidden_buddy_cell,
+                  hidden_buddy_cell.candidates.intersection(cand_permutation),
+                  {strategy: name, hidden_buddies: hidden_buddys.map(&:id)}
+                )
               end
             end
           end

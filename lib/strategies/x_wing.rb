@@ -19,16 +19,12 @@ class Strategy::XWing < Strategy::BaseStrategy
             col.cells_with_any_of_candidates([cand]).reject do |col_cell|
               matched_rows.map(&:id).include?(col_cell.row_id)
             end.each do |col_cell|
-              new_candidates = col_cell.candidates - [cand]
-
-              if col_cell.will_change?(new_candidates)
-                board.state.register_change(
-                  board,
-                  col_cell,
-                  new_candidates,
-                  {strategy: name, x_wing_id: "Rows-#{matched_rows.map(&:id)}|Cols-#{col_ids_with_cand_in_cell_row}|Locked-#{cand}"}
-                )
-              end
+              board.state.register_change(
+                board,
+                col_cell,
+                col_cell.candidates - [cand],
+                {strategy: name, x_wing_id: "Rows-#{matched_rows.map(&:id)}|Cols-#{col_ids_with_cand_in_cell_row}|Locked-#{cand}"}
+              )
             end
           end
         end
@@ -51,16 +47,12 @@ class Strategy::XWing < Strategy::BaseStrategy
             row.cells_with_any_of_candidates([cand]).reject do |row_cell|
               matched_cols.map(&:id).include?(row_cell.column_id)
             end.each do |row_cell|
-              new_candidates = row_cell.candidates - [cand]
-
-              if row_cell.will_change?(new_candidates)
-                board.state.register_change(
-                  board,
-                  row_cell,
-                  new_candidates,
-                  {strategy: name, x_wing_id: "Cols-#{matched_cols.map(&:id)}|Rows-#{row_ids_with_cand_in_cell_col}|Locked-#{cand}"}
-                )
-              end
+              board.state.register_change(
+                board,
+                row_cell,
+                row_cell.candidates - [cand],
+                {strategy: name, x_wing_id: "Cols-#{matched_cols.map(&:id)}|Rows-#{row_ids_with_cand_in_cell_col}|Locked-#{cand}"}
+              )
             end
           end
         end

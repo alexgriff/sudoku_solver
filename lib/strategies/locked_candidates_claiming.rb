@@ -20,15 +20,12 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
           third_box.cells_with_all_of_candidates([cand]).select do |third_box_cell|
             cand_rows.map(&:id).include?(third_box_cell.row_id)
           end.each do |third_box_cell|
-            new_candidates = third_box_cell.candidates - [cand]
-            if cell.will_change?(new_candidates)
-              board.state.register_change(
-                board,
-                third_box_cell,
-                new_candidates,
-                {strategy: name, claiming_box_id: "Box-#{third_box.id}|Row-#{cand_rows.map(&:id)}|Locked-#{cand}"}
-              )
-            end
+            board.state.register_change(
+              board,
+              third_box_cell,
+              third_box_cell.candidates - [cand],
+              {strategy: name, claiming_box_id: "Box-#{third_box.id}|Row-#{cand_rows.map(&:id)}|Locked-#{cand}"}
+            )
           end
         end
       end
@@ -49,14 +46,12 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
             cand_cols.map(&:id).include?(third_box_cell.column_id)
           end.each do |third_box_cell|
             new_candidates = third_box_cell.candidates - [cand]
-            if cell.will_change?(new_candidates)
-              board.state.register_change(
-                board,
-                third_box_cell,
-                new_candidates,
-                {strategy: name, claiming_box_id: "Box-#{third_box.id}|Cols-#{cand_cols.map(&:id)}|Locked-#{cand}"}
-              )
-            end
+            board.state.register_change(
+              board,
+              third_box_cell,
+              third_box_cell.candidates - [cand],
+              {strategy: name, claiming_box_id: "Box-#{third_box.id}|Cols-#{cand_cols.map(&:id)}|Locked-#{cand}"}
+            )
           end
         end
       end 
