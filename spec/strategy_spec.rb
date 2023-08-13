@@ -322,7 +322,7 @@ describe Strategy do
 
   describe Strategy::HiddenTriple do
     let(:board) do
-      # https://hodoku.sourceforge.net/en/tech_naked.php#n4
+      # https://hodoku.sourceforge.net/en/tech_hidden.php#h3
       txt = <<~SUDOKU
       5 . . | 6 2 . | . 3 7
       . . 4 | 8 9 . | . . .
@@ -362,7 +362,7 @@ describe Strategy do
 
   describe Strategy::XWing do
     let(:board) do
-      # https://hodoku.sourceforge.net/en/tech_naked.php#n4
+      # https://hodoku.sourceforge.net/en/tech_fishb.php#bf2
       txt = <<~SUDOKU
       . 4 1 | 7 2 9 | . 3 .
       7 6 9 | . . 3 | 4 . 2
@@ -380,7 +380,7 @@ describe Strategy do
     end
 
     it 'updates the candidates of the cell that are eliminated by the x-wing' do
-      expect(board.cells[31].candidates).to eq([5,8])
+    expect(board.cells[31].candidates).to eq([5,8])
       Strategy::XWing.apply(board)
       expect(board.cells[31].value).to eq(8)
 
@@ -388,6 +388,68 @@ describe Strategy do
         cell_id: 31,
         type: Action::UPDATE_CELL,
         strategy: Strategy::XWing.name,
+      )
+      expect(action).to be_truthy
+    end
+  end
+
+  describe Strategy::Swordfish do
+    let(:board) do
+      # https://hodoku.sourceforge.net/en/tech_fishb.php#bf3
+      txt = <<~SUDOKU
+      1 . 8 | 5 . . | 2 3 4
+      5 . . | 3 . 2 | 1 7 8
+      . . . | 8 . . | 5 6 9
+     -------|-------|-------
+      8 . . | 6 . 5 | 7 9 3
+      . . 5 | 9 . . | 4 8 1
+      3 . . | . . 8 | 6 5 2
+     -------|-------|-------
+      9 8 . | 2 . 6 | 3 1 .
+      . . . | . . . | 8 . .
+      . . . | 7 8 . | 9 . .
+      SUDOKU
+      Board.from_txt(txt)
+    end
+
+    it 'todo write this', skip: true do
+      expect(board.cells[19].candidates).to include(4)
+      expect(board.cells[20].candidates).to include(4)
+      expect(board.cells[22].candidates).to include(4)
+
+      expect(board.cells[46].candidates).to include(4)
+      expect(board.cells[47].candidates).to include(4)
+      expect(board.cells[49].candidates).to include(4)
+
+      expect(board.cells[64].candidates).to include(4)
+      expect(board.cells[65].candidates).to include(4)
+      expect(board.cells[67].candidates).to include(4)
+
+      expect(board.cells[73].candidates).to include(4)
+      expect(board.cells[74].candidates).to include(4)
+
+
+      Strategy::Swordfish.apply(board)
+
+      expect(board.cells[19].candidates).not_to include(4)
+      expect(board.cells[20].candidates).not_to include(4)
+      expect(board.cells[22].candidates).not_to include(4)
+
+      expect(board.cells[46].candidates).not_to include(4)
+      expect(board.cells[47].candidates).not_to include(4)
+      expect(board.cells[49].candidates).not_to include(4)
+
+      expect(board.cells[64].candidates).not_to include(4)
+      expect(board.cells[65].candidates).not_to include(4)
+      expect(board.cells[67].candidates).not_to include(4)
+
+      expect(board.cells[73].candidates).not_to include(4)
+      expect(board.cells[74].candidates).not_to include(4)
+
+      action = board.state.history.find(
+        cell_id: 19,
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::Swordfish.name,
       )
       expect(action).to be_truthy
     end

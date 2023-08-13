@@ -1,57 +1,53 @@
 class Strategy::XWing < Strategy::BaseStrategy
   def self.execute(board, cell)
-    cell.candidates.each do |cand|    
-      # Rows - get all cell_ids with cand in the row
-      cells_with_cand_in_row = cell.row(board).cells_with_any_of_candidates([cand])
+    n = 2
+    cell.candidates.each do |cand|
+      self.execute_for_line(:row, board, cell, cand)
+    end
+    cell.candidates.each do |cand|
+      self.execute_for_line(:column, board, cell, cand)
+    end
+  end
 
-      # if the cand is in exactly 2 cells in the row, is there another row with same cand in exactly the same 2 _cols_?
-      if cells_with_cand_in_row.length == 2
-        col_ids_with_cand_in_cell_row = cells_with_cand_in_row.map(&:column_id)
+  def self.execute_for_line(line_type, board, cell, cand)
+    n = 2
+    other_axis_line_type = line_type == :row ? :column : :row
+    # for a cand in a line (weed out singles)
+    # look for n other lines, where the cand is present in a total of exactly n of the other-axis lines
+    # ie if a cand is in 2 rows, is it in the same col in each of those rows?
+    current_line = cell.send(line_type, board)
+
+    if current_line.cells_with_any_of_candidates([cand]).length >= 2
+      other_axis_ids_current_line = current_line.cells_with_any_of_candidates([cand]).map { |ln_cell| ln_cell.send("#{other_axis_line_type}_id") }
+      other_lines_w_cand = (board.send("#{line_type}s") - [current_line]).select { |ln| ln.has_any_of_candidates?([cand]) }
         
-        matched_rows = board.rows.map.select do |row|
-          col_ids_with_cand_in_cell_row == row.cells_with_any_of_candidates([cand]).map(&:column_id)
-        end
+      # is there another line of my type where the other-axis ids 'match' mine...
+      # ..meaning there is a set comprised of me + some other lines
+      # where togeher our set is of size n,
+      # and where as a whole we have exactly n other-axis ids for the cand
+
+      # for all of the other lines, build sets of size n - 1 (when you add in the current line it size will equal n)
+      other_lines_w_cand.permutation(n - 1).each do |set|
+        next unless set.all? { |ln| ln.has_any_of_candidates?([cand]) } # accounts for state having changed - TODO do this better
+        other_axis_ids_in_set = set.map { |ln| ln.cells_with_any_of_candidates([cand]).map(&:"#{other_axis_line_type}_id") }
+        common_axis_ids_in_set = [*other_axis_ids_in_set].reduce(&:intersection)
+
+        uniq_other_axis_ids = (other_axis_ids_current_line + common_axis_ids_in_set).uniq
         
-        # if so, the cand can be eliminated from the cols in cells that don't intersect with the 'matched' rows
-        if matched_rows.length == 2
-          col_ids_with_cand_in_cell_row.each do |col_id|
-            col = board.columns[col_id]
-            col.cells_with_any_of_candidates([cand]).reject do |col_cell|
-              matched_rows.map(&:id).include?(col_cell.row_id)
-            end.each do |col_cell|
+        if uniq_other_axis_ids.length == n
+          uniq_other_axis_ids.each do |other_axis_id|
+            other_axis = board.send("#{other_axis_line_type}s")[other_axis_id]
+
+            # filter out cells that intersect with the lines in the current set
+            full_set = [current_line] + set
+            intersecting_cells = full_set.map(&:cells).flatten
+            other_axis.other_cells_with_any_of_candidates(intersecting_cells, [cand]).each do |other_axis_cell|
+              new_candidates = other_axis_cell.candidates - [cand]
               board.state.register_change(
                 board,
-                col_cell,
-                col_cell.candidates - [cand],
-                {strategy: name, x_wing_id: "Rows-#{matched_rows.map(&:id)}|Cols-#{col_ids_with_cand_in_cell_row}|Locked-#{cand}"}
-              )
-            end
-          end
-        end
-      end
-
-      # Cols - get all cell_ids with cand in the col
-      cells_with_cand_in_col = cell.column(board).cells_with_any_of_candidates([cand])
-      # if the cand is in exactly 2 cells in the col, is there another col with same cand in exactly the same 2 _rows_?
-      if cells_with_cand_in_col.length == 2
-        row_ids_with_cand_in_cell_col = cells_with_cand_in_col.map(&:row_id)
-        
-        matched_cols = board.columns.select do |col|
-          row_ids_with_cand_in_cell_col == col.cells_with_any_of_candidates([cand]).map(&:row_id)
-        end
-
-        # if so, the cand can be eliminated from the rows in cells that don't intersect with the 'matched' cols
-        if matched_cols.length == 2
-          row_ids_with_cand_in_cell_col.each do |row_id|
-            row = board.rows[row_id]
-            row.cells_with_any_of_candidates([cand]).reject do |row_cell|
-              matched_cols.map(&:id).include?(row_cell.column_id)
-            end.each do |row_cell|
-              board.state.register_change(
-                board,
-                row_cell,
-                row_cell.candidates - [cand],
-                {strategy: name, x_wing_id: "Cols-#{matched_cols.map(&:id)}|Rows-#{row_ids_with_cand_in_cell_col}|Locked-#{cand}"}
+                other_axis_cell,
+                other_axis_cell.candidates - [cand],
+                {strategy: name, originating_cell_id: cell.id, x_wing_id: "#{line_type}-#{full_set.map(&:id)}|#{other_axis_line_type}-#{uniq_other_axis_ids}|locked-#{cand}"}
               )
             end
           end
