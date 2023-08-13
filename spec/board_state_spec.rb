@@ -66,19 +66,4 @@ describe Board::State do
       }.to raise_error(Board::State::InvalidError)
     end
   end
-
-  describe '.clone_from' do
-    it 'can create a clone of an existing state' do
-      # put the board in an arbitrary state
-      Strategy::NakedSingle.apply(board)
-      clone = Board::State.clone_from(board.state)
-
-      expect(board.state.instance_variable_get(:@touched)).to eq(clone.instance_variable_get(:@touched))
-      expect(board.state.instance_variable_get(:@passes)).to eq(clone.instance_variable_get(:@passes))
-      expect(board.state.instance_variable_get(:@solved)).to eq(clone.instance_variable_get(:@solved))
-      expect(board.state.instance_variable_get(:@cells)).to eq(clone.instance_variable_get(:@cells))
-
-      expect(clone.history.all.first.type).to eq(Action::CLONE)
-    end
-  end
 end
