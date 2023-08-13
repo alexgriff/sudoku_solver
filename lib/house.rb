@@ -48,6 +48,10 @@ class House
     empty_cells.select { |cell| cell.has_any_of_candidates?(cands) }
   end
 
+  def has_any_of_candidates?(cands)
+    cells_with_any_of_candidates(cands).any?
+  end
+
   def other_cells_with_any_of_candidates(filtered_cells, cands)
     cells_with_any_of_candidates(cands) - filtered_cells
   end

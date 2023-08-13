@@ -61,6 +61,10 @@ class Board
     end
   end
 
+  def cells_with_any_of_candidates(cands)
+    empty_cells.select { |cell| cell.has_any_of_candidates?(cands) }
+  end
+
   def valid?
     @errors = []
 
