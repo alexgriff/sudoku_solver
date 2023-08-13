@@ -2,12 +2,18 @@ class Cell
   EMPTY = '.'
   ALL_CANDIDATES = (1..9).to_a
 
-  attr_reader :id, :value, :candidates
+  attr_reader :id
 
-  def initialize(id:, candidates: nil, value: EMPTY)
+  def initialize(id)
     @id = id
-    @value = value || EMPTY
-    @candidates = filled? ? [] : (candidates || ALL_CANDIDATES.dup)
+  end
+
+  def value
+    state.get_cell_value(id)
+  end
+
+  def candidates
+    state.get_cell_candidates(id)
   end
 
   def row_id
@@ -65,4 +71,21 @@ class Cell
   def candidate_permutations(n)
     candidates.permutation(n).uniq { |perm| perm.sort }
   end
+
+  def will_change?(new_candidates)
+    empty? && new_candidates.any? && (new_candidates - candidates) != candidates
+  end
+
+  def use_state(state)
+    @state = state
+  end
+
+  def inspect
+    # printing the whole state object is too annoying and unwieldy
+    "#<#{self.class.name}:0x#{object_id.to_s(16).rjust(16, '0')} @id=#{id}>"
+  end
+
+  private
+
+  attr_reader :state
 end

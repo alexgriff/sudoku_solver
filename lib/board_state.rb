@@ -22,12 +22,12 @@ class Board::State
     dispatch(Action.new(type: init_action_type))
   end
 
-  def get_cell(id)
-    Cell.new(
-      id: id,
-      value: @solved[id],
-      candidates: @cells[id]
-    )
+  def get_cell_value(id)
+    @solved[id] || Cell::EMPTY
+  end
+
+  def get_cell_candidates(id)
+    @solved[id] ? [] : @cells[id]
   end
 
   def is_solved?
@@ -68,29 +68,23 @@ class Board::State
     )
   end
 
-  def register_change(board, cell_id, candidates, action_opts={})
-    cell = get_cell(cell_id)
+  def register_change(board, cell, candidates, action_opts={})
     solving = cell.empty? && candidates.length == 1
     if solving
       dispatch(
         Action.new(
           type: Action::UPDATE_CELL,
-          cell_id: cell_id,
+          cell_id: cell.id,
           values: [candidates.first],
           solves: true,
           **action_opts
         )
       )
-      board.all_empty_cell_ids_with_any_of_candidates_seen_by(cell_id, candidates).each do |seen_cell_id|
-        seen_cell = get_cell(seen_cell_id)
-        # Because the board state can change from a previous iteration of this loop, all cells that were empty
-        # with the given candidates when the loop started may not be in that state when the next iteration runs.
-        # Although sending a now-'empty' action would result in a no-op, we can make a (small-ish) optimization by
-        # checking the new state of the cell before dispatching any new actions
+      board.all_empty_cells_with_any_of_candidates_seen_by(cell, candidates).each do |seen_cell|
         if seen_cell.empty? && seen_cell.has_any_of_candidates?(candidates)
           register_change(
             board,
-            seen_cell_id,
+            seen_cell,
             seen_cell.candidates - candidates,
             action_opts.merge(cascade: cell.id)
           )
@@ -100,14 +94,14 @@ class Board::State
       dispatch(
         Action.new(
           type: Action::UPDATE_CELL,
-          cell_id: cell_id,
+          cell_id: cell.id,
           values: candidates,
           **action_opts
         )
       )
     end
 
-    raise Board::State::InvalidError.new(board) unless board.valid?
+    raise InvalidError.new(board) unless board.valid?
   end
 
   class InvalidError < StandardError

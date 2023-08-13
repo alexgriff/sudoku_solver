@@ -18,7 +18,7 @@ describe Board do
 
     it 'can generate rows columns and boxes from formatted string' do
       board = Board.from_txt(txt)
-      expect(board.rows.map { |row| row.cell_ids.map { |id| board.state.get_cell(id).value } }).to eq(
+      expect(board.rows.map { |row| row.cells.map(&:value) }).to eq(
         [
           [Cell::EMPTY, 8, 4, Cell::EMPTY, 5, Cell::EMPTY, 9, 1, Cell::EMPTY],
           [5, Cell::EMPTY, Cell::EMPTY, 8, 9, Cell::EMPTY, Cell::EMPTY, Cell::EMPTY, 2],
@@ -33,7 +33,7 @@ describe Board do
         ]
       )
 
-      expect(board.columns.map  { |col| col.cell_ids.map { |id| board.state.get_cell(id).value } }).to eq(
+      expect(board.columns.map { |col| col.cells.map(&:value) }).to eq(
         [
           [Cell::EMPTY, 5, Cell::EMPTY, Cell::EMPTY, 8, Cell::EMPTY, Cell::EMPTY, 1, 3],
           [8, Cell::EMPTY, Cell::EMPTY, Cell::EMPTY, 5, 2, Cell::EMPTY, 4, Cell::EMPTY],
@@ -47,7 +47,7 @@ describe Board do
         ]
       )
 
-      expect(board.boxes.map  { |box| box.cell_ids.map { |id| board.state.get_cell(id).value } }).to eq(
+      expect(board.boxes.map { |box| box.cells.map(&:value) }).to eq(
         [
           [Cell::EMPTY, 8, 4, 5, Cell::EMPTY, Cell::EMPTY, Cell::EMPTY, Cell::EMPTY, 7],
           [Cell::EMPTY, 5, Cell::EMPTY, 8, 9, Cell::EMPTY, Cell::EMPTY, Cell::EMPTY, 2],
@@ -83,12 +83,12 @@ describe Board do
     end
 
     it 'correctly accounts for initial solved cells' do
-      expect(board.state.get_cell(0).value).to eq(5)
+      expect(board.cells[0].value).to eq(5)
 
       # no other cell that cell 0 can see should have 5 as a candidate
       seen_cell_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 19, 20, 27, 36, 45, 54, 63, 72]
       seen_cell_ids.each do |seen_cell_id|
-        expect(board.state.get_cell(seen_cell_id).candidates).not_to include(5)
+        expect(board.cells[seen_cell_id].candidates).not_to include(5)
       end
     end
 

@@ -1,8 +1,7 @@
 class Strategy::NakedSingle < Strategy::BaseStrategy
-  def self.execute(board, cell_id)
-    cell = board.state.get_cell(cell_id)
+  def self.execute(board, cell)
     if cell.empty?  && cell.candidates.length == 1
-      board.state.register_change(board, cell_id, [cell.candidates.first], {strategy: name})
+      board.state.register_change(board, cell, [cell.candidates.first], {strategy: name})
     end
   end
 end

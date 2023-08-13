@@ -23,9 +23,9 @@ describe Strategy do
     end
 
     it 'solves the cell with a naked single' do
-      expect(board.state.get_cell(14).candidates).to eq([6])
+      expect(board.cells[14].candidates).to eq([6])
       Strategy::NakedSingle.apply(board)
-      expect(board.state.get_cell(14).value).to eq(6)
+      expect(board.cells[14].value).to eq(6)
       action = board.state.history.find(
         cell_id: 14,
         type: Action::UPDATE_CELL,
@@ -56,10 +56,10 @@ describe Strategy do
     end
 
     it 'updates the cell with a hidden single' do
-      expect(board.state.get_cell(21).candidates).to eq([4, 6, 9])
+      expect(board.cells[21].candidates).to eq([4, 6, 9])
 
       Strategy::HiddenSingle.apply(board)
-      expect(board.state.get_cell(21).value).to eq(6)
+      expect(board.cells[21].value).to eq(6)
       action = board.state.history.find(
         cell_id: 21,
         type: Action::UPDATE_CELL,
@@ -91,10 +91,10 @@ describe Strategy do
     end
 
     it 'updates the candiates of the cell that cant be one of the naked pair candidates' do
-      expect(board.state.get_cell(64).candidates).to eq([3, 7])
+      expect(board.cells[64].candidates).to eq([3, 7])
 
       Strategy::NakedPair.apply(board)
-      expect(board.state.get_cell(64).value).to eq(7)
+      expect(board.cells[64].value).to eq(7)
 
       action = board.state.history.find(
         cell_id: 64,
@@ -127,10 +127,10 @@ describe Strategy do
     end
 
     it "updates the candidates of cells in the same aligned row/col that can't be the locked candidate" do
-      expect(board.state.get_cell(24).candidates).to eq([3, 5])
+      expect(board.cells[24].candidates).to eq([3, 5])
 
       Strategy::LockedCandidatesPointing.apply(board)
-      expect(board.state.get_cell(24).value).to eq(3)
+      expect(board.cells[24].value).to eq(3)
 
       action = board.state.history.find(
         cell_id: 24,
@@ -163,10 +163,10 @@ describe Strategy do
     end
 
     it 'updates the candidates of the cells in the box that must have the candidate in the free row/col' do
-      expect(board.state.get_cell(19).candidates).to eq([4, 7])
+      expect(board.cells[19].candidates).to eq([4, 7])
       
       Strategy::LockedCandidatesClaiming.apply(board)
-      expect(board.state.get_cell(19).value).to eq(4)
+      expect(board.cells[19].value).to eq(4)
 
       action = board.state.history.find(
         cell_id: 19,
@@ -199,9 +199,9 @@ describe Strategy do
     end
 
     it 'updates the candidates of the cell that cant be one of the hidden pair candidates' do
-      expect(board.state.get_cell(44).candidates).to eq([1, 6, 9])
+      expect(board.cells[44].candidates).to eq([1, 6, 9])
       Strategy::HiddenPair.apply(board)
-      expect(board.state.get_cell(44).candidates).to eq([1, 9])
+      expect(board.cells[44].candidates).to eq([1, 9])
 
       action = board.state.history.find(
         cell_id: 44,
@@ -250,11 +250,11 @@ describe Strategy do
     end
 
     it 'updates the candidates of the cell that cant be one of the naked triple candidates' do
-      expect(board.state.get_cell(1).candidates).to eq([1, 6, 7])
+      expect(board.cells[1].candidates).to eq([1, 6, 7])
 
       Strategy::NakedTriple.apply(board)
 
-      expect(board.state.get_cell(1).candidates).to eq([1, 7])
+      expect(board.cells[1].candidates).to eq([1, 7])
 
       action = board.state.history.find(
         cell_id: 1,
@@ -264,21 +264,21 @@ describe Strategy do
       )
       expect(action).to be_truthy
 
-      expect(board1.state.get_cell(3).candidates & [1,2,6]).not_to be_empty
-      expect(board1.state.get_cell(5).candidates & [1,2,6]).not_to be_empty
-      expect(board1.state.get_cell(12).candidates & [1,2,6]).not_to be_empty
-      expect(board1.state.get_cell(13).candidates & [1,2,6]).not_to be_empty
-      expect(board1.state.get_cell(14).candidates & [1,2,6]).not_to be_empty
-      expect(board1.state.get_cell(23).candidates & [1,2,6]).not_to be_empty
+      expect(board1.cells[3].candidates & [1,2,6]).not_to be_empty
+      expect(board1.cells[5].candidates & [1,2,6]).not_to be_empty
+      expect(board1.cells[12].candidates & [1,2,6]).not_to be_empty
+      expect(board1.cells[13].candidates & [1,2,6]).not_to be_empty
+      expect(board1.cells[14].candidates & [1,2,6]).not_to be_empty
+      expect(board1.cells[23].candidates & [1,2,6]).not_to be_empty
 
       Strategy::NakedTriple.apply(board1)
 
-      expect(board1.state.get_cell(3).candidates & [1,2,6]).to be_empty
-      expect(board1.state.get_cell(5).candidates & [1,2,6]).to be_empty
-      expect(board1.state.get_cell(12).candidates & [1,2,6]).to be_empty
-      expect(board1.state.get_cell(13).candidates & [1,2,6]).to be_empty
-      expect(board1.state.get_cell(14).candidates & [1,2,6]).to be_empty
-      expect(board1.state.get_cell(23).candidates & [1,2,6]).to be_empty
+      expect(board1.cells[3].candidates & [1,2,6]).to be_empty
+      expect(board1.cells[5].candidates & [1,2,6]).to be_empty
+      expect(board1.cells[12].candidates & [1,2,6]).to be_empty
+      expect(board1.cells[13].candidates & [1,2,6]).to be_empty
+      expect(board1.cells[14].candidates & [1,2,6]).to be_empty
+      expect(board1.cells[23].candidates & [1,2,6]).to be_empty
     end
   end
 
@@ -302,13 +302,13 @@ describe Strategy do
     end
 
     it 'updates the candidates of the cell that cant be one of the naked quad candidates' do
-      expect(board.state.get_cell(69).candidates & [3,4,8,9]).not_to be_empty
-      expect(board.state.get_cell(70).candidates & [3,4,8,9]).not_to be_empty
+      expect(board.cells[69].candidates & [3,4,8,9]).not_to be_empty
+      expect(board.cells[70].candidates & [3,4,8,9]).not_to be_empty
 
       Strategy::NakedQuadruple.apply(board)
 
-      expect(board.state.get_cell(69).candidates & [3,4,8,9]).to be_empty
-      expect(board.state.get_cell(70).candidates & [3,4,8,9]).to be_empty
+      expect(board.cells[69].candidates & [3,4,8,9]).to be_empty
+      expect(board.cells[70].candidates & [3,4,8,9]).to be_empty
 
       action = board.state.history.find(
         cell_id: 69,
@@ -339,16 +339,16 @@ describe Strategy do
       Board.from_txt(txt)
     end
 
-    it 'updates the candidates of the cell that cant be one of the naked quad candidates' do
-      expect(board.state.get_cell(32).candidates).to eq([1,2,4,5,6,7,8])
-      expect(board.state.get_cell(50).candidates).to eq([1,2,4,5,6,8])
-      expect(board.state.get_cell(68).candidates).to eq([1,2,3,4,6,8])
+    it 'updates the candidates of the cell that cant be one of the hidden triple candidates' do
+      expect(board.cells[32].candidates).to eq([1,2,4,5,6,7,8])
+      expect(board.cells[50].candidates).to eq([1,2,4,5,6,8])
+      expect(board.cells[68].candidates).to eq([1,2,3,4,6,8])
 
       Strategy::HiddenTriple.apply(board)
 
-      expect(board.state.get_cell(32).candidates).to eq([2,5,6])
-      expect(board.state.get_cell(50).candidates).to eq([2,5,6])
-      expect(board.state.get_cell(68).candidates).to eq([2,6])
+      expect(board.cells[32].candidates).to eq([2,5,6])
+      expect(board.cells[50].candidates).to eq([2,5,6])
+      expect(board.cells[68].candidates).to eq([2,6])
 
       action = board.state.history.find(
         cell_id: 32,
@@ -379,10 +379,10 @@ describe Strategy do
       Board.from_txt(txt)
     end
 
-    it 'updates the candidates of the cell that cant be one of the naked quad candidates' do
-      expect(board.state.get_cell(31).candidates).to eq([5,8])
+    it 'updates the candidates of the cell that are eliminated by the x-wing' do
+      expect(board.cells[31].candidates).to eq([5,8])
       Strategy::XWing.apply(board)
-      expect(board.state.get_cell(31).value).to eq(8)
+      expect(board.cells[31].value).to eq(8)
 
       action = board.state.history.find(
         cell_id: 31,
