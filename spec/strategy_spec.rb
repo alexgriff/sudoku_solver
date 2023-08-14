@@ -453,4 +453,52 @@ describe Strategy do
       expect(action).to be_truthy
     end
   end
+
+  describe Strategy::YWing do
+    let(:board) do
+      # https://hodoku.sourceforge.net/en/tech_wings.php#xy
+      # pivot is cell 27 with cands 1,6
+      # it sees cell 30 with cands 1,9
+      # and 37 with cands 6,9
+      # eliminating 9 as a cand from any cell that can see 30 & 37
+      txt = <<~SUDOKU
+      7 1 4 | . 6 . | 5 3 8
+      8 . . | 4 5 3 | . . 7
+      3 5 6 | 7 1 8 | 4 2 9
+     -------|-------|-------
+      . . . | . 2 4 | . 8 5
+      4 . . | . . . | 3 . 2
+      2 8 5 | 3 7 6 | 9 4 1
+     -------|-------|-------
+      9 7 8 | 6 3 1 | 2 5 4
+      . . . | . . 7 | . . 6
+      . . . | . . . | . . 3
+      SUDOKU
+      Board.from_txt(txt)
+    end
+
+    it 'the pivot cell eliminates candidates' do
+      expect(board.cells[28].candidates).to include(9)
+      expect(board.cells[29].candidates).to include(9)
+      expect(board.cells[39].candidates).to include(9)
+      expect(board.cells[40].candidates).to include(9)
+      expect(board.cells[41].candidates).to include(9)
+
+      Strategy::YWing.apply(board)
+
+      expect(board.cells[28].candidates).not_to include(9)
+      expect(board.cells[29].candidates).not_to include(9)
+      expect(board.cells[39].candidates).not_to include(9)
+      expect(board.cells[40].candidates).not_to include(9)
+      expect(board.cells[41].candidates).not_to include(9)
+
+      action = board.state.history.find(
+        cell_id: 41,
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::YWing.name,
+        y_wing_id: "27-30-37|9"
+      )
+      expect(action).to be_truthy
+    end
+  end
 end

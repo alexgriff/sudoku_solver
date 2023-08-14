@@ -72,7 +72,7 @@ class Board::State
         )
       )
       board.each_empty_cell(
-        board.all_empty_cells_seen_by(cell).intersection(board.cells_with_candidates(new_candidates))
+        board.empty_cells_seen_by(cell).intersection(board.cells_with_candidates(new_candidates))
       ) do |seen_cell|
         register_change(
           board,

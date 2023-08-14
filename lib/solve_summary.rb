@@ -9,7 +9,7 @@ class Solve::Summary
     [
       "Solved: #{solved_status}",
       "Filled cells at start: #{initial_filled_cell_count}",
-      "Cells solveable 'by sudoku' (naked single): #{naked_single_cell_count}",
+      "Cells initially solveable 'by sudoku' (naked single): #{naked_single_cell_count}",
       "Hidden singles: #{hidden_single_cell_count}",
       "Naked pairs: #{num_naked_pairs}",
       "Cells solveable 'by sudoku' after identifying naked pair: #{solved_by_naked_pair_cell_count}",
@@ -27,6 +27,8 @@ class Solve::Summary
       "Cells solveable 'by sudoku' after identifying a hidden triple: #{solved_by_hidden_triple_cell_count}",
       "X-Wings: #{num_x_wings}",
       "Cells solveable 'by sudoku' after identifying an x-wing: #{solved_by_x_wing_cell_count}",
+      "Y-Wings: #{num_y_wings}",
+      "Cells solveable 'by sudoku' after identifying a y-wing: #{solved_by_y_wing_cell_count}",
       "Swordfishes: #{num_swordfish}",
       "Cells solveable 'by sudoku' after identifying a swordfish: #{solved_by_swordfish_cell_count}",
       "Passes: #{num_passes}",
@@ -46,7 +48,9 @@ class Solve::Summary
       solved_by_naked_triple_cell_count +
       solved_by_naked_quadruple_cell_count +
       solved_by_hidden_triple_cell_count +
-      solved_by_x_wing_cell_count
+      solved_by_x_wing_cell_count +
+      solved_by_y_wing_cell_count +
+      solved_by_swordfish_cell_count
     )
   end
 
@@ -156,6 +160,17 @@ class Solve::Summary
 
   def solved_by_x_wing_cell_count
     history.where(solves: true, strategy: Strategy::XWing.name).length
+  end
+
+  def num_y_wings
+    history.where(
+      strategy: Strategy::YWing.name,
+      type: Action::UPDATE_CELL,
+    ).map(&:y_wing_id).uniq.length
+  end
+
+  def solved_by_y_wing_cell_count
+    history.where(solves: true, strategy: Strategy::YWing.name).length
   end
 
   def num_swordfish

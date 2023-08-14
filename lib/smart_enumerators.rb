@@ -20,6 +20,22 @@ module SmartEnumerators
       )
     end
 
+    def each_cell_with_candidates(cell_collection=nil, cands, &block)
+      safe_each(
+        cell_collection || cells,
+        Proc.new { |cell| cell.empty? && cell.has_candidates?(cands) },
+        &block
+      )
+    end
+
+    def each_empty_cell(cell_collection=nil, &block)
+      safe_each(
+        cell_collection || cells,
+        Proc.new { |cell| cell.empty? },
+        &block
+      )
+    end
+
     def each_incomplete_box(&block)
       safe_each(
         boxes,

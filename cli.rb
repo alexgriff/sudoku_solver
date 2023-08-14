@@ -24,8 +24,10 @@ strategies = [
   Strategy::LockedCandidatesClaiming,
   Strategy::HiddenPair,
   Strategy::NakedTriple,
-  Strategy::NakedQuadruple
+  Strategy::NakedQuadruple,
+  Strategy::HiddenTriple,
   Strategy::XWing,
+  Strategy::YWing,
   Strategy::Swordfish
 ]
 

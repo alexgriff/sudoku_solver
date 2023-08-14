@@ -6,7 +6,7 @@ Currently there's not a real CLI interface, so to interact with the program you 
 
 `bundle install` and run `ruby cli.rb`.
 
-Sudoku boards generated from [https://qqwing.com/generate.html](https://qqwing.com/generate.html) can be copied pasted into this program. Currently the program should be able to solve any 'Simple', 'Easy', or 'Intermediate' boards and only vey rarely will be able to solve an 'Expert' board. More solving strategies will need to be supported! These board strings looks like
+Sudoku boards generated from [https://qqwing.com/generate.html](https://qqwing.com/generate.html) can be copied pasted into this program. Currently the program should be able to solve any 'Simple', 'Easy', or 'Intermediate' boards and only seldomly will be able to solve an 'Expert' board. More solving strategies are planning to be supported! These board strings looks like
 ```rb
 txt = <<~SUDOKU
  1 . . | 6 . . | . . 9
@@ -38,7 +38,7 @@ Each "solve" can be passed the set of strategies you want to apply to the board.
 ```
 Solved: true
 Filled cells at start: 29
-Cells solveable 'by sudoku' (naked single): 4
+Cells initially solveable 'by sudoku' (naked single): 4
 Hidden singles: 11
 Naked pairs: 0
 Cells solveable 'by sudoku' after identifying naked pair: 0
@@ -64,7 +64,7 @@ Notice that a hidden pair was used to solve the board. So if you do not pass thr
 ```
 Solved: true
 Filled cells at start: 29
-Cells solveable 'by sudoku' (naked single): 4
+Cells initially solveable 'by sudoku' (naked single): 4
 Hidden singles: 11
 Naked pairs: 0
 Cells solveable 'by sudoku' after identifying naked pair: 0
@@ -97,7 +97,7 @@ Here is the summary without using the following strategies:
 ```
 Solved: false
 Filled cells at start: 29
-Cells solveable 'by sudoku' (naked single): 4
+Cells initially solveable 'by sudoku' (naked single): 4
 Hidden singles: 11
 Naked pairs: 0
 Cells solveable 'by sudoku' after identifying naked pair: 0

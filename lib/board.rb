@@ -30,7 +30,7 @@ class Board
     @state = Board::State.new
     state.register_starting_state(
       initial_data.map { |char| char == Cell::EMPTY ? char : char.to_i },
-      (0...initial_data.length).to_a.each_with_object({}) { |id, res| res[id] = all_cells_seen_by(cells[id]).map(&:id) }
+      (0...initial_data.length).to_a.each_with_object({}) { |id, res| res[id] = cells_seen_by(cells[id]).map(&:id) }
     )
   end
 
@@ -58,12 +58,12 @@ class Board
     ]
   end
 
-  def all_cells_seen_by(cell)
+  def cells_seen_by(cell)
     houses_for(cell).map { |house| house.cells }.flatten - [cell]
   end
   
-  def all_empty_cells_seen_by(cell)
-    all_cells_seen_by(cell).select { |seen_cell| seen_cell.empty? }
+  def empty_cells_seen_by(cell)
+    cells_seen_by(cell).select { |seen_cell| seen_cell.empty? }
   end
 
   def valid?
