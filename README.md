@@ -134,49 +134,25 @@ The web app will respond with a json version of the entire solve history. The hi
 What's consuming this currently??.... nothing! But you could imagine a simple client side reducer that would allow you to replay the whole solve history step by step...
 
 ### Dev Notes
-State management is complex: boards, row, columns, boxes, and cells all own the same underlying state! The program heavily adopts a redux-like pattern; board state can only be modified by calling a `register` method on the `Board::State` which then `dispatch`es an `Action` to the `Board::Reducer` which returns a new copy of the state. The state is made of primitve data types.
+State management is complex: boards, row, columns, boxes, and cells all own the same underlying state! The program adopts a redux-like pattern; board state can only be modified by calling a `register` method on the `Board::State` which then `dispatch`es an `Action` to the `Board::Reducer` which returns a new copy of the state. The state is made of primitve data types.
 
-But! we still want to use nice, expressive OO abstractions, `Cell#empty?`, `Cell#has_candidate?`,  `Row.empty_cells`, etc.  The way this is resolved is that the domain objects don't really hold data of their own, but are synced up to the `Board::State`. To make a comparison to relational databses and ORMs, if the "redux-like" state is the equivalent of the DB here, the domain objects have a similar relationship to an in-memory object hydrated from the DB.
+But! we still want to use nice, expressive OO abstractions, `Cell#empty?`, `Cell#has_candidate?`,  `Row.empty_cells`, etc.  The way this is resolved is that the domain objects don't really hold data of their own, but are synced up to the `Board::State` and always read from it to determine their current values.
 
-Initally, this ORM comparison was even more 1:1, you would hydrate an object from state, it held it's own data, the underlying state could change and the object might become stale
-```ruby
-# Bad / old
-cell = board.state.get_cell(id)
-# <Cell:0x00001 @id=1 @candidates=[2,4,7]>
-puts cell.candidates
-# => [2,4,7]
-# ... then some action is dispatched to state that modifies the cell state
-# ... so the candidates for the cell in state are [2,7]
+A decent mental model is an ORM. As an equivalent to the database in an ORM we have the "redux-like" board state which we read from it to hydrate objects in memory. The pattern here differs a bit from the ORM model in that in an ORM the in-memory object pulled from the db can have stale values if the underlying db changes after initially being read. Here, since domain objects don't actually hold their own data, but _read from state every time you access their properties_, the values cannot be stale. The analogy might be if in an ORM every time you accessed a propery of an object, something like `user.username`, it made a fresh DB query to get the current value of the property. That might be a bad pattern in an ORM, but here our "db call" equivalents are cheap, just grabbing an element of an array at an index, and there's only one actor operating on the underlying state. The result is that you can be ensured a `Cell` object is always giving you an accurate value.
 
-puts cell.candidates
-# => [2,4,7] # this is stale
-```
-Instead, the way this is implemnted now might be more equivelent to something like if for an ORM, every time you called `User#username` on a hydrated object it made a fresh DB query to get the current value. Here our "db calls" are cheap, just grabbing an element of an array at an index. You data is always in sync
+Even though individuals cells are always "synced" to the current state, when you grab a collection of objects based board state in some way, and in a loop do something that modifies the state, subtle bugs can be caused if objects aren't in the state you think they are. For ex, below the only guarantee is that the cells were empty _when `board.empty_cells` was called_:
 ```rb
-# Good / new
-cell = board.cells[id]
-puts cell.candidates
-#  <Cell:0x00001 @id=1> (doesnt hold candidates directly)
-# => [2,4,7]
-# ... then some action is dispatched to state that modifies the cell state
-# ... so the candidates for the cell in state are [2,7]
-
-puts cell.candidates
-# => [2,7] # every call to #candidates re-reads from state
-```
-Even though individuals cells are always "synced" to the current state, when you grab a collection of objects based on the current state, and in a loop do something that modifies the state, subtle bugs can be caused if objects aren't in the state you think they are. For ex, below the only gurantee is that the cells were empty _when `board.empty_cells` was called_:
-```rb
-# Bad / old
+# Bad
 board.empty_cells.each do |cell|
-  # after an early iteration some cells that were originally empty may no longer be,
+  # if a previous iteration filled a cell it may no longer be empty when it's turn in the loop occurs
   # you'd need to add a guard clause if you expect these cells to really still be empty
   next unless cell.empty?
    # .. business logic ...
 end
 ```
-To resolve this, there are some "smart" enumerators provided that ensure the conditions you'd expect are upheld for each iteration.
+To ease having to think about these types of staleness issues, there are some "smart" enumerators provided that ensure the conditions you'd expect are upheld for each iteration.
 ```rb
-# Good / new
+# Good
 board.each_empty_cell do |cell|
   # will only yield cells to the block that are empty at the moment it is yielded
   # .. business logic ...
