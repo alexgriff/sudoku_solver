@@ -411,7 +411,7 @@ describe Strategy do
       Board.from_txt(txt)
     end
 
-    it 'todo write this', skip: true do
+    it 'eliminates candidates by a swordfish (like an x-wing but 3 lines not 2)' do
       expect(board.cells[19].candidates).to include(4)
       expect(board.cells[20].candidates).to include(4)
       expect(board.cells[22].candidates).to include(4)

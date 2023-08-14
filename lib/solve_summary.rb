@@ -27,6 +27,8 @@ class Solve::Summary
       "Cells solveable 'by sudoku' after identifying Hidden triple: #{solved_by_hidden_triple_cell_count}",
       "X-Wings: #{num_x_wings}",
       "Cells solveable 'by sudoku' after identifying X-wings: #{solved_by_x_wing_cell_count}",
+      "Swordfishes: #{num_swordfish}",
+      "Cells solveable 'by sudoku' after identifying a swordfish: #{solved_by_swordfish_cell_count}",
       "Passes: #{num_passes}",
       total_count
     ].compact.join("\n")
@@ -154,5 +156,16 @@ class Solve::Summary
 
   def solved_by_x_wing_cell_count
     history.where(solves: true, strategy: Strategy::XWing.name).length
+  end
+
+  def num_swordfish
+    history.where(
+      strategy: Strategy::Swordfish.name,
+      type: Action::UPDATE_CELL,
+    ).map(&:fish_id).uniq.length
+  end
+
+  def solved_by_swordfish_cell_count
+    history.where(solves: true, strategy: Strategy::Swordfish.name).length
   end
 end

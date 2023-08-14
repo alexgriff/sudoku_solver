@@ -8,7 +8,8 @@ class Solve
     Strategy::NakedTriple,
     Strategy::NakedQuadruple,
     Strategy::HiddenTriple,
-    Strategy::XWing
+    Strategy::XWing,
+    Strategy::Swordfish
   ]
   
   attr_reader :strategies, :with_display, :with_summary
