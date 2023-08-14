@@ -25,7 +25,9 @@ class Solve::Summary
       "Cells solveable 'by sudoku' after identifying a naked quadruple: #{solved_by_naked_quadruple_cell_count}",
       "Hidden triples: #{num_hidden_triples}",
       "Cells solveable 'by sudoku' after identifying a hidden triple: #{solved_by_hidden_triple_cell_count}",
-      "X-Wings: #{num_x_wings}",
+      "Skyscrapers: #{num_skyscrapers}",
+      "Cells solveable 'by sudoku' after identifying a skyscraper: #{solved_by_skyscraper_cell_count}",
+      "Skyscrapers: #{num_x_wings}",
       "Cells solveable 'by sudoku' after identifying an x-wing: #{solved_by_x_wing_cell_count}",
       "Y-Wings: #{num_y_wings}",
       "Cells solveable 'by sudoku' after identifying a y-wing: #{solved_by_y_wing_cell_count}",
@@ -48,6 +50,7 @@ class Solve::Summary
       solved_by_naked_triple_cell_count +
       solved_by_naked_quadruple_cell_count +
       solved_by_hidden_triple_cell_count +
+      solved_by_skyscraper_cell_count +
       solved_by_x_wing_cell_count +
       solved_by_y_wing_cell_count +
       solved_by_swordfish_cell_count
@@ -149,6 +152,17 @@ class Solve::Summary
 
   def solved_by_hidden_triple_cell_count
     history.where(solves: true, strategy: Strategy::HiddenTriple.name).length
+  end
+
+  def num_skyscrapers
+    history.where(
+      strategy: Strategy::Skyscraper.name,
+      type: Action::UPDATE_CELL,
+    ).map(&:skyscraper).uniq.length
+  end
+
+  def solved_by_skyscraper_cell_count
+    history.where(solves: true, strategy: Strategy::Skyscraper.name).length
   end
 
   def num_x_wings

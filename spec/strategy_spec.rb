@@ -501,4 +501,51 @@ describe Strategy do
       expect(action).to be_truthy
     end
   end
+
+  describe Strategy::Skyscraper do
+    let(:board) do
+      # https://hodoku.sourceforge.net/en/tech_sdp.php#sk
+      # cols 5 and 8 have 1 as a cand in 2 positions only
+      # in one of those positions they share the same row (row 4),
+      # thus one or the other must be the candidate.
+      # that means one or the other of the non-aligned-in-row cands will be the cand,
+      # thus anything that sees both will not be able to be the candidate
+      txt = <<~SUDOKU
+      6 9 7 | . . . | . . 2
+      . . 1 | 9 7 2 | . 6 3
+      . . 3 | . . 6 | 7 9 .
+     -------|-------|-------
+      9 1 2 | . . . | 6 . 7
+      3 7 4 | 2 6 . | 9 5 .
+      8 6 5 | 7 . 9 | . 2 4
+     -------|-------|-------
+      1 4 8 | 6 9 3 | 2 7 5
+      7 . 9 | . 2 4 | . . 6
+      . . 6 | 8 . 7 | . . 9
+      SUDOKU
+      Board.from_txt(txt)
+    end
+
+    it 'candidates are eliminated by skyscraper' do
+      expect(board.cells[21].candidates).to include(1)
+      expect(board.cells[22].candidates).to include(1)
+      expect(board.cells[6].candidates).to include(1)
+      expect(board.cells[7].candidates).to include(1)
+
+      Strategy::Skyscraper.apply(board)
+
+      expect(board.cells[21].candidates).not_to include(1)
+      expect(board.cells[22].candidates).not_to include(1)
+      expect(board.cells[6].candidates).not_to include(1)
+      expect(board.cells[7].candidates).not_to include(1)
+
+      action = board.state.history.find(
+        cell_id: 7,
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::Skyscraper.name,
+        skyscraper: "41-44|1"
+      )
+      expect(action).to be_truthy
+    end
+  end
 end

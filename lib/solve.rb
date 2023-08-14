@@ -8,6 +8,7 @@ class Solve
     Strategy::NakedTriple,
     Strategy::NakedQuadruple,
     Strategy::HiddenTriple,
+    Strategy::Skyscraper,
     Strategy::XWing,
     Strategy::YWing,
     Strategy::Swordfish

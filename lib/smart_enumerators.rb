@@ -36,12 +36,16 @@ module SmartEnumerators
       )
     end
 
-    def each_incomplete_box(&block)
+    def each_incomplete_house(house_collection = nil, &block)
       safe_each(
-        boxes,
-        Proc.new { |box| !box.complete? },
+        house_collection || houses,
+        Proc.new { |house| !house.complete? },
         &block
       )
+    end
+
+    def each_incomplete_box(collection=nil, &block)
+      each_incomplete_house(collection || boxes, &block)
     end
 
     def each_candidate(&block)
