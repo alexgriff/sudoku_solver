@@ -105,13 +105,7 @@ describe Solve do
   it "can solve a _large_ series of sudokus reasonably quickly", skip: true do
     # 300 intermediate boards, will like to make this random difficulty in future
     boards = File.read("spec/fixtures/speed_test.txt").split("\n\n").map { |txt| Board.from_txt(txt) }
-    solved = boards.map do |board|
-      begin
-        Solve.new.solve(board)
-      rescue => err
-        puts board.id
-      end
-    end
+    solved = boards.map { |board| Solve.new.solve(board) }
     solved.each.with_index do |status, i|
       expect("#{i} - #{status}").to eq("#{i} - true")
     end
@@ -119,7 +113,7 @@ describe Solve do
   
   it "can solve a series of expert sudokus", skip: true do
     boards = File.read("spec/fixtures/experts.txt").split("\n\n").map { |txt| Board.from_txt(txt) }
-    solved = boards.map { |board| Solve.new.solve(board) }
+    solved = boards.map { board| Solve.new.solve(board) }
     solved.each.with_index do |status, i|
       expect("#{i} - #{status}").to eq("#{i} - true")
     end
@@ -148,8 +142,3 @@ describe Solve do
 #     expect(board.state.is_solved?).to eq(true)
 #   end
 end
-
-
-
-
-

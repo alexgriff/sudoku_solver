@@ -1,17 +1,21 @@
 class Solve
+  # Loosely following standard solve order from: https://hodoku.sourceforge.net/en/docs_solv.php#progress_1
+  # (Full House, Naked Single, Hidden Single, Locked Pair, Naked Pair, Locked Candidates,
+  # Locked Triple, Naked Triple, Naked Quadruple, Hidden Pair, X-Wing, Swordfish,
+  # Simple Colors, Multi Colors, Hidden Triple, XY-Wing, Hidden Quadruple
   BASIC_STRATEGIES = [
     Strategy::HiddenSingle,
     Strategy::NakedPair,
     Strategy::LockedCandidatesPointing,
     Strategy::LockedCandidatesClaiming,
-    Strategy::HiddenPair,
     Strategy::NakedTriple,
     Strategy::NakedQuadruple,
-    Strategy::HiddenTriple,
-    Strategy::Skyscraper,
+    Strategy::HiddenPair,
     Strategy::XWing,
+    Strategy::Swordfish,
+    Strategy::HiddenTriple,
     Strategy::YWing,
-    Strategy::Swordfish
+    Strategy::Skyscraper
   ]
   
   attr_reader :strategies, :with_display, :with_summary

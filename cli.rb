@@ -22,14 +22,14 @@ strategies = [
   Strategy::NakedPair,
   Strategy::LockedCandidatesPointing,
   Strategy::LockedCandidatesClaiming,
-  Strategy::HiddenPair,
   Strategy::NakedTriple,
   Strategy::NakedQuadruple,
-  Strategy::HiddenTriple,
-  Strategy::Skyscraper,
+  Strategy::HiddenPair,
   Strategy::XWing,
+  Strategy::Swordfish,
+  Strategy::HiddenTriple,
   Strategy::YWing,
-  Strategy::Swordfish
+  Strategy::Skyscraper
 ]
 
 Solve.new(

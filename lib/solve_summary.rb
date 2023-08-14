@@ -17,22 +17,22 @@ class Solve::Summary
       "Cells solveable 'by sudoku' after identifying locked, aligned candidates: #{solved_by_locked_pointing_cell_count}",
       "Lines with 'claimed' candidate from box intersecting two locked candidate lines: #{num_claimed_lines}",
       "Cells solveable 'by sudoku' after identifying 'claiming' line/box: #{solved_by_claiming_lines_cell_count}",
-      "Hidden pairs: #{num_hidden_pairs}",
-      "Cells solveable 'by sudoku' after identifying a hidden pair: #{solved_by_hidden_pair_cell_count}",
       "Naked triples: #{num_naked_triples}",
       "Cells solveable 'by sudoku' after identifying a naked triple: #{solved_by_naked_triple_cell_count}",
       "Naked quadruples: #{num_naked_quadruples}",
       "Cells solveable 'by sudoku' after identifying a naked quadruple: #{solved_by_naked_quadruple_cell_count}",
-      "Hidden triples: #{num_hidden_triples}",
-      "Cells solveable 'by sudoku' after identifying a hidden triple: #{solved_by_hidden_triple_cell_count}",
-      "Skyscrapers: #{num_skyscrapers}",
-      "Cells solveable 'by sudoku' after identifying a skyscraper: #{solved_by_skyscraper_cell_count}",
-      "Skyscrapers: #{num_x_wings}",
+      "Hidden pairs: #{num_hidden_pairs}",
+      "Cells solveable 'by sudoku' after identifying a hidden pair: #{solved_by_hidden_pair_cell_count}",
+      "X-Wings: #{num_x_wings}",
       "Cells solveable 'by sudoku' after identifying an x-wing: #{solved_by_x_wing_cell_count}",
-      "Y-Wings: #{num_y_wings}",
-      "Cells solveable 'by sudoku' after identifying a y-wing: #{solved_by_y_wing_cell_count}",
       "Swordfishes: #{num_swordfish}",
       "Cells solveable 'by sudoku' after identifying a swordfish: #{solved_by_swordfish_cell_count}",
+      "Hidden triples: #{num_hidden_triples}",
+      "Cells solveable 'by sudoku' after identifying a hidden triple: #{solved_by_hidden_triple_cell_count}",
+      "Y-Wings: #{num_y_wings}",
+      "Cells solveable 'by sudoku' after identifying a y-wing: #{solved_by_y_wing_cell_count}",
+      "Skyscrapers: #{num_skyscrapers}",
+      "Cells solveable 'by sudoku' after identifying a skyscraper: #{solved_by_skyscraper_cell_count}",
       "Passes: #{num_passes}",
       total_count
     ].compact.join("\n")
@@ -46,14 +46,14 @@ class Solve::Summary
       solved_by_naked_pair_cell_count +
       solved_by_locked_pointing_cell_count +
       solved_by_claiming_lines_cell_count +
-      solved_by_hidden_pair_cell_count +
       solved_by_naked_triple_cell_count +
       solved_by_naked_quadruple_cell_count +
-      solved_by_hidden_triple_cell_count +
-      solved_by_skyscraper_cell_count +
+      solved_by_hidden_pair_cell_count +
       solved_by_x_wing_cell_count +
+      solved_by_swordfish_cell_count +
+      solved_by_hidden_triple_cell_count +
       solved_by_y_wing_cell_count +
-      solved_by_swordfish_cell_count
+      solved_by_skyscraper_cell_count
     )
   end
 
@@ -98,7 +98,7 @@ class Solve::Summary
   def solved_by_locked_pointing_cell_count
     history.where(solves: true, strategy: Strategy::LockedCandidatesPointing.name).length
   end
-  
+
   def num_claimed_lines
     history.where(
       strategy: Strategy::LockedCandidatesClaiming.name,
@@ -108,17 +108,6 @@ class Solve::Summary
 
   def solved_by_claiming_lines_cell_count
     history.where(solves: true, strategy: Strategy::LockedCandidatesClaiming.name).length
-  end
-
-  def num_hidden_pairs
-    history.where(
-      strategy: Strategy::HiddenPair.name,
-      type: Action::UPDATE_CELL
-    ).map(&:hidden_buddies).uniq.length
-  end
-
-  def solved_by_hidden_pair_cell_count
-    history.where(solves: true, strategy: Strategy::HiddenPair.name).length
   end
 
   def num_naked_triples
@@ -143,6 +132,17 @@ class Solve::Summary
     history.where(solves: true, strategy: Strategy::NakedQuadruple.name).length
   end
 
+  def num_hidden_pairs
+    history.where(
+      strategy: Strategy::HiddenPair.name,
+      type: Action::UPDATE_CELL
+    ).map(&:hidden_buddies).uniq.length
+  end
+
+  def solved_by_hidden_pair_cell_count
+    history.where(solves: true, strategy: Strategy::HiddenPair.name).length
+  end
+
   def num_hidden_triples
     history.where(
       strategy: Strategy::HiddenTriple.name,
@@ -152,17 +152,6 @@ class Solve::Summary
 
   def solved_by_hidden_triple_cell_count
     history.where(solves: true, strategy: Strategy::HiddenTriple.name).length
-  end
-
-  def num_skyscrapers
-    history.where(
-      strategy: Strategy::Skyscraper.name,
-      type: Action::UPDATE_CELL,
-    ).map(&:skyscraper).uniq.length
-  end
-
-  def solved_by_skyscraper_cell_count
-    history.where(solves: true, strategy: Strategy::Skyscraper.name).length
   end
 
   def num_x_wings
@@ -176,6 +165,17 @@ class Solve::Summary
     history.where(solves: true, strategy: Strategy::XWing.name).length
   end
 
+  def num_swordfish
+    history.where(
+      strategy: Strategy::Swordfish.name,
+      type: Action::UPDATE_CELL,
+    ).map(&:fish_id).uniq.length
+  end
+
+  def solved_by_swordfish_cell_count
+    history.where(solves: true, strategy: Strategy::Swordfish.name).length
+  end
+
   def num_y_wings
     history.where(
       strategy: Strategy::YWing.name,
@@ -187,14 +187,14 @@ class Solve::Summary
     history.where(solves: true, strategy: Strategy::YWing.name).length
   end
 
-  def num_swordfish
+  def num_skyscrapers
     history.where(
-      strategy: Strategy::Swordfish.name,
+      strategy: Strategy::Skyscraper.name,
       type: Action::UPDATE_CELL,
-    ).map(&:fish_id).uniq.length
+    ).map(&:skyscraper).uniq.length
   end
 
-  def solved_by_swordfish_cell_count
-    history.where(solves: true, strategy: Strategy::Swordfish.name).length
+  def solved_by_skyscraper_cell_count
+    history.where(solves: true, strategy: Strategy::Skyscraper.name).length
   end
 end
