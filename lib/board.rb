@@ -83,44 +83,39 @@ class Board
 
   def inspect
     # printing the whole state object is too annoying and unwieldy
-    "#<#{self.class.name}:0x#{object_id.to_s(16).rjust(16, '0')}>"
+    "#<#{self.class.name}:0x#{object_id.to_s(16).rjust(16, '0')} @id=#{id}>"
   end
 
-  # these print methods are ugly, but ¯\_(ツ)_/¯
+  # these print methods are ugly, but ¯\_(ツ)_/¯ , will get to eventually...
   def display
-    txt = []
+    board_as_text = []
     top_3 = rows.slice(0...3)
     top_3.each do |row|
       cell_values = row.cells.map(&:value)
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
-      # puts(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
-      txt.push(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
+      board_as_text.push(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
     end
-    # puts('-------|-------|-------')
-    txt.push('-------|-------|-------')
+    board_as_text.push('-------|-------|-------')
     middle_3 = rows.slice(3...6)
     middle_3.each do |row|
       cell_values = row.cells.map(&:value)
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
-      # puts(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
-      txt.push(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
+      board_as_text.push(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
     end
-    # puts('-------|-------|-------')
-    txt.push('-------|-------|-------')
+    board_as_text.push('-------|-------|-------')
     bottom_3 = rows.slice(6..-1)
     bottom_3.each do |row|
       cell_values = row.cells.map(&:value)
       left_3 = cell_values.slice(0...3)
       center_3 = cell_values.slice(3...6)
       right_3 = cell_values.slice(6..-1)
-      # puts(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
-      txt.push(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
+      board_as_text.push(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
     end
-    txt.join("\n")
+    board_as_text.join("\n")
   end
 
   def debug_print

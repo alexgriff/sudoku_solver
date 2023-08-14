@@ -62,15 +62,15 @@ class Board::State
     return unless cell.will_change?(new_candidates)
     solving = cell.empty? && new_candidates.length == 1
     if solving
-      dispatch(
-        Action.new(
-          type: Action::UPDATE_CELL,
-          cell_id: cell.id,
-          values: [new_candidates.first],
-          solves: true,
-          **action_opts
-        )
+      action = Action.new(
+        type: Action::UPDATE_CELL,
+        cell_id: cell.id,
+        values: [new_candidates.first],
+        solves: true,
+        **action_opts
       )
+      dispatch(action)
+
       board.each_empty_cell(
         board.empty_cells_seen_by(cell).intersection(board.cells_with_candidates(new_candidates))
       ) do |seen_cell|
@@ -78,7 +78,7 @@ class Board::State
           board,
           seen_cell,
           seen_cell.candidates - new_candidates,
-          action_opts.merge(cascade: cell.id)
+          action_opts.merge(cascade: action.id)
         )
       end
     else
