@@ -2,7 +2,9 @@
 A Ruby program that solves sudokus.
 
 ## Instructions
-Currently there's not a real CLI interface, so to interact with the program you can edit `cli.rb` \:shrug\:. `bundle install` and run `ruby cli.rb` \:shrug\:
+Currently there's not a real CLI interface, so to interact with the program you can edit `cli.rb` \:shrug\:.
+
+`bundle install` and run `ruby cli.rb`.
 
 Sudoku boards generated from [https://qqwing.com/generate.html](https://qqwing.com/generate.html) can be copied pasted into this program. Currently the program should be able to solve any 'Simple', 'Easy', or 'Intermediate' boards and only vey rarely will be able to solve an 'Expert' board. More solving strategies will need to be supported! These board strings looks like
 ```rb
@@ -32,7 +34,7 @@ Solve.new(with_summary: true, with_display: true).solve(board)
 ```
 
 ### Strategies
-`Solve`s can be passed the set of strategies you want to apply to the board. A lot of information about strategies and techniques can be found here [https://hodoku.sourceforge.net/en/techniques.php](https://hodoku.sourceforge.net/en/techniques.php). For the example board text above using all default strategies the summary might be
+Each "solve" can be passed the set of strategies you want to apply to the board. A lot of information about strategies and techniques can be found here [https://hodoku.sourceforge.net/en/techniques.php](https://hodoku.sourceforge.net/en/techniques.php). For the example board text above using all default strategies the summary might be
 ```
 Solved: true
 Filled cells at start: 29
@@ -45,15 +47,15 @@ Cells solveable 'by sudoku' after identifying locked, aligned candidates: 0
 Lines with 'claimed' candidate from box intersecting two locked candidate lines: 13
 Cells solveable 'by sudoku' after identifying 'claiming' line/box: 0
 Hidden pairs: 5
-Cells solveable 'by sudoku' after identifying hidden pair: 0
+Cells solveable 'by sudoku' after identifying a hidden pair: 0
 Naked triples: 2
-Cells solveable 'by sudoku' after identifying naked triple: 37
+Cells solveable 'by sudoku' after identifying a naked triple: 37
 Naked quadruples: 0
-Cells solveable 'by sudoku' after identifying naked quadruple: 0
+Cells solveable 'by sudoku' after identifying a naked quadruple: 0
 Hidden triples: 0
-Cells solveable 'by sudoku' after identifying Hidden triple: 0
+Cells solveable 'by sudoku' after identifying a hidden triple: 0
 X-Wings: 0
-Cells solveable 'by sudoku' after identifying X-wings: 0
+Cells solveable 'by sudoku' after identifying an x-wing: 0
 Swordfishes: 0
 Cells solveable 'by sudoku' after identifying a swordfish: 0
 Passes: 1
@@ -71,15 +73,15 @@ Cells solveable 'by sudoku' after identifying locked, aligned candidates: 0
 Lines with 'claimed' candidate from box intersecting two locked candidate lines: 13
 Cells solveable 'by sudoku' after identifying 'claiming' line/box: 0
 Hidden pairs: 0
-Cells solveable 'by sudoku' after identifying hidden pair: 0
+Cells solveable 'by sudoku' after identifying a hidden pair: 0
 Naked triples: 1
-Cells solveable 'by sudoku' after identifying naked triple: 0
+Cells solveable 'by sudoku' after identifying a naked triple: 0
 Naked quadruples: 0
-Cells solveable 'by sudoku' after identifying naked quadruple: 0
+Cells solveable 'by sudoku' after identifying a naked quadruple: 0
 Hidden triples: 0
-Cells solveable 'by sudoku' after identifying Hidden triple: 0
+Cells solveable 'by sudoku' after identifying a hidden triple: 0
 X-Wings: 1
-Cells solveable 'by sudoku' after identifying X-wings: 9
+Cells solveable 'by sudoku' after identifying an x-wings: 9
 Swordfishes: 1
 Cells solveable 'by sudoku' after identifying a swordfish: 28
 Passes: 1
@@ -104,15 +106,15 @@ Cells solveable 'by sudoku' after identifying locked, aligned candidates: 0
 Lines with 'claimed' candidate from box intersecting two locked candidate lines: 13
 Cells solveable 'by sudoku' after identifying 'claiming' line/box: 0
 Hidden pairs: 0
-Cells solveable 'by sudoku' after identifying hidden pair: 0
+Cells solveable 'by sudoku' after identifying a hidden pair: 0
 Naked triples: 0
-Cells solveable 'by sudoku' after identifying naked triple: 0
+Cells solveable 'by sudoku' after identifying a naked triple: 0
 Naked quadruples: 0
-Cells solveable 'by sudoku' after identifying naked quadruple: 0
+Cells solveable 'by sudoku' after identifying a naked quadruple: 0
 Hidden triples: 0
-Cells solveable 'by sudoku' after identifying Hidden triple: 0
+Cells solveable 'by sudoku' after identifying a hidden triple: 0
 X-Wings: 0
-Cells solveable 'by sudoku' after identifying X-wings: 0
+Cells solveable 'by sudoku' after identifying an x-wings: 0
 Swordfishes: 0
 Cells solveable 'by sudoku' after identifying a swordfish: 0
 ```
@@ -134,3 +136,53 @@ The web app will respond with a json version of the entire solve history. The hi
 What's consuming this currently??.... nothing! But you could imagine a simple client side reducer that would allow you to replay the whole solve history step by step...
 
 ### Dev Notes
+State management is complex: boards, row, columns, boxes, and cells all own the same underlying state! The program heavily adopts a redux-like pattern; board state can only be modified by calling a `register` method on the `Board::State` which then `dispatch`es an `Action` to the `Board::Reducer` which returns a new copy of the state. The state is made of primitve data types.
+
+But! we still want to use nice, expressive OO abstractions, `Cell#empty?`, `Cell#has_candidate?`,  `Row.empty_cells`, etc.  The way this is resolved is that the domain objects don't really hold data of their own, but are synced up to the `Board::State`. To make a comparison to relational databses and ORMs, if the "redux-like" state is the equivalent of the DB here, the domain objects have a similar relationship to an in-memory object hydrated from the DB.
+
+Initally, this ORM comparison was even more 1:1, you would hydrate an object from state, it held it's own data, the underlying state could change and the object might become stale
+```ruby
+# Bad / old
+
+cell = board.state.get_cell(id)
+# <Cell:0x00001 @id=1 @candidates=[2,4,7]>
+puts cell.candidates
+# => [2,4,7]
+# ... then some action is dispatched to state that modifies the cell state
+# ... so the candidates for the cell in state are [2,7]
+
+puts cell.candidates
+# => [2,4,7] # this is stale
+
+end
+```
+Instead, the way this is implemnted now might be more equivelent to something like if for an ORM, every time you called `User#username` on a hydrated object it made a fresh DB query to get the current value. Here our "db calls" are cheap, just grabbing an element of an array at an index. You data is always in sync
+```rb
+# Good / new
+puts cell.candidates
+#  <Cell:0x00001 @id=1> (doesnt hold candidates directly)
+# => [2,4,7]
+# ... then some action is dispatched to state that modifies the cell state
+# ... so the candidates for the cell in state are [2,7]
+
+puts cell.candidates
+# => [2,7] # every call to #candidates re-reads from state
+```
+Even though individuals cells are always "synced" to the current state, when you grab a collection of objects based on the current state, and in a loop do something that modifies the state, subtle bugs can be caused if objects aren't in the state you think they are. For ex, below the only gurantee is that the cells were empty _when `board.empty_cells` was called_:
+```rb
+# Bad / old
+board.empty_cells.each do |cell|
+  # after an early iteration some cells that were originally empty may no longer be,
+  # you'd need to add a guard clause if you expect these cells to really still be empty
+  next unless cell.empty?
+   # .. business logic ...
+end
+```
+To resolve this, there are some "smart" enumerators provided that ensure the conditions you'd expect are upheld for each iteration.
+```rb
+# Good / new
+board.each_empty_cell do |cell|
+  # will only yield cells to the block that are empty at the moment it is yielded
+  # .. business logic ...
+end
+```

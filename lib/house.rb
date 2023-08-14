@@ -1,21 +1,6 @@
 class House
   include SmartEnumerators::HouseEnumerators
 
-  def self.house_method
-    case self::HOUSE_TYPE
-      when :row
-        :rows
-      when :column
-        :columns
-      when :box
-        :boxes
-    end
-  end
-
-  def self.house_id_method
-    "#{self::HOUSE_TYPE}_id"
-  end
-
   attr_reader :id, :board, :errors
 
   def initialize(id:, board:)
@@ -26,7 +11,7 @@ class House
 
   def cells
     @cells ||= board.cells.select do |cell|
-      cell.send(self.class.house_id_method) == id
+      cell.send("#{self.class::HOUSE_TYPE}_id") == id
     end
   end
 
