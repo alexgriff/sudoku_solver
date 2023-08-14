@@ -46,8 +46,8 @@ class Board
     cells.select { |cell| cell.empty? }
   end
 
-  def all_cells_seen_by(cell)
-    houses_for(cell).map { |house| house.cells }.flatten - [cell]
+  def cells_with_candidates(cands)
+    empty_cells.select { |cell| cell.has_candidates?(cands) }
   end
 
   def houses_for(cell)
@@ -57,13 +57,13 @@ class Board
       boxes[cell.box_id]
     ]
   end
+
+  def all_cells_seen_by(cell)
+    houses_for(cell).map { |house| house.cells }.flatten - [cell]
+  end
   
   def all_empty_cells_seen_by(cell)
     all_cells_seen_by(cell).select { |seen_cell| seen_cell.empty? }
-  end
-
-  def cells_with_candidates(cands)
-    empty_cells.select { |cell| cell.has_candidates?(cands) }
   end
 
   def valid?
