@@ -4,7 +4,7 @@ A Ruby program that solves sudokus.
 ## Instructions
 Currently there's not a real CLI interface, so to interact with the program you can edit `cli.rb` directly and run `ruby cli.rb` \: shrug \:
 
-Sudoku boards generated from [https://qqwing.com/generate.html](https://qqwing.com/generate.html) can be copied pasted into this program. Currently the program should be able to solve any 'Simple', 'Easy', or 'Intermediate' boards and only seldomly will be able to solve an 'Expert' board. More solving strategies are planning to be supported! These board strings looks like
+Sudoku boards generated from [https://qqwing.com/generate.html](https://qqwing.com/generate.html) can be copied pasted into this program. Currently the program should be able to solve any 'Simple', 'Easy', or 'Intermediate' boards and some 'Expert' boards. More solving strategies are planning to be supported! These board strings looks like
 ```rb
 txt = <<~SUDOKU
  1 . . | 6 . . | . . 9
