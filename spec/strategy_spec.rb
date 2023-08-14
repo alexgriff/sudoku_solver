@@ -359,7 +359,7 @@ describe Strategy do
     end
   end
 
-  describe Strategy::XWing, skip: true do
+  describe Strategy::XWing do
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_fishb.php#bf2
       txt = <<~SUDOKU

@@ -1,4 +1,6 @@
 class House
+  include SmartEnumerators::HouseEnumerators
+
   def self.house_method
     case self::HOUSE_TYPE
       when :row

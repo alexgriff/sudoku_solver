@@ -45,7 +45,7 @@ module Strategy
           board.houses_for(cell).each do |house|
             next if (cell.candidates.intersection(house.uniq_candidates)).any? # a hidden single is handled separately
 
-            cell.candidate_permutations(n).each do |cand_permutation|
+            cell.candidate_combinations(n).each do |cand_permutation|
               hidden_buddys = house.cells_with_candidates(cand_permutation)
               if hidden_buddys.length == n
                 hidden_buddys.each do |hidden_buddy_cell|

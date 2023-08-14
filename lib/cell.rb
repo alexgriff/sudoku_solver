@@ -44,8 +44,8 @@ class Cell
     candidates.intersection(cands)
   end
 
-  def candidate_permutations(n)
-    candidates.permutation(n).uniq { |perm| perm.sort }
+  def candidate_combinations(n)
+    candidates.combination(n).to_a
   end
 
   def will_change?(new_candidates)
