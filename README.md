@@ -2,7 +2,7 @@
 A Ruby program that solves sudokus.
 
 ## Instructions
-Currently there's not a real CLI interface, so to interact with the program you can edit `cli.rb` and run `ruby cli.rb` \: shrug \:
+Currently there's not a real CLI interface, so to interact with the program you can edit `cli.rb` directly and run `ruby cli.rb` \: shrug \:
 
 Sudoku boards generated from [https://qqwing.com/generate.html](https://qqwing.com/generate.html) can be copied pasted into this program. Currently the program should be able to solve any 'Simple', 'Easy', or 'Intermediate' boards and only seldomly will be able to solve an 'Expert' board. More solving strategies are planning to be supported! These board strings looks like
 ```rb
@@ -32,7 +32,7 @@ Solve.new(with_summary: true, with_display: true).solve(board)
 ```
 
 ### Strategies
-Each "solve" can be passed the set of strategies you want to apply to the board. A lot of information about strategies and techniques can be found here [https://hodoku.sourceforge.net/en/techniques.php](https://hodoku.sourceforge.net/en/techniques.php). For the example board text above using all default strategies the summary might be
+Each "solve" can be passed the set of strategies you want to apply to the board. A lot of information about strategies and techniques can be found here [https://hodoku.sourceforge.net/en/techniques.php](https://hodoku.sourceforge.net/en/techniques.php). For the example board text above using all default strategies the summary will look something like:
 ```
 Solved: true
 Filled cells at start: 29
@@ -58,7 +58,7 @@ Swordfishes: 0
 Cells solveable 'by sudoku' after identifying a swordfish: 0
 Passes: 1
 ```
-Notice that a hidden pair was used to solve the board. So if you do not pass thru the `Strategy::HiddenPair` strategy to the solve, the summary may look a lot different:
+Notice that the "hidden pair" strategy was used to solve the board. If you do not pass thru the `Strategy::HiddenPair` strategy to the solve, the summary will look a lot different:
 ```
 Solved: true
 Filled cells at start: 29
@@ -85,12 +85,12 @@ Cells solveable 'by sudoku' after identifying a swordfish: 28
 Passes: 1
 ```
 If you comment out enough strategies you may not even be able to solve the board at all!
-Here is the summary without using the following strategies:
+Here is the summary only using the following strategies:
 ```rb
- Strategy::HiddenPair
- Strategy::NakedTriple
- Strategy::XWing
- Strategy::Swordfish
+Strategy::HiddenSingle
+Strategy::NakedPair
+Strategy::LockedCandidatesPointing
+Strategy::LockedCandidatesClaiming
 ```
 ```
 Solved: false
@@ -112,9 +112,10 @@ Cells solveable 'by sudoku' after identifying a naked quadruple: 0
 Hidden triples: 0
 Cells solveable 'by sudoku' after identifying a hidden triple: 0
 X-Wings: 0
-Cells solveable 'by sudoku' after identifying an x-wings: 0
+Cells solveable 'by sudoku' after identifying an x-wing: 0
 Swordfishes: 0
 Cells solveable 'by sudoku' after identifying a swordfish: 0
+Passes: 2
 ```
 
 ### A Sinatra server????
