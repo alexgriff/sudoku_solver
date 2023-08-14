@@ -124,20 +124,27 @@ By passing a board string to the `/solve` endpoint like
 ```
 http://0.0.0.0:9292/solve/1..6....9.9247..5......9.7...9....38.1..3..2.53....1...5.9......2..4586.8....1..4
 ```
-The web app will respond with a json version of the entire solve history. The history is made up of an array of discrete _"redux-like"_ actions, like:
+The web app will respond with a json version of the entire solve history. The history is an array of discrete _"redux-like" actions_, ie plain objects like:
 ```json
-[
-  {"values":[6],"id":15183,"cascade":56,"solves":true,"cell_id":47,"type":"update_cell","strategy":"nakedpair","naked_buddies":[57,59]},
-]
+{
+  "id":15183,
+  "cell_id":47,
+  "type":"update_cell",
+  "values":[6],
+  "cascade":56,
+  "solves":true,
+  "strategy":"nakedpair",
+  "naked_buddies":[57,59]
+}
 ```
-What's consuming this currently??.... nothing! But you could imagine a simple client side reducer that would allow you to replay the whole solve history step by step...
+What's consuming this currently??.... nothing! But you could imagine a fairly simple client side reducer that would allow you to replay the whole solve history step by step... that's coming next perhaps.
 
 ### Dev Notes
-State management is complex: boards, row, columns, boxes, and cells all own the same underlying state! The program adopts a redux-like pattern; board state can only be modified by calling a `register` method on the `Board::State` which then `dispatch`es an `Action` to the `Board::Reducer` which returns a new copy of the state. The state is made of primitve data types.
+State management is complicated: boards, row, columns, boxes, and cells all own the same underlying state! As mentioned, the program adopts a redux-like pattern; board state can only be modified by calling a `register` method on the `Board::State` which then `dispatch`es an `Action` to the `Board::Reducer` which returns the new state. The elements of the state are made of primitve data types.
 
-But! we still want to use nice, expressive OO abstractions, `Cell#empty?`, `Cell#has_candidate?`,  `Row.empty_cells`, etc.  The way this is resolved is that the domain objects don't really hold data of their own, but are synced up to the `Board::State` and always read from it to determine their current values.
+But! we still want to use nice, expressive OO abstractions, `Cell#empty?`, `Cell#has_candidate?`, `Row#empty_cells`, etc.  To support this, domain objects don't really hold data of their own, but are synced up to the `Board::State` and always read from it to determine their current values.
 
-A decent mental model is an ORM. As an equivalent to the database in an ORM we have the "redux-like" board state which we read from it to hydrate objects in memory. The pattern here differs a bit from the ORM model in that in an ORM the in-memory object pulled from the db can have stale values if the underlying db changes after initially being read. Here, since domain objects don't actually hold their own data, but _read from state every time you access their properties_, the values cannot be stale. The analogy might be if in an ORM every time you accessed a propery of an object, something like `user.username`, it made a fresh DB query to get the current value of the property. That might be a bad pattern in an ORM, but here our "db call" equivalents are cheap, just grabbing an element of an array at an index, and there's only one actor operating on the underlying state. The result is that you can be ensured a `Cell` object is always giving you an accurate value.
+A decent mental model is an ORM. As an equivalent to the database in an ORM we have the "redux-like" board state which objects are created from. The pattern here differs a bit from the ORM model in that in an ORM the in-memory object pulled from the db can have stale values if the underlying db changes after initially being read. Here, since domain objects don't actually hold their own data, but _read from state every time you access their properties_, the values cannot be stale. The analogy might be if in an ORM every time you accessed a propery of an object, something like `user.username`, it made a fresh db query to get the current value of the property. That might be a bad pattern in an ORM, but here our "db call" equivalents are cheap, just grabbing an element of an array at an index, and there's only one actor operating on the underlying state. The result is that you can be ensured a `Cell` object is always giving you an up-to-date value.
 
 Even though individuals cells are always "synced" to the current state, when you grab a collection of objects based board state in some way, and in a loop do something that modifies the state, subtle bugs can be caused if objects aren't in the state you think they are. For ex, below the only guarantee is that the cells were empty _when `board.empty_cells` was called_:
 ```rb
