@@ -149,7 +149,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::XWing.name,
       type: Action::UPDATE_CELL,
-    ).map(&:x_wing_id).uniq.length
+    ).map(&:fish_id).uniq.length
   end
 
   def solved_by_x_wing_cell_count
