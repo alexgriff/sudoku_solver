@@ -3,9 +3,9 @@
 get '/solve/:board' do
   content_type :json
   board = Board.from_txt(params['board'])
-  solve = Solve.new.solve(board)
+  Solve.new.solve(board)
   {
     history: board.state.history.all,
-    summary: solve.summary
+    summary: Solve::Summary.new(board.state.history)
   }.to_json
 end

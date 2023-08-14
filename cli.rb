@@ -24,8 +24,9 @@ strategies = [
   Strategy::LockedCandidatesClaiming,
   Strategy::HiddenPair,
   Strategy::NakedTriple,
-  Strategy::NakedQuadruple,
-  Strategy::XWing
+  Strategy::NakedQuadruple
+  Strategy::XWing,
+  Strategy::Swordfish
 ]
 
 Solve.new(

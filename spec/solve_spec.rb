@@ -22,7 +22,8 @@ describe Solve do
   end
 
   it 'can provide a summary of the solve' do
-    # value of this spec is mostly just ensuring nothing in Solve::Summary is broken
+    # value of this spec is mostly just ensuring nothing in Solve::Summary is very broken
+    # it doesnt spec that the summary is actually accurate
     board = Board.from_txt(board_missing_one)
     expect {
       Solve.new(with_summary: true).solve(board)
@@ -95,6 +96,7 @@ describe Solve do
   it "can solve a series of intermediate sudokus" do
     boards = File.read("spec/fixtures/intermediates.txt").split("\n\n").map { |txt| Board.from_txt(txt) }
     solved = boards.map { |board| Solve.new.solve(board) }
+
     solved.each.with_index do |status, i|
       expect("#{i} - #{status}").to eq("#{i} - true")
     end
