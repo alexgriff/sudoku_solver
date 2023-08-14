@@ -1,7 +1,5 @@
 module Strategy
   class BaseStrategy
-    attr_reader :name
-
     def self.name
       self.to_s.split('::').last.downcase.to_sym
     end
