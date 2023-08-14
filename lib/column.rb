@@ -2,6 +2,6 @@ class Column < House
  HOUSE_TYPE = :column
 
   def boxes
-    cells.map { |cell|cell.box(board) }.uniq
+    cells.map { |cell|board.boxes[cell.box_id] }.uniq
   end
 end

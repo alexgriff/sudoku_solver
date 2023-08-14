@@ -1,26 +1,27 @@
 class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
-  def self.execute(board, cell)
-    box = cell.box(board)
-    cands_with_multiple_in_box = box.candidate_counts.select { |k, v| v == 2 || v == 3 }.keys
+  def self.apply(board)
+    board.each_incomplete_box do |box|      
+      box.each_non_uniq_candidate do |shared_cand|
+        cells_with_shared_cand = box.cells_with_candidates([shared_cand])
+        
+        line_house = if cells_with_shared_cand.map(&:row_id).uniq.count == 1
+                       board.rows[cells_with_shared_cand.first.row_id]
+                     elsif cells_with_shared_cand.map(&:column_id).uniq.count == 1
+                       board.columns[cells_with_shared_cand.first.column_id]
+                     end
 
-    cell.intersecting_candidates(cands_with_multiple_in_box).each do |shared_cand|
-      cells_with_shared_cand = box.other_cells_with_any_of_candidates([cell], [shared_cand])
-      next if cells_with_shared_cand.empty?
-      
-      line_house = if cells_with_shared_cand.all? { |c| c.row_id == cell.row_id }
-                      cell.row(board)
-                   elsif cells_with_shared_cand.all? { |c| c.column_id == cell.column_id }
-                      cell.column(board)
-                   end
-
-      if line_house
-        line_house.other_cells_with_any_of_candidates(box.cells, [shared_cand]).each do |outside_current_box_cell|
-          board.state.register_change(
-            board,
-            outside_current_box_cell,
-            outside_current_box_cell.candidates - [shared_cand],
-            {strategy: name, locked_alignment_id: "Box-#{box.id}|Row-#{cell.row(board).id}|Locked-#{shared_cand}"}
-          )
+        if line_house
+          line_house.each_cell_with_candidates(
+            line_house.cells_with_candidates([shared_cand]) - box.cells,
+            [shared_cand]
+          ) do |outside_current_box_cell|
+            board.state.register_change(
+              board,
+              outside_current_box_cell,
+              outside_current_box_cell.candidates - [shared_cand],
+              {strategy: name, locked_alignment_id: "Box-#{box.id}|#{line_house.class}-#{line_house.id}|Locked-#{shared_cand}"}
+            )
+          end
         end
       end
     end

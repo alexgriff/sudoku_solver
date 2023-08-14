@@ -1,8 +1,8 @@
 class Board
+  include SmartEnumerators::BoardEnumerators
   READABILITY_CHARACTERS = [' ', '|', '-'].freeze
   SIZE = 9
   NUM_CELLS = SIZE * SIZE
-
 
   def self.from_txt(txt)
     board_str = txt.split("\n").map do |row|
@@ -16,13 +16,14 @@ class Board
     new(data)
   end
 
-  attr_reader :boxes, :columns, :rows, :state, :errors, :id
+  attr_reader :boxes, :columns, :rows, :houses, :state, :errors, :id
 
   def initialize(initial_data)
     @id = Digest::SHA256.hexdigest(initial_data.to_s)
     @columns = (0..SIZE-1).to_a.map { |id| Column.new(id: id, board: self) }
     @rows = (0..SIZE-1).to_a.map { |id| Row.new(id: id, board: self)}
     @boxes = (0..SIZE-1).to_a.map { |id| Box.new(id: id, board: self) }
+    @houses = columns + rows + boxes
 
     @errors = []
 
@@ -46,23 +47,23 @@ class Board
   end
 
   def all_cells_seen_by(cell)
-    cell.houses(self).map do |house|
-      house.cells
-    end.flatten - [cell]
+    houses_for(cell).map { |house| house.cells }.flatten - [cell]
+  end
+
+  def houses_for(cell)
+    [
+      rows[cell.row_id],
+      columns[cell.column_id],
+      boxes[cell.box_id]
+    ]
   end
   
   def all_empty_cells_seen_by(cell)
     all_cells_seen_by(cell).select { |seen_cell| seen_cell.empty? }
   end
 
-  def all_empty_cells_with_any_of_candidates_seen_by(cell, cands)
-    all_empty_cells_seen_by(cell).select do |seen_cell|
-      seen_cell.has_any_of_candidates?(cands)
-    end
-  end
-
-  def cells_with_any_of_candidates(cands)
-    empty_cells.select { |cell| cell.has_any_of_candidates?(cands) }
+  def cells_with_candidates(cands)
+    empty_cells.select { |cell| cell.has_candidates?(cands) }
   end
 
   def valid?

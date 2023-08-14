@@ -71,15 +71,15 @@ class Board::State
           **action_opts
         )
       )
-      board.all_empty_cells_with_any_of_candidates_seen_by(cell, new_candidates).each do |seen_cell|
-        if seen_cell.empty? && seen_cell.has_any_of_candidates?(new_candidates)
-          register_change(
-            board,
-            seen_cell,
-            seen_cell.candidates - new_candidates,
-            action_opts.merge(cascade: cell.id)
-          )
-        end
+      board.each_empty_cell(
+        board.all_empty_cells_seen_by(cell).intersection(board.cells_with_candidates(new_candidates))
+      ) do |seen_cell|
+        register_change(
+          board,
+          seen_cell,
+          seen_cell.candidates - new_candidates,
+          action_opts.merge(cascade: cell.id)
+        )
       end
     else
       dispatch(

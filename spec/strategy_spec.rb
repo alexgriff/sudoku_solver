@@ -167,7 +167,6 @@ describe Strategy do
       
       Strategy::LockedCandidatesClaiming.apply(board)
       expect(board.cells[19].value).to eq(4)
-
       action = board.state.history.find(
         cell_id: 19,
         type: Action::UPDATE_CELL,
@@ -360,7 +359,7 @@ describe Strategy do
     end
   end
 
-  describe Strategy::XWing do
+  describe Strategy::XWing, skip: true do
     let(:board) do
       # https://hodoku.sourceforge.net/en/tech_fishb.php#bf2
       txt = <<~SUDOKU

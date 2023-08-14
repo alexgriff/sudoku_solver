@@ -1,60 +1,40 @@
 class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
-  def self.execute(board, cell)
-    row = cell.row(board)
-    col = cell.column(board)
-    box = cell.box(board)
-    
-    (cell.candidates - box.uniq_candidates).each do |cand|
-      # if cand is in found in 2 rows only is there another box with cand in same 2 rows
-      cand_rows = box.cells_with_all_of_candidates([cand]).map { |c| c.row(board) }.uniq    
-      if cand_rows.length == 2
-        matched_box = (row.boxes - [box]).find do |other_box|
-          cand_cells_other_box = other_box.cells_with_all_of_candidates([cand])
-          cand_rows.map(&:id) == cand_cells_other_box.map(&:row_id).uniq
-        end
-        
-        # if so, third box cant have the cand in those rows
-        if matched_box
-          third_box = (row.boxes - [box, matched_box]).first
+  def self.apply(board)
+    apply_to_line(:row, board)
+    apply_to_line(:column, board)
+  end
 
-          third_box.cells_with_all_of_candidates([cand]).select do |third_box_cell|
-            cand_rows.map(&:id).include?(third_box_cell.row_id)
-          end.each do |third_box_cell|
-            board.state.register_change(
-              board,
-              third_box_cell,
-              third_box_cell.candidates - [cand],
-              {strategy: name, claiming_box_id: "Box-#{third_box.id}|Row-#{cand_rows.map(&:id)}|Locked-#{cand}"}
-            )
+  def self.apply_to_line(line_type, board)
+    board.each_incomplete_box do |box|
+      box.each_non_uniq_candidate do |cand|
+        cells = box.cells_with_candidates([cand])
+        # if cand is in found in only 2 lines in a box is there another box with cand in same 2 lines
+        cand_line_ids = cells.map(&:"#{line_type}_id").uniq
+        if cand_line_ids.count == 2
+          line = board.send("#{line_type}s")[cells.first.send("#{line_type}_id")]
+          matched_box = (line.boxes - [box]).find do |other_box|
+            cand_line_ids == other_box.cells_with_candidates([cand]).map(&:"#{line_type}_id").uniq
+          end
+
+          # if so, the third box cant have the cand in those lines
+          if matched_box
+            third_box = (line.boxes - [box, matched_box]).first
+            claiming_line = (third_box.send("#{line_type}s") - cand_line_ids.map { |id| board.send("#{line_type}s")[id] }).first
+
+            third_box.each_cell_with_candidates(
+              third_box.cells - claiming_line.cells,
+              [cand]
+            ) do |cell|
+              board.state.register_change(
+                board,
+                cell,
+                cell.candidates - [cand],
+                {strategy: name, claiming_box_id: "Box-#{third_box.id}|#{line_type}-#{cand_line_ids}|Locked-#{cand}"}
+              )
+            end
           end
         end
       end
-
-      # if cand is in found in 2 cols only is there another box with cand in same 2 cols
-      cand_cols = box.cells_with_all_of_candidates([cand]).map { |c| c.column(board) }.uniq   
-      if cand_cols.length == 2
-        matched_box = (col.boxes - [box]).find do |other_box|
-          cand_cells_other_box = other_box.cells_with_all_of_candidates([cand])
-          cand_cols.map(&:id) == cand_cells_other_box.map(&:column_id).uniq
-        end
-
-        # if so, third box cant have the cand in those cols
-        if matched_box
-          third_box = (col.boxes - [box, matched_box]).first
-
-          third_box.cells_with_all_of_candidates([cand]).select do |third_box_cell|
-            cand_cols.map(&:id).include?(third_box_cell.column_id)
-          end.each do |third_box_cell|
-            new_candidates = third_box_cell.candidates - [cand]
-            board.state.register_change(
-              board,
-              third_box_cell,
-              third_box_cell.candidates - [cand],
-              {strategy: name, claiming_box_id: "Box-#{third_box.id}|Cols-#{cand_cols.map(&:id)}|Locked-#{cand}"}
-            )
-          end
-        end
-      end 
     end
   end
 end

@@ -28,36 +28,24 @@ class House
     end
   end
 
-  def cell_ids
-    @cell_ids ||= cells.map(&:id)
+  def complete?
+    cells.all?(&:filled?)
+  end
+
+  def candidates
+    empty_cells.map(&:candidates).flatten.uniq
   end
 
   def empty_cells
     cells.select(&:empty?)
   end
-
-  def other_cells(filtered_cells)
-    cells - filtered_cells
-  end
-
-  def empty_other_cells(filtered_cells)
-    filtered_cells.select(&:empty)
-  end
   
-  def cells_with_any_of_candidates(cands)
-    empty_cells.select { |cell| cell.has_any_of_candidates?(cands) }
+  def cells_with_candidates(cands)
+    empty_cells.select { |cell| cell.has_candidates?(cands) }
   end
 
-  def has_any_of_candidates?(cands)
-    cells_with_any_of_candidates(cands).any?
-  end
-
-  def other_cells_with_any_of_candidates(filtered_cells, cands)
-    cells_with_any_of_candidates(cands) - filtered_cells
-  end
-
-  def cells_with_all_of_candidates(cands)
-    empty_cells.select { |cell| cell.has_all_of_candidates?(cands) }
+  def has_candidates?(cands)
+    cells_with_candidates(cands).any?
   end
 
   def uniq_candidates

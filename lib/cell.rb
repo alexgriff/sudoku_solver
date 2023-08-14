@@ -20,32 +20,12 @@ class Cell
     @row_id ||= id / Board::SIZE
   end
 
-  def row(board)
-    board.rows[row_id]
-  end
-
   def column_id
     @column_id ||= id % Board::SIZE
   end
 
-  def column(board)
-    board.columns[column_id]
-  end
-
   def box_id
     @box_id ||= column_id / 3 + row_id / 3 * 3
-  end
-
-  def box(board)
-    board.boxes[box_id]
-  end
-
-  def houses(board)
-    [
-      row(board),
-      column(board),
-      box(board)
-    ]
   end
 
   def empty?
@@ -56,12 +36,8 @@ class Cell
     !empty?
   end
 
-  def has_any_of_candidates?(cands)
+  def has_candidates?(cands)
     intersecting_candidates(cands).length > 0
-  end
-
-  def has_all_of_candidates?(cands)
-    intersecting_candidates(cands).length == cands.length
   end
 
   def intersecting_candidates(cands)
