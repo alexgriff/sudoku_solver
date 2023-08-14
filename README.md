@@ -128,7 +128,7 @@ http://0.0.0.0:9292/solve/1..6....9.9247..5......9.7...9....38.1..3..2.53....1..
 The web app will respond with a json version of the entire solve history. The history is made up of an array of discrete _"redux-like"_ actions, like:
 ```json
 [
-	{"values":[6],"id":15183,"cascade":56,"solves":true,"cell_id":47,"type":"update_cell","strategy":"nakedpair","naked_buddies":[57,59]},
+  {"values":[6],"id":15183,"cascade":56,"solves":true,"cell_id":47,"type":"update_cell","strategy":"nakedpair","naked_buddies":[57,59]},
 ]
 ```
 What's consuming this currently??.... nothing! But you could imagine a simple client side reducer that would allow you to replay the whole solve history step by step...
@@ -141,7 +141,6 @@ But! we still want to use nice, expressive OO abstractions, `Cell#empty?`, `Cell
 Initally, this ORM comparison was even more 1:1, you would hydrate an object from state, it held it's own data, the underlying state could change and the object might become stale
 ```ruby
 # Bad / old
-
 cell = board.state.get_cell(id)
 # <Cell:0x00001 @id=1 @candidates=[2,4,7]>
 puts cell.candidates
@@ -151,12 +150,11 @@ puts cell.candidates
 
 puts cell.candidates
 # => [2,4,7] # this is stale
-
-end
 ```
 Instead, the way this is implemnted now might be more equivelent to something like if for an ORM, every time you called `User#username` on a hydrated object it made a fresh DB query to get the current value. Here our "db calls" are cheap, just grabbing an element of an array at an index. You data is always in sync
 ```rb
 # Good / new
+cell = board.cells[id]
 puts cell.candidates
 #  <Cell:0x00001 @id=1> (doesnt hold candidates directly)
 # => [2,4,7]
