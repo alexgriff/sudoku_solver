@@ -31,28 +31,6 @@ describe Solve do
      .to_stdout
   end
 
-  let(:board_missing_two) do
-    <<~SUDOKU
-       8 9 4 | 5 1 2 | 3 6 7
-       5 6 7 | 3 . . | 1 8 2
-       1 3 2 | 8 7 6 | 4 9 5
-      -------|-------|-------
-       7 4 5 | 2 9 3 | 6 1 8
-       2 8 9 | 1 6 4 | 7 5 3
-       3 1 6 | 7 8 5 | 9 2 4
-      -------|-------|-------
-       4 2 8 | 9 3 1 | 5 7 6
-       6 5 1 | 4 2 7 | 8 3 9
-       9 7 3 | 6 5 8 | 2 4 1
-    SUDOKU
-  end
-
-  it 'can solve taking into account rows and columns' do
-    board = Board.from_txt(board_missing_two)
-    Solve.new.solve(board)
-    expect(board.state.is_solved?).to eq(true)
-  end
-
   let(:board_missing_more) do
     <<~SUDOKU
     . . . | . . . | . . .

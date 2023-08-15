@@ -13,6 +13,11 @@ class Board
       char == Cell::EMPTY ? char : char.to_i
     end
 
+    raise ParseError unless (
+      data.length == NUM_CELLS &&
+      data.all? { |d| (Cell::ALL_CANDIDATES + [Cell::EMPTY]).include?(d) }
+    )
+
     new(data)
   end
 
@@ -115,7 +120,7 @@ class Board
       right_3 = cell_values.slice(6..-1)
       board_as_text.push(" #{left_3.join(' ')} | #{center_3.join(' ')} | #{right_3.join(' ')} ")
     end
-    board_as_text.join("\n")
+    "#{board_as_text.join("\n")}\n\n"
   end
 
   def debug_print
@@ -165,4 +170,6 @@ class Board
     end
     nil
   end
+
+  class ParseError < StandardError; end
 end

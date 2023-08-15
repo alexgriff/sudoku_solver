@@ -49,7 +49,11 @@ class Cell
   end
 
   def will_change?(new_candidates)
-    empty? && new_candidates.any? && (new_candidates - candidates) != candidates
+    (
+      empty? &&
+      new_candidates.any? &&
+      new_candidates.length == 1 || new_candidates != candidates
+    )
   end
 
   def use_state(state)
