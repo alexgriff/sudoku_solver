@@ -1,7 +1,12 @@
 module Strategy
   class BaseStrategy
     def self.name
-      self.to_s.split('::').last.downcase.to_sym
+      self.to_s
+          .sub(/.*?::/, '')
+          .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+          .gsub(/([a-z\d])([A-Z])/, '\1_\2')
+          .downcase
+          .to_sym
     end
 
     def self.apply(board)
