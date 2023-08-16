@@ -41,7 +41,7 @@ class Solve
       board.state.register_done
 
       puts(board.display) if with_display
-      puts(Solve::Summary.new(board.state.history).summarize) if with_summary
+      puts(Solve::Summary.new(board.state.history, strategies).summarize) if with_summary
       board.state.is_solved?
     else
       solve(board)

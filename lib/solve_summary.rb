@@ -1,40 +1,41 @@
 class Solve::Summary
-  attr_reader :history
+  attr_reader :history, :strategies_used
 
-  def initialize(history)
+  def initialize(history, strategies_used)
     @history = history
+    @strategies_used = strategies_used
   end
 
   def summarize
     [
       "Solved: #{solved_status}",
-      "Filled cells at start: #{initial_filled_cell_count}",
-      "Cells initially solveable 'by sudoku' (naked single): #{naked_single_cell_count}",
-      "Hidden singles: #{hidden_single_cell_count}",
-      "Naked pairs: #{num_naked_pairs}",
-      "Cells solveable 'by sudoku' after identifying naked pair: #{solved_by_naked_pair_cell_count}",
-      "Lines with locked, aligned candidates in same box: #{num_locked_pointing_lines}",
-      "Cells solveable 'by sudoku' after identifying locked, aligned candidates: #{solved_by_locked_pointing_cell_count}",
-      "Lines with 'claimed' candidate from box intersecting two locked candidate lines: #{num_claimed_lines}",
-      "Cells solveable 'by sudoku' after identifying 'claiming' line/box: #{solved_by_claiming_lines_cell_count}",
-      "Naked triples: #{num_naked_triples}",
-      "Cells solveable 'by sudoku' after identifying a naked triple: #{solved_by_naked_triple_cell_count}",
-      "Naked quadruples: #{num_naked_quadruples}",
-      "Cells solveable 'by sudoku' after identifying a naked quadruple: #{solved_by_naked_quadruple_cell_count}",
-      "Hidden pairs: #{num_hidden_pairs}",
-      "Cells solveable 'by sudoku' after identifying a hidden pair: #{solved_by_hidden_pair_cell_count}",
-      "X-Wings: #{num_x_wings}",
-      "Cells solveable 'by sudoku' after identifying an x-wing: #{solved_by_x_wing_cell_count}",
-      "Swordfishes: #{num_swordfish}",
-      "Cells solveable 'by sudoku' after identifying a swordfish: #{solved_by_swordfish_cell_count}",
-      "Hidden triples: #{num_hidden_triples}",
-      "Cells solveable 'by sudoku' after identifying a hidden triple: #{solved_by_hidden_triple_cell_count}",
-      "Y-Wings: #{num_y_wings}",
-      "Cells solveable 'by sudoku' after identifying a y-wing: #{solved_by_y_wing_cell_count}",
-      "Skyscrapers: #{num_skyscrapers}",
-      "Cells solveable 'by sudoku' after identifying a skyscraper: #{solved_by_skyscraper_cell_count}",
+      "Cells filled at start: #{initial_filled_cell_count}",
+      "Cells initially solveable 'by sudoku' (Naked single): #{naked_single_cell_count}",
+      used_strategy?(Strategy::HiddenSingle) && "Hidden singles: #{hidden_single_cell_count}",
+      used_strategy?(Strategy::NakedPair) && "Naked pairs: #{num_naked_pairs}",
+      used_strategy?(Strategy::NakedPair) && "  cells solved 'by sudoku' after identifying naked pair: #{solved_by_naked_pair_cell_count}",
+      used_strategy?(Strategy::LockedCandidatesPointing) && "Locked lines: #{num_locked_pointing_lines}",
+      used_strategy?(Strategy::LockedCandidatesPointing) && "  cells solved 'by sudoku' after locked line in box: #{solved_by_locked_pointing_cell_count}",
+      used_strategy?(Strategy::LockedCandidatesClaiming) && "Claimed lines: #{num_claimed_lines}",
+      used_strategy?(Strategy::LockedCandidatesClaiming) && "  cells solved 'by sudoku' after identifying 'claiming' line/box: #{solved_by_claiming_lines_cell_count}",
+      used_strategy?(Strategy::NakedTriple) && "Naked triples: #{num_naked_triples}",
+      used_strategy?(Strategy::NakedTriple) && "  cells solved 'by sudoku' after identifying a naked triple: #{solved_by_naked_triple_cell_count}",
+      used_strategy?(Strategy::NakedQuadruple) && "Naked quadruples: #{num_naked_quadruples}",
+      used_strategy?(Strategy::NakedQuadruple) && "  cells solved 'by sudoku' after identifying a naked quadruple: #{solved_by_naked_quadruple_cell_count}",
+      used_strategy?(Strategy::HiddenPair) && "Hidden pairs: #{num_hidden_pairs}",
+      used_strategy?(Strategy::HiddenPair) && "  cells solved 'by sudoku' after identifying a hidden pair: #{solved_by_hidden_pair_cell_count}",
+      used_strategy?(Strategy::XWing) && "X-Wings: #{num_x_wings}",
+      used_strategy?(Strategy::XWing) && "  cells solved 'by sudoku' after identifying an x-wing: #{solved_by_x_wing_cell_count}",
+      used_strategy?(Strategy::Swordfish) && "Swordfishes: #{num_swordfish}",
+      used_strategy?(Strategy::Swordfish) && "  cells solved 'by sudoku' after identifying a swordfish: #{solved_by_swordfish_cell_count}",
+      used_strategy?(Strategy::HiddenTriple) && "Hidden triples: #{num_hidden_triples}",
+      used_strategy?(Strategy::HiddenTriple) && "  cells solved 'by sudoku' after identifying a hidden triple: #{solved_by_hidden_triple_cell_count}",
+      used_strategy?(Strategy::YWing) && "Y-Wings: #{num_y_wings}",
+      used_strategy?(Strategy::YWing) && "  cells solved 'by sudoku' after identifying a y-wing: #{solved_by_y_wing_cell_count}",
+      used_strategy?(Strategy::Skyscraper) && "Skyscrapers: #{num_skyscrapers}",
+      used_strategy?(Strategy::Skyscraper) && "  cells solved 'by sudoku' after identifying a skyscraper: #{solved_by_skyscraper_cell_count}",
       "Passes: #{num_passes}",
-      total_count
+      "(#{total_count})"
     ].compact.join("\n")
   end
 
@@ -55,6 +56,10 @@ class Solve::Summary
       solved_by_y_wing_cell_count +
       solved_by_skyscraper_cell_count
     )
+  end
+
+  def used_strategy?(strategy)
+    strategies_used.include?(strategy) || nil
   end
 
   def solved_status

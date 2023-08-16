@@ -7,3 +7,5 @@ gem 'rspec'
 
 gem 'sinatra'
 gem 'puma'
+
+gem "slop", "~> 4.10"
