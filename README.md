@@ -64,11 +64,11 @@ Cells filled at start: 29
 Cells initially solveable 'by sudoku' (Naked single): 4
 Hidden singles: 11
 Naked pairs: 0
-  cells solved 'by sudoku' after identifying naked pair: 0
+  cells solved 'by sudoku' after identifying a naked pair: 0
 Locked lines: 1
-  cells solved 'by sudoku' after locked line in box: 0
+  cells solved 'by sudoku' after identifying a locked line in box: 0
 Claimed lines: 0
-  cells solved 'by sudoku' after identifying 'claiming' line/box: 0
+  cells solved 'by sudoku' after identifying a claiming line/box: 0
 Naked triples: 1
   cells solved 'by sudoku' after identifying a naked triple: 0
 Naked quadruples: 0
@@ -98,11 +98,11 @@ Cells filled at start: 29
 Cells initially solveable 'by sudoku' (Naked single): 4
 Hidden singles: 20
 Naked pairs: 1
-  cells solved 'by sudoku' after identifying naked pair: 28
+  cells solved 'by sudoku' after identifying a naked pair: 28
 Locked lines: 1
-  cells solved 'by sudoku' after locked line in box: 0
+  cells solved 'by sudoku' after identifying a locked line in box: 0
 Claimed lines: 0
-  cells solved 'by sudoku' after identifying 'claiming' line/box: 0
+  cells solved 'by sudoku' after identifying a claiming line/box: 0
 Naked triples: 1
   cells solved 'by sudoku' after identifying a naked triple: 0
 Naked quadruples: 0
@@ -122,11 +122,11 @@ Cells filled at start: 29
 Cells initially solveable 'by sudoku' (Naked single): 4
 Hidden singles: 11
 Naked pairs: 0
-  cells solved 'by sudoku' after identifying naked pair: 0
+  cells solved 'by sudoku' after identifying a naked pair: 0
 Locked lines: 1
-  cells solved 'by sudoku' after locked line in box: 0
+  cells solved 'by sudoku' after identifying a locked line in box: 0
 Claimed lines: 0
-  cells solved 'by sudoku' after identifying 'claiming' line/box: 0
+  cells solved 'by sudoku' after identifying a claiming line/box: 0
 Passes: 2
 ```
 
