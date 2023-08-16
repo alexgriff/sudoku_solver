@@ -28,7 +28,7 @@ class Strategy::Skyscraper < Strategy::BaseStrategy
               board,
               cell,
               cell.candidates - [cand],
-              {strategy: name, skyscraper: "#{aligned_cells.map(&:id).sort.join('-')}|#{cand}"}
+              {strategy: name, strategy_id: "#{aligned_cells.map(&:id).sort.join('-')}|#{cand}"}
             )
           end
         end

@@ -29,7 +29,7 @@ class Strategy::LockedCandidatesClaiming < Strategy::BaseStrategy
                 board,
                 cell,
                 cell.candidates - [cand],
-                {strategy: name, claiming_box_id: "Box-#{third_box.id}|#{line_type}-#{cand_line_ids}|Locked-#{cand}"}
+                {strategy: name, strategy_id: "Box-#{third_box.id}|#{line_type}-#{cand_line_ids}|Locked-#{cand}"}
               )
             end
           end

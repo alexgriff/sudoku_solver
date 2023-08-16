@@ -28,7 +28,7 @@ class Strategy::YWing < Strategy::BaseStrategy
                 board,
                 cell,
                 cell.candidates - eliminateable_cand,
-                {strategy: name, y_wing_id: "#{[pivot_cell.id, first_pincer.id, second_pincer.id].sort.join('-')}|#{eliminateable_cand.first}"}
+                {strategy: name, strategy_id: "#{[pivot_cell.id, first_pincer.id, second_pincer.id].sort.join('-')}|#{eliminateable_cand.first}"}
               )
             end
           end

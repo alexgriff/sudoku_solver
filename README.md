@@ -146,7 +146,7 @@ The web app will respond with a json version of the entire solve history. The hi
   "cascade":56,
   "solves":true,
   "strategy":"nakedpair",
-  "naked_buddies":[57,59]
+  "strategy_id":[57,59]
 }
 ```
 What's consuming this currently??.... nothing! But you could imagine a fairly simple client side reducer that would allow you to replay the whole solve history step by step... that's coming next perhaps.

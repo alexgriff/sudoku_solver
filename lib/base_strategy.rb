@@ -29,7 +29,7 @@ module Strategy
                   board,
                   non_buddied_cell,
                   non_buddied_cell.candidates - cell.candidates,
-                  {strategy: name, naked_buddies: naked_buddy_cells.map(&:id)}
+                  {strategy: name, strategy_id: naked_buddy_cells.map(&:id)}
                 )
               end
             end
@@ -56,7 +56,7 @@ module Strategy
                     board,
                     hidden_buddy_cell,
                     hidden_buddy_cell.candidates.intersection(cand_permutation),
-                    {strategy: name, hidden_buddies: hidden_buddys.map(&:id)}
+                    {strategy: name, strategy_id: hidden_buddys.map(&:id)}
                   )
                 end
               end
@@ -107,7 +107,7 @@ module Strategy
                   board,
                   cell,
                   cell.candidates - [cand],
-                  {strategy: name, fish_id: "#{line_type}-#{line_set.map(&:id)}|#{other_axis_line_type}-#{matched_other_axis_ids}|locked-#{cand}"}
+                  {strategy: name, strategy_id: "#{line_type}-#{line_set.map(&:id)}|#{other_axis_line_type}-#{matched_other_axis_ids}|locked-#{cand}"}
                 )
               end
             end

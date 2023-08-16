@@ -86,7 +86,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::NakedPair.name,
       type: Action::UPDATE_CELL,
-    ).map(&:naked_buddies).uniq.length
+    ).map(&:strategy_id).uniq.length
   end
 
   def solved_by_naked_pair_cell_count
@@ -97,7 +97,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::LockedCandidatesPointing.name,
       type: Action::UPDATE_CELL,
-    ).map(&:locked_alignment_id).uniq.length
+    ).map(&:strategy_id).uniq.length
   end
 
   def solved_by_locked_pointing_cell_count
@@ -108,7 +108,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::LockedCandidatesClaiming.name,
       type: Action::UPDATE_CELL,
-    ).map(&:claiming_box_id).uniq.length
+    ).map(&:strategy_id).uniq.length
   end
 
   def solved_by_claiming_lines_cell_count
@@ -119,7 +119,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::NakedTriple.name,
       type: Action::UPDATE_CELL,
-    ).map(&:naked_buddies).uniq.length
+    ).map(&:strategy_id).uniq.length
   end
 
   def solved_by_naked_triple_cell_count
@@ -130,7 +130,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::NakedQuadruple.name,
       type: Action::UPDATE_CELL,
-    ).map(&:naked_buddies).uniq.length
+    ).map(&:strategy_id).uniq.length
   end
 
   def solved_by_naked_quadruple_cell_count
@@ -141,7 +141,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::HiddenPair.name,
       type: Action::UPDATE_CELL
-    ).map(&:hidden_buddies).uniq.length
+    ).map(&:strategy_id).uniq.length
   end
 
   def solved_by_hidden_pair_cell_count
@@ -152,7 +152,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::HiddenTriple.name,
       type: Action::UPDATE_CELL,
-    ).map(&:hidden_buddies).uniq.length
+    ).map(&:strategy_id).uniq.length
   end
 
   def solved_by_hidden_triple_cell_count
@@ -163,7 +163,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::XWing.name,
       type: Action::UPDATE_CELL,
-    ).map(&:fish_id).uniq.length
+    ).map(&:strategy_id).uniq.length
   end
 
   def solved_by_x_wing_cell_count
@@ -174,7 +174,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::Swordfish.name,
       type: Action::UPDATE_CELL,
-    ).map(&:fish_id).uniq.length
+    ).map(&:strategy_id).uniq.length
   end
 
   def solved_by_swordfish_cell_count
@@ -185,7 +185,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::YWing.name,
       type: Action::UPDATE_CELL,
-    ).map(&:y_wing_id).uniq.length
+    ).map(&:strategy_id).uniq.length
   end
 
   def solved_by_y_wing_cell_count
@@ -196,7 +196,7 @@ class Solve::Summary
     history.where(
       strategy: Strategy::Skyscraper.name,
       type: Action::UPDATE_CELL,
-    ).map(&:skyscraper).uniq.length
+    ).map(&:strategy_id).uniq.length
   end
 
   def solved_by_skyscraper_cell_count

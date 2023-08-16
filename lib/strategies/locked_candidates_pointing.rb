@@ -19,7 +19,7 @@ class Strategy::LockedCandidatesPointing < Strategy::BaseStrategy
               board,
               outside_current_box_cell,
               outside_current_box_cell.candidates - [shared_cand],
-              {strategy: name, locked_alignment_id: "Box-#{box.id}|#{line_house.class}-#{line_house.id}|Locked-#{shared_cand}"}
+              {strategy: name, strategy_id: "Box-#{box.id}|#{line_house.class}-#{line_house.id}|Locked-#{shared_cand}"}
             )
           end
         end

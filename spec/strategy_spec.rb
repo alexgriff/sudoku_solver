@@ -259,7 +259,7 @@ describe Strategy do
         cell_id: 1,
         type: Action::UPDATE_CELL,
         strategy: Strategy::NakedTriple.name,
-        naked_buddies: [10,28,37]
+        strategy_id: [10,28,37]
       )
       expect(action).to be_truthy
 
@@ -313,7 +313,7 @@ describe Strategy do
         cell_id: 69,
         type: Action::UPDATE_CELL,
         strategy: Strategy::NakedQuadruple.name,
-        naked_buddies: [63, 65, 66, 68]
+        strategy_id: [63, 65, 66, 68]
       )
       expect(action).to be_truthy
     end
@@ -353,7 +353,7 @@ describe Strategy do
         cell_id: 32,
         type: Action::UPDATE_CELL,
         strategy: Strategy::HiddenTriple.name,
-        hidden_buddies: [32, 50, 68]
+        strategy_id: [32, 50, 68]
       )
       expect(action).to be_truthy
     end
@@ -496,7 +496,7 @@ describe Strategy do
         cell_id: 41,
         type: Action::UPDATE_CELL,
         strategy: Strategy::YWing.name,
-        y_wing_id: "27-30-37|9"
+        strategy_id: "27-30-37|9"
       )
       expect(action).to be_truthy
     end
@@ -543,7 +543,7 @@ describe Strategy do
         cell_id: 7,
         type: Action::UPDATE_CELL,
         strategy: Strategy::Skyscraper.name,
-        skyscraper: "41-44|1"
+        strategy_id: "41-44|1"
       )
       expect(action).to be_truthy
     end
