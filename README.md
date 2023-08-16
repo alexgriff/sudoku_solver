@@ -5,15 +5,15 @@ A Ruby program that solves sudokus.
 ## Instructions
 Currently you can interact with the program via a CLI app. Run:
 ```sh
-ruby sudouku.rb --help
+ruby sudoku.rb --help
 ```
 For usage instructions and useful tips.
 
 Sudoku boards generated from [https://qqwing.com/generate.html](https://qqwing.com/generate.html) can be copied pasted into this program. Currently the program should be able to solve any 'Simple', 'Easy', or 'Intermediate' boards and some 'Expert' boards.
 
 It's easiest use boards in the 'One line' format, which will look like
-```rb
-"1..6....9.9247..5......9.7...9....38.1..3..2.53....1...5.9......2..4586.8....1..4"
+```txt
+1..6....9.9247..5......9.7...9....38.1..3..2.53....1...5.9......2..4586.8....1..4
 ```
 
 But other text formats can be passed into the program as well outside of the CLI interface
@@ -34,7 +34,7 @@ SUDOKU
 ```
 
 ### Strategies
-Each "solve" can be passed the set of strategies you want to apply to the board. A lot of information about strategies and techniques can be found here [https://hodoku.sourceforge.net/en/techniques.php](https://hodoku.sourceforge.net/en/techniques.php).
+Each "solve" can be passed the set of strategies you want to apply to the board. Lots od information about strategies and techniques can be found here [https://hodoku.sourceforge.net/en/techniques.php](https://hodoku.sourceforge.net/en/techniques.php).
 
 By default, the CLI uses all of the following strategies which can be viewed with `ruby sudoku.rb -s`
 
@@ -53,7 +53,7 @@ By default, the CLI uses all of the following strategies which can be viewed wit
 12 - Skyscraper
 ```
 
-In the solve summary, you can see the how the strategies were applied to the board. So for example, solving the example board above might look like
+In the solve summary, you can see the how the strategies were applied to the board. So for example, solving the example board above might output a summary like
 
 ```sh
 ruby sudoku.rb -b 1..6....9.9247..5......9.7...9....38.1..3..2.53....1...5.9......2..4586.8....1..4
@@ -87,7 +87,7 @@ Skyscrapers: 0
   cells solved 'by sudoku' after identifying a skyscraper: 0
 Passes: 1
 ```
-If instead you only solve excluding some of the more advanced strategies, the summary may look a lot of different
+If you solve the board excluding some of the more advanced strategies, the summary may look a lot of different
 
 ```sh
 ruby sudoku.rb -e 7,8,9,10,12 -b 1..6....9.9247..5......9.7...9....38.1..3..2.53....1...5.9......2..4586.8....1..4
@@ -110,10 +110,10 @@ Naked quadruples: 0
 Y-Wings: 0
   cells sol
 ```
-If you include only a small enough set of strategies you may not even be able to solve the board at all! The following is the summary only using the  strategies:
+If you include only a small enough set of strategies you may not even be able to solve the board at all! The following is the summary only using 4 strategies:
 
 ```sh
-ruby sudoku.rb -i 1,2,3,4 5 -b 1..6....9.9247..5......9.7...9....38.1..3..2.53....1...5.9......2..4586.8....1..4
+ruby sudoku.rb -i 1,2,3,4 -b 1..6....9.9247..5......9.7...9....38.1..3..2.53....1...5.9......2..4586.8....1..4
 ```
 ```
 Solved: false
