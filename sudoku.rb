@@ -76,6 +76,7 @@ Solve.new(
   with_summary: true
 ).solve(board)
 
+
 # cant solve this one 
 # ruby sudoku.rb -b 47.2..1...9...87....19.....2.....3..91..8..62..4.....7.....24....53...7...6..1.83
 

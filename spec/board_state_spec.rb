@@ -53,10 +53,10 @@ describe Board::State do
         expect(action).to be_truthy
       end
 
-      it 'marks cascading actions with cascade value indicating the action id it cascaded from' do
+      it 'marks cascading actions with cascaded_from_id value indicating the action id it cascaded from' do
         state.register_change(board, board.cells[14], [6], {foo: 'bar'})
         action = state.history.find(cell_id: 12)
-        expect(action.cascade).to be_truthy
+        expect(action.cascaded_from_id).to be_truthy
       end
     end
 

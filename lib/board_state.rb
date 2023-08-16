@@ -78,7 +78,7 @@ class Board::State
           board,
           seen_cell,
           seen_cell.candidates - new_candidates,
-          action_opts.merge(cascade: action.id)
+          action_opts.merge(cascaded_from_id: action.id)
         )
       end
     else

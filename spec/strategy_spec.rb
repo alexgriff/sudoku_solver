@@ -259,7 +259,7 @@ describe Strategy do
         cell_id: 1,
         type: Action::UPDATE_CELL,
         strategy: Strategy::NakedTriple.name,
-        strategy_id: [10,28,37]
+        strategy_id: "Column 1|[10, 28, 37]"
       )
       expect(action).to be_truthy
 
@@ -313,7 +313,7 @@ describe Strategy do
         cell_id: 69,
         type: Action::UPDATE_CELL,
         strategy: Strategy::NakedQuadruple.name,
-        strategy_id: [63, 65, 66, 68]
+        strategy_id: "Row 7|[63, 65, 66, 68]"
       )
       expect(action).to be_truthy
     end
@@ -353,7 +353,7 @@ describe Strategy do
         cell_id: 32,
         type: Action::UPDATE_CELL,
         strategy: Strategy::HiddenTriple.name,
-        strategy_id: [32, 50, 68]
+        strategy_id: "Column 5|[32, 50, 68]"
       )
       expect(action).to be_truthy
     end

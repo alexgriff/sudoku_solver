@@ -139,14 +139,12 @@ http://0.0.0.0:9292/solve/1..6....9.9247..5......9.7...9....38.1..3..2.53....1..
 The web app will respond with a json version of the entire solve history. The history is an array of discrete _"redux-like" actions_, ie plain objects like:
 ```json
 {
-  "id":15183,
-  "cell_id":47,
+  "id":22,
   "type":"update_cell",
-  "values":[6],
-  "cascade":56,
-  "solves":true,
-  "strategy":"nakedpair",
-  "strategy_id":[57,59]
+  "cell_id":50,
+  "values":[2,6,7],
+  "strategy":"hidden_single",
+  "cascaded_from_id":20
 }
 ```
 What's consuming this currently??.... nothing! But you could imagine a fairly simple client side reducer that would allow you to replay the whole solve history step by step... that's coming next perhaps.
