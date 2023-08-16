@@ -34,7 +34,7 @@ SUDOKU
 ```
 
 ### Strategies
-Each "solve" can be passed the set of strategies you want to apply to the board. Lots od information about strategies and techniques can be found here [https://hodoku.sourceforge.net/en/techniques.php](https://hodoku.sourceforge.net/en/techniques.php).
+Each "solve" can be passed the set of strategies you want to apply to the board. Lots of information about strategies and techniques can be found here [https://hodoku.sourceforge.net/en/techniques.php](https://hodoku.sourceforge.net/en/techniques.php).
 
 By default, the CLI uses all of the following strategies which can be viewed with `ruby sudoku.rb -s`
 
@@ -108,7 +108,8 @@ Naked triples: 1
 Naked quadruples: 0
   cells solved 'by sudoku' after identifying a naked quadruple: 0
 Y-Wings: 0
-  cells sol
+  cells solved 'by sudoku' after identifying a y-wing: 0
+Passes: 2
 ```
 If you include only a small enough set of strategies you may not even be able to solve the board at all! The following is the summary only using 4 strategies:
 
