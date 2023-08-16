@@ -548,4 +548,80 @@ describe Strategy do
       expect(action).to be_truthy
     end
   end
+
+  describe Strategy::SimpleColoring do
+    let(:board_same_color) do
+      # https://www.thonky.com/sudoku/simple-coloring
+      txt = <<~SUDOKU
+      . 5 . | . . . | 2 . 8
+      7 . . | . . 3 | 6 . 4
+      4 . . | . . . | . . 1
+     -------|-------|-------
+      . . . | . 7 . | . 1 .
+      2 . . | 5 . . | . . 6
+      . 4 . | . 3 6 | 9 7 .
+     -------|-------|-------
+      8 . . | . . 5 | 1 6 9
+      6 . . | . 1 . | 8 2 3
+      3 . 1 | . 6 . | 5 4 7
+      SUDOKU
+      Board.from_txt(txt)
+    end
+
+    let(:board_opposite_colors) do
+      # https://www.thonky.com/sudoku/simple-coloring
+      txt = <<~SUDOKU
+      8 . 3 | 9 5 . | 4 . 7
+      6 . 4 | . 3 . | 5 . .
+      7 . 5 | . 4 . | 2 3 .
+     -------|-------|-------
+      4 . 2 | . 9 3 | 1 7 .
+      1 . 9 | . 2 . | 3 4 .
+      3 5 7 | 1 . 4 | . 9 2
+     -------|-------|-------
+      . 3 . | 4 7 . | 9 . 1
+      9 7 . | 3 1 5 | . 2 4
+      . 4 1 | . . 9 | 7 . 3
+      SUDOKU
+      Board.from_txt(txt)
+    end
+
+    it 'can solve cells when the same color appears 2x in a house' do
+      expect(board_same_color.cells[10].candidates).to include(1)
+      expect(board_same_color.cells[45].candidates).to include(1)
+      expect(board_same_color.cells[41].candidates).to include(1)
+
+      Strategy::SimpleColoring.apply(board_same_color)
+
+      expect(board_same_color.cells[10].value).to eq(1)
+      expect(board_same_color.cells[45].value).to eq(1)
+      expect(board_same_color.cells[41].value).to eq(1)
+
+      action = board_same_color.state.history.find(
+        cell_id: 10,
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::SimpleColoring.name,
+        strategy_id: 1 # TODO: may need more uniq id
+      )
+      expect(action).to be_truthy
+    end
+
+    it 'eliminates candidates by simple coloring when opposite colors are seen by same cell' do
+      expect(board_opposite_colors.cells[59].candidates).to include(6)
+      expect(board_opposite_colors.cells[79].candidates).to include(6)
+
+      Strategy::SimpleColoring.apply(board_opposite_colors)
+
+      expect(board_opposite_colors.cells[59].candidates).not_to include(6)
+      expect(board_opposite_colors.cells[79].candidates).not_to include(6)
+
+      action = board_opposite_colors.state.history.find(
+        cell_id: 7,
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::SimpleColoring.name,
+        strategy_id: 6
+      )
+      expect(action).to be_truthy
+    end
+  end
 end

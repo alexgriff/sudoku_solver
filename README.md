@@ -33,6 +33,8 @@ txt = <<~SUDOKU
 SUDOKU
 ```
 
+Board texts in an easily pasteable format can also be found at [https://www.thonky.com/sudoku/](https://www.thonky.com/sudoku/).
+
 ### Strategies
 Each "solve" can be passed the set of strategies you want to apply to the board. Lots of information about strategies and techniques can be found here [https://hodoku.sourceforge.net/en/techniques.php](https://hodoku.sourceforge.net/en/techniques.php).
 
