@@ -46,6 +46,12 @@ class House
     end
   end
 
+  def conjugate_pair(cand)
+    cells_with_candidates([cand]).yield_self do |cells|
+      cells.length == 2 ? cells : []
+    end
+  end
+
   def valid?
     @errors = []
     all_non_emptys_are_unique?

@@ -15,7 +15,8 @@ class Solve
     Strategy::Swordfish,
     Strategy::HiddenTriple,
     Strategy::YWing,
-    Strategy::Skyscraper
+    Strategy::Skyscraper,
+    # Strategy::SimpleColoring
   ]
   
   attr_reader :strategies, :with_display, :with_summary
