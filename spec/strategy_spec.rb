@@ -601,13 +601,14 @@ describe Strategy do
         cell_id: 10,
         type: Action::UPDATE_CELL,
         strategy: Strategy::SimpleColoring.name,
-        strategy_id: "[10, 41, 45]|1"
+        strategy_id: "[10, 41, 45]|1",
+        same_color_in_same_house: true
       )
 
       expect(action).to be_truthy
     end
 
-    it 'eliminates candidates by simple coloring when opposite colors are seen by same cell', skip: true do
+    it 'eliminates candidates by simple coloring when opposite colors are seen by same cell' do
       expect(board_opposite_colors.cells[59].candidates).to include(6)
       expect(board_opposite_colors.cells[79].candidates).to include(6)
 
@@ -617,11 +618,13 @@ describe Strategy do
       expect(board_opposite_colors.cells[79].candidates).not_to include(6)
 
       action = board_opposite_colors.state.history.find(
-        cell_id: 7,
+        cell_id: 59,
         type: Action::UPDATE_CELL,
         strategy: Strategy::SimpleColoring.name,
-        strategy_id: 6
+        strategy_id: "[59, 79]|6",
+        seen_by_opposite_colors: true
       )
+
       expect(action).to be_truthy
     end
   end

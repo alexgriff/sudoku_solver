@@ -44,16 +44,39 @@ class Strategy::SimpleColoring < Strategy::BaseStrategy
 
       conj_pair_chains.each do |chain|
         begin
-          cell_colors = self.color(chain)
-          COLORS.each do |color|
-            same_color_cells = cell_colors.keys.select { |cell| cell_colors[cell] == color }
-            same_color_houses = same_color_cells.map { |cell| board.houses_for(cell) }.flatten
-  
-            # if this is true it means there is more than 1 cell in the same house with the same color.
-            # This is a problem - it can't be true! Everything marked with the current color is false.
-            if same_color_houses.length != same_color_houses.uniq.length
-              raise ColorError.new(color)
+          cell_colors = color_in(chain)
+          same_color_cells = COLORS.map do |color|
+            cell_colors.keys.select { |cell| cell_colors[cell] == color }
+          end
+
+          # Check if the same house has the same color in it more than once.
+          # If so, that's bad! That color cannot be true
+          same_color_cells.each.with_index do |one_color_cells, i|
+            house_set = Set.new
+            one_color_cells.each do |cell|
+              board.houses_for(cell).each do |house|
+                raise ColorError.new(COLORS[i]) unless house_set.add?(house)
+              end
             end
+          end
+
+          # Check if there are any cells with the cand that can see both colors
+          # if so, that cell can't be the cand
+          other_cells_with_cand = board.cells_with_candidates([cand]) - same_color_cells.flatten
+
+          seen_by_both_colors = same_color_cells.map do |one_color_cells|
+            one_color_cells.map { |colored_cell| board.empty_cells_seen_by(colored_cell) }
+                          .flatten
+                          .intersection(other_cells_with_cand)
+          end.reduce(&:intersection)
+
+          board.each_empty_cell(seen_by_both_colors) do |cell|
+            board.state.register_change(
+              board,
+              cell,
+              cell.candidates - [cand],
+              {strategy: name, seen_by_opposite_colors: true, strategy_id: "#{seen_by_both_colors.map(&:id).sort}|#{cand}"}
+            )
           end
         rescue ColorError => color_err
           true_color = opposite_color_for(color_err.false_color)
@@ -63,7 +86,7 @@ class Strategy::SimpleColoring < Strategy::BaseStrategy
               board,
               cell,
               [cand],
-              {strategy: name, strategy_id: "#{true_color_cells.map(&:id).sort}|#{cand}"}
+              {strategy: name, same_color_in_same_house: true, strategy_id: "#{true_color_cells.map(&:id).sort}|#{cand}"}
             )
           end
         end
@@ -71,15 +94,15 @@ class Strategy::SimpleColoring < Strategy::BaseStrategy
     end
   end
 
-  def self.color(chain)
+  def self.color_in(chain)
     # mark the first cell with an arbitrary color
     cell = chain.keys.first
     cell_colors = {}
     cell_colors[cell] = COLORS.first
-    recursive_color(cell, chain, cell_colors)
+    recursive_color_in(cell, chain, cell_colors)
   end
 
-  def self.recursive_color(cell, chain, cell_colors)
+  def self.recursive_color_in(cell, chain, cell_colors)
     # return if every cell has been marked with a color
     return cell_colors if chain.keys.length == cell_colors.keys.length
     current_color = cell_colors[cell]
@@ -91,7 +114,7 @@ class Strategy::SimpleColoring < Strategy::BaseStrategy
       # Skip if cell has already been marked
       if cell_colors[seen_cell].nil?
         cell_colors[seen_cell] = opposite_color
-        cell_colors = recursive_color(seen_cell, chain, cell_colors)
+        cell_colors = recursive_color_in(seen_cell, chain, cell_colors)
       end
     end
     cell_colors

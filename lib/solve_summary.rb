@@ -48,7 +48,8 @@ class Solve::Summary
       used_strategy?(Strategy::Skyscraper) && "Skyscrapers: #{num_skyscrapers}",
       used_strategy?(Strategy::Skyscraper) && "  cells solved 'by sudoku' after identifying a skyscraper: #{solved_by_skyscraper_cell_count}",
       used_strategy?(Strategy::SimpleColoring) && "Simple Coloring used: #{num_simple_colorings}",
-      used_strategy?(Strategy::SimpleColoring) && "  cells solved 'by sudoku' after identifying a simple coloring mismatch: #{solved_by_simple_coloring_cell_count}",
+      used_strategy?(Strategy::SimpleColoring) && "  cells solved after identifying the same color was present in the same house: #{solved_by_simple_coloring_same_color_same_house_cell_count}",
+      used_strategy?(Strategy::SimpleColoring) && "  cells solved 'by sudoku' after identifying a cell was seen by opposite colors: #{solved_by_simple_coloring_seen_by_opposite_colors_cell_count}",
       "Passes: #{num_passes}",
       "(#{total_count})"
     ].compact.join("\n")
@@ -69,7 +70,8 @@ class Solve::Summary
       solved_by_swordfish_cell_count +
       solved_by_hidden_triple_cell_count +
       solved_by_y_wing_cell_count +
-      solved_by_skyscraper_cell_count
+      solved_by_skyscraper_cell_count +
+      solved_by_simple_coloring_cell_count
     )
   end
 
@@ -87,5 +89,15 @@ class Solve::Summary
 
   def initial_filled_cell_count
     history.find(type: Action::NEW_BOARD_SYNC).initial_data.reject { |v| v == Cell::EMPTY }.length
+  end
+
+  # The SimpleColoring reporting methods need to be handrolled since
+  # there's two (highly related) different sub-strategies within the SimpleColoring strategy
+  def solved_by_simple_coloring_same_color_same_house_cell_count
+    history.where(solves: true, strategy: Strategy::SimpleColoring.name, same_color_in_same_house: true).length
+  end
+
+  def solved_by_simple_coloring_seen_by_opposite_colors_cell_count
+    history.where(solves: true, strategy: Strategy::SimpleColoring.name, seen_by_opposite_colors: true).length
   end
 end
