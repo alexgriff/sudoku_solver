@@ -74,7 +74,6 @@ describe Solve do
   it "can solve a series of intermediate sudokus" do
     boards = File.read("spec/fixtures/intermediates.txt").split("\n\n").map { |txt| Board.from_txt(txt) }
     solved = boards.map { |board| Solve.new.solve(board) }
-
     solved.each.with_index do |status, i|
       expect("#{i} - #{status}").to eq("#{i} - true")
     end

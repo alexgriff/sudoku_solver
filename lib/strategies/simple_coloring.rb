@@ -52,12 +52,8 @@ class Strategy::SimpleColoring < Strategy::BaseStrategy
           # Check if the same house has the same color in it more than once.
           # If so, that's bad! That color cannot be true
           same_color_cells.each.with_index do |one_color_cells, i|
-            house_set = Set.new
-            one_color_cells.each do |cell|
-              board.houses_for(cell).each do |house|
-                raise ColorError.new(COLORS[i]) unless house_set.add?(house)
-              end
-            end
+            houses_for_color = one_color_cells.map { |cell| board.houses_for(cell) }.flatten
+            raise ColorError.new(COLORS[i]) unless houses_for_color.length == houses_for_color.uniq.length
           end
 
           # Check if there are any cells with the cand that can see both colors
