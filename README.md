@@ -53,9 +53,12 @@ By default, the CLI uses all of the following strategies which can be viewed wit
 10 - Hidden triple
 11 - Y wing
 12 - Skyscraper
+13 - Simple coloring
 ```
 
 In the solve summary, you can see the how the strategies were applied to the board. So for example, solving the example board above might output a summary like
+
+* _Note: (these example summary texts may not be totally up to date)_
 
 ```sh
 ruby sudoku.rb -b 1..6....9.9247..5......9.7...9....38.1..3..2.53....1...5.9......2..4586.8....1..4
