@@ -601,8 +601,9 @@ describe Strategy do
         cell_id: 10,
         type: Action::UPDATE_CELL,
         strategy: Strategy::SimpleColoring.name,
-        # strategy_id: 1 # TODO: may need more uniq id
+        strategy_id: "[10, 41, 45]|1"
       )
+
       expect(action).to be_truthy
     end
 

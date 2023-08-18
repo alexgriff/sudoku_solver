@@ -97,7 +97,7 @@ class Board::State
 
   class InvalidError < StandardError
     def initialize(board)
-      super(board.errors.join("\n"))
+      super("Board: #{board.id}\n#{board.errors.join("\n")}")
     end
   end
 

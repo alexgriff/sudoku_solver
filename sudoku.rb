@@ -13,7 +13,8 @@ strategy_selections = {
   9 => Strategy::Swordfish,
   10 => Strategy::HiddenTriple,
   11 => Strategy::YWing,
-  12 => Strategy::Skyscraper
+  12 => Strategy::Skyscraper,
+  13 => Strategy::SimpleColoring
 }
 
 opts = Slop.parse do |o|

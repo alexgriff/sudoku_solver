@@ -47,6 +47,8 @@ class Solve::Summary
       used_strategy?(Strategy::YWing) && "  cells solved 'by sudoku' after identifying a y-wing: #{solved_by_y_wing_cell_count}",
       used_strategy?(Strategy::Skyscraper) && "Skyscrapers: #{num_skyscrapers}",
       used_strategy?(Strategy::Skyscraper) && "  cells solved 'by sudoku' after identifying a skyscraper: #{solved_by_skyscraper_cell_count}",
+      used_strategy?(Strategy::SimpleColoring) && "Simple Coloring used: #{num_simple_colorings}",
+      used_strategy?(Strategy::SimpleColoring) && "  cells solved 'by sudoku' after identifying a simple coloring mismatch: #{solved_by_simple_coloring_cell_count}",
       "Passes: #{num_passes}",
       "(#{total_count})"
     ].compact.join("\n")

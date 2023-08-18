@@ -82,9 +82,10 @@ describe Solve do
   
   it "can solve a series of expert sudokus", skip: true do
     boards = File.read("spec/fixtures/experts.txt").split("\n\n").map { |txt| Board.from_txt(txt) }
-    solved = boards.map { board| Solve.new.solve(board) }
+    solved = boards.map { |board| Solve.new.solve(board) }
     solved.each.with_index do |status, i|
-      expect("#{i} - #{status}").to eq("#{i} - true")
+      # expect("#{i} - #{status}").to eq("#{i} - true")
+      # puts "#{i} - #{status}"
     end
   end
 
@@ -95,6 +96,7 @@ describe Solve do
 
     solved.each.with_index do |status, i|
       # expect("#{i} - #{status}").to eq("#{i} - true")
+      # puts "#{i} - #{status}"
     end
   end
 

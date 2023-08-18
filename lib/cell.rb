@@ -62,7 +62,7 @@ class Cell
 
   def inspect
     # printing the whole state object is too annoying and unwieldy
-    "#<#{self.class.name}:0x#{object_id.to_s(16).rjust(16, '0')} @id=#{id}>"
+    "#<#{self.class.name} @id=#{id}>"
   end
 
   private
