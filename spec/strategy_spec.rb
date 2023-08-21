@@ -259,7 +259,7 @@ describe Strategy do
         cell_id: 1,
         type: Action::UPDATE_CELL,
         strategy: Strategy::NakedTriple.name,
-        strategy_id: "Column 1|[10, 28, 37]"
+        strategy_application_id: "Column 1|[10, 28, 37]"
       )
       expect(action).to be_truthy
 
@@ -313,7 +313,7 @@ describe Strategy do
         cell_id: 69,
         type: Action::UPDATE_CELL,
         strategy: Strategy::NakedQuadruple.name,
-        strategy_id: "Row 7|[63, 65, 66, 68]"
+        strategy_application_id: "Row 7|[63, 65, 66, 68]"
       )
       expect(action).to be_truthy
     end
@@ -353,7 +353,7 @@ describe Strategy do
         cell_id: 32,
         type: Action::UPDATE_CELL,
         strategy: Strategy::HiddenTriple.name,
-        strategy_id: "Column 5|[32, 50, 68]"
+        strategy_application_id: "Column 5|[32, 50, 68]"
       )
       expect(action).to be_truthy
     end
@@ -496,7 +496,7 @@ describe Strategy do
         cell_id: 41,
         type: Action::UPDATE_CELL,
         strategy: Strategy::YWing.name,
-        strategy_id: "27-30-37|9"
+        strategy_application_id: "27-30-37|9"
       )
       expect(action).to be_truthy
     end
@@ -543,7 +543,7 @@ describe Strategy do
         cell_id: 7,
         type: Action::UPDATE_CELL,
         strategy: Strategy::Skyscraper.name,
-        strategy_id: "41-44|1"
+        strategy_application_id: "41-44|1"
       )
       expect(action).to be_truthy
     end
@@ -601,7 +601,7 @@ describe Strategy do
         cell_id: 10,
         type: Action::UPDATE_CELL,
         strategy: Strategy::SimpleColoring.name,
-        strategy_id: "[10, 41, 45]|1",
+        strategy_application_id: "[10, 41, 45]|1",
         same_color_in_same_house: true
       )
 
@@ -621,7 +621,7 @@ describe Strategy do
         cell_id: 59,
         type: Action::UPDATE_CELL,
         strategy: Strategy::SimpleColoring.name,
-        strategy_id: "[59, 79]|6",
+        strategy_application_id: "[59, 79]|6",
         seen_by_opposite_colors: true
       )
 

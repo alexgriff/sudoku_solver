@@ -16,7 +16,7 @@ class Strategy::RandomGuess < Strategy::BaseStrategy
     # after finding the correct value, undo all the guesswork
     # and put the state into a 'clean' state with only the one guessed cell filled in
     correct_value = selected_cell.value
-    first_guess = board.state.history.guesses.find { |action| action.strategy_id == selected_cell.id }
+    first_guess = board.state.history.guesses.find { |action| action.strategy_application_id == selected_cell.id }
     board.state.undo(first_guess)
     board.state.register_change(
       board,
@@ -33,7 +33,7 @@ class Strategy::RandomGuess < Strategy::BaseStrategy
     puts "\n[Cell #{cell.id}]" if debugging
     puts "already filled!" if cell.filled? if debugging
     return try_it(board, empty_cells.slice(1..), empty_cells.first) if cell.filled?
-  
+
     puts "trying it for #{cell.id}" if debugging
     shuffled_cands = cell.candidates.dup.shuffle(random: random)
     cand = shuffled_cands.pop
@@ -47,7 +47,7 @@ class Strategy::RandomGuess < Strategy::BaseStrategy
           board,
           cell,
           [cand],
-          {strategy: name, strategy_id: cell.id}
+          {strategy: name, strategy_application_id: cell.id}
         )
       rescue Board::State::InvalidError
         puts "    -- cand #{cand} failed" if debugging

@@ -71,7 +71,7 @@ class Strategy::SimpleColoring < Strategy::BaseStrategy
               board,
               cell,
               cell.candidates - [cand],
-              {strategy: name, seen_by_opposite_colors: true, strategy_id: "#{seen_by_both_colors.map(&:id).sort}|#{cand}"}
+              {strategy: name, seen_by_opposite_colors: true, strategy_application_id: "#{seen_by_both_colors.map(&:id).sort}|#{cand}"}
             )
           end
         rescue ColorError => color_err
@@ -82,7 +82,7 @@ class Strategy::SimpleColoring < Strategy::BaseStrategy
               board,
               cell,
               [cand],
-              {strategy: name, same_color_in_same_house: true, strategy_id: "#{true_color_cells.map(&:id).sort}|#{cand}"}
+              {strategy: name, same_color_in_same_house: true, strategy_application_id: "#{true_color_cells.map(&:id).sort}|#{cand}"}
             )
           end
         end

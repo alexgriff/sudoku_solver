@@ -25,7 +25,7 @@ class Solve
     @with_display = with_display
     @with_summary = with_summary
     @with_random_guess = strategies.include?(Strategy::RandomGuess)
-    @strategies = strategies - [Strategy::RandomGuess]
+    @strategies = strategies
   end
 
   def solve(board)
@@ -35,7 +35,7 @@ class Solve
     # subsequent strategies account for completing naked singles discovered after the strategy is applied
     Strategy::NakedSingle.apply(board) if board.state.current_pass == 1
 
-    strategies.each do |strategy|
+    base_strategies.each do |strategy|
       strategy.apply(board)
     end
 
@@ -52,5 +52,9 @@ class Solve
     else
       solve(board)
     end
+  end
+
+  def base_strategies
+    @base_strategies ||= strategies - [Strategy::RandomGuess]
   end
 end

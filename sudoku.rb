@@ -21,6 +21,7 @@ opts = Slop.parse do |o|
   o.string '-b', '--board', 'board text', required: true
   o.array '-i', '--include', 'strategies to include', delimiter: ',', default: []
   o.array '-e', '--exclude', 'strategies to exclude', delimiter: ',', default: []
+  o.bool '-r', '--random-guess', 'include the random guess strategy'
   o.on '-h', '--help' do
     puts <<~HELP
       Tries to solve the given sudoko board passed to the -b (--board) flag
@@ -37,10 +38,16 @@ opts = Slop.parse do |o|
 
       ruby sudoku.rb -e 7,11,12 -b 6..3.8..4..3...2......7....2.......63...9...7.48.6.32.....4......57.64..8.41.27.9
 
-      To instead only use the passed set of strategies and no other use the -i (--include flag)
+      To instead only use the passed set of strategies and no other use the -i (--include) flag
 
       ruby sudoku.rb -i 1,2,3,4 -b 6..3.8..4..3...2......7....2.......63...9...7.48.6.32.....4......57.64..8.41.27.9
 
+      'Random guessing' is a special strategy that works a bit differently than the others. If this strategy is enabled,
+      and the main set of strategies is totally exhausted and cannot update the board in any way, one cell
+      will be filled with the correct value by random guessing. This is disabled by default. To include it use the
+      -r (--random-guess) flag
+
+      ruby sudoku.rb -r -b 65..3.19.9...8....8.2....7...371...9.........1..9..8.6...6.......8.21....1....56.
     HELP
     
     exit
@@ -65,6 +72,10 @@ end
 
 if excluding
   strategies = strategy_selections.except(*opts[:exclude].map(&:to_i)).values
+end
+
+if opts[:random_guess]
+  strategies += [Strategy::RandomGuess]
 end
 
 
