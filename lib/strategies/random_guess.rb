@@ -10,13 +10,13 @@ class Strategy::RandomGuess < Strategy::BaseStrategy
   def self.apply(board, cell=nil)
     selected_cell = cell || board.empty_cells.sample(random: random)
     return if !selected_cell&.empty?
-    
-    try_it(board, selected_cell)
-    
+    strategy_application_id = selected_cell.id
+
+    try_it(board, selected_cell, strategy_application_id)
     # after finding the correct value, undo all the guesswork
     # and put the board into a 'clean' state with only the single guessed cell filled in
     correct_value = selected_cell.value
-    first_guess = board.state.history.guesses.find { |action| action.strategy_application_id == selected_cell.id }
+    first_guess = guesses(board, strategy_application_id).first
     board.state.undo(first_guess)
     board.state.register_change(
       board,
@@ -26,47 +26,46 @@ class Strategy::RandomGuess < Strategy::BaseStrategy
     )
   end
 
-  def self.try_it(board, cell)
-    debugging = false
-    return true if board.state.is_solved?
-    puts "\n[Cell #{cell.id}]" if debugging
-    puts "    -- trying it for #{cell.id}" if debugging
+  def self.try_it(board, cell, strategy_application_id)
+    return true if board.state.is_solved? || cell.filled?
+
     shuffled_cands = cell.candidates.dup.shuffle(random: random)
     cand = shuffled_cands.pop
 
     while cand && cell.empty?
       begin
-        puts "\n[Cell #{cell.id}]" if debugging
-        puts "    -- next cands #{shuffled_cands.inspect}" if debugging
-        puts "    -- attempting cand #{cand}" if debugging
         board.state.register_change(
           board,
           cell,
           [cand],
-          {strategy: name, strategy_application_id: cell.id}
+          {strategy: name, strategy_application_id: strategy_application_id}
         )
       rescue Board::State::InvalidError
-        puts "    -- cand #{cand} failed" if debugging
-        puts "******RESETTING STATE******" if debugging
-        board.state.undo(board.state.history.guesses.last)
-        cand = shuffled_cands.pop
-        next 
+        board.state.undo(guesses(board, strategy_application_id).last)
+        next
       else
-        puts "    -- cand #{cand} succeeded!" if debugging
-        puts "    -- board is solved? #{board.state.is_solved?}" if debugging
-        it_worked = try_it(board, board.empty_cells.sample(random: random))
-        cand = shuffled_cands.pop unless it_worked
+        try_it(board, board.empty_cells.sample(random: random), strategy_application_id)
+      ensure
+        cand = shuffled_cands.pop
       end
     end
-    puts "\n[Cell #{cell.id}]" if debugging
-    puts "    -- no more candidates - will return false" if cell.empty? && debugging
-    puts "    -- cell is already filled! - will return true" if cell.filled? && debugging
+
+    # when we've gotten here we've either exited the loop above due to finding a valid value for the cell,
+    # or we've exhausted all possible candidates.
+    # In the sad path case, we want to undo not just the last guess, that would get us
+    # back to this same state, but the last 2
     if cell.filled?
       true
     else
-      puts "******RESETTING STATE******" if debugging
-      board.state.undo(board.state.history.guesses.last)
+      board.state.undo(guesses(board, strategy_application_id).last(2).first)
       false
     end
+  end
+
+  def self.guesses(board, strategy_application_id)
+    board.state
+         .history
+         .where(strategy: Strategy::RandomGuess.name, solves: true, strategy_application_id: strategy_application_id)
+         .reject { |action| action.cascaded_from_id }
   end
 end

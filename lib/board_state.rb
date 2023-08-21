@@ -104,7 +104,7 @@ class Board::State
   end
 
   def undo(action)
-    reset_to(history.action_previous_to(action))
+    reset_to(history.action_previous_to(action)) if action
   end
 
   class InvalidError < StandardError
