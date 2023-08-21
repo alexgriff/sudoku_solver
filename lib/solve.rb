@@ -19,12 +19,13 @@ class Solve
     Strategy::SimpleColoring
   ]
   
-  attr_reader :strategies, :with_display, :with_summary
+  attr_reader :strategies, :with_display, :with_summary, :with_random_guess
 
   def initialize(strategies: BASIC_STRATEGIES, with_display: false, with_summary: false)
-    @strategies = strategies
     @with_display = with_display
     @with_summary = with_summary
+    @with_random_guess = strategies.include?(Strategy::RandomGuess)
+    @strategies = strategies - [Strategy::RandomGuess]
   end
 
   def solve(board)
@@ -37,6 +38,10 @@ class Solve
     strategies.each do |strategy|
       strategy.apply(board)
     end
+
+    # Random guess is a special strategy, if included and the board hasn't been touched in this pass,
+    # it will fill in one cell the correct value and then allow the other strategies to continue
+    Strategy::RandomGuess.apply(board) if with_random_guess && !board.state.has_been_touched?
 
     if board.state.is_solved? || !board.state.has_been_touched?
       board.state.register_done

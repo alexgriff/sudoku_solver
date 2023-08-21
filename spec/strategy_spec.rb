@@ -628,4 +628,65 @@ describe Strategy do
       expect(action).to be_truthy
     end
   end
+
+  describe Strategy::RandomGuess do
+    let(:board) do
+      txt = <<~SUDOKU
+      1 6 4 | . 9 . | . . .
+      . . . | . 7 . | . . 6
+      5 . . | 1 . 6 | 4 . .
+     -------|-------|-------
+      . 5 . | 7 . 1 | 6 . .
+      . . . | . . . | . . .
+      . 8 . | 4 . 9 | 5 . .
+     -------|-------|-------
+      4 . . | 6 . 2 | 7 . .
+      . . . | . 4 . | . . 3
+      8 2 5 | . 3 . | . . .
+      SUDOKU
+      Board.from_txt(txt)
+    end
+
+    it "is given a cell and can fill in the correct value for that cell using only random guessing" do
+      expect(board.cells[44].empty?).to be(true)
+      Strategy::RandomGuess.apply(board, board.cells[44])
+      expect(board.cells[44].value).to eq(1)
+
+      action = board.state.history.find(
+        cell_id: 44,
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::RandomGuess.name,
+        solves: true
+      )
+      expect(action).to be_truthy
+
+      # expect the state to be 'clean' and not show random guesses
+      all_guesses = board.state.history.where(
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::RandomGuess.name,
+        solves: true
+      )
+      expect(all_guesses.length).to eq(1)
+
+      # expect this not to fail due to an invalid state
+      expect(Solve.new.solve(board)).to be(true)
+    end
+
+    it "if not given a cell it chooses one at random to solve" do
+      expect(board.empty_cells.length).to eq(53)
+      Strategy::RandomGuess.apply(board)
+      expect(board.empty_cells.length).to be <=(53)
+
+      action = board.state.history.find(
+        type: Action::UPDATE_CELL,
+        strategy: Strategy::RandomGuess.name,
+        solves: true
+      )
+      expect(action).to be_truthy
+
+      # expect this not to fail due to an invalid state
+      expect(Solve.new.solve(board)).to be(true)
+    end
+  end
+
 end

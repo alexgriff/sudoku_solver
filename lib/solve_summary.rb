@@ -50,6 +50,8 @@ class Solve::Summary
       used_strategy?(Strategy::SimpleColoring) && "Simple Coloring used: #{num_simple_colorings}",
       used_strategy?(Strategy::SimpleColoring) && "  cells solved after identifying the same color was present in the same house: #{solved_by_simple_coloring_same_color_same_house_cell_count}",
       used_strategy?(Strategy::SimpleColoring) && "  cells solved 'by sudoku' after identifying a cell was seen by opposite colors: #{solved_by_simple_coloring_seen_by_opposite_colors_cell_count}",
+      used_strategy?(Strategy::RandomGuess) && "Random Guesses: #{num_random_guesss}",
+      used_strategy?(Strategy::RandomGuess) && "  cells solved 'by sudoku' after filling in one cell: #{solved_by_random_guess_cell_count}",
       "Passes: #{num_passes}",
       "(#{total_count})"
     ].compact.join("\n")
@@ -71,7 +73,8 @@ class Solve::Summary
       solved_by_hidden_triple_cell_count +
       solved_by_y_wing_cell_count +
       solved_by_skyscraper_cell_count +
-      solved_by_simple_coloring_cell_count
+      solved_by_simple_coloring_cell_count +
+      solved_by_random_guess_cell_count
     )
   end
 

@@ -70,7 +70,10 @@ end
 
 board_txt = opts[:board]
 board = Board.from_txt(board_txt)
+puts "ORIGINAL"
+puts board.display
 
+puts "SOLVED"
 Solve.new(
   strategies: strategies,
   with_display: true,

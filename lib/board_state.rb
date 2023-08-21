@@ -33,11 +33,11 @@ class Board::State
   end
 
   def dispatch(action)
-    history << action
     self.touched = Board::Reducer.touched_reducer({touched: @touched, cells: @cells}, action)
     self.passes = Board::Reducer.passes_reducer(@passes, action)
     self.solved = Board::Reducer.solved_reducer(@solved, action)
     self.cells = Board::Reducer.cells_reducer(@cells, action)
+    history << action
   end
 
   def register_next_pass
@@ -93,6 +93,18 @@ class Board::State
     end
 
     raise InvalidError.new(board) unless board.valid?
+  end
+
+  def reset_to(action)
+    copied_history = history.up_to(action.id)
+    history.reset
+    copied_history.each do |action|
+      dispatch(action)
+    end
+  end
+
+  def undo(action)
+    reset_to(history.action_previous_to(action))
   end
 
   class InvalidError < StandardError

@@ -1,25 +1,24 @@
 describe Board::State do
-  let(:board) do
-    txt = <<~SUDOKU
-    . . . | 5 . 7 | . . .
-    . 1 9 | . 4 . | 2 7 .
-    . . 3 | . . . | 9 . .
-   -------|-------|-------
-    . . 6 | . . . | 3 . .
-    4 . . | 8 . 3 | . . 5
-    . . 2 | . . . | 8 . .
-   -------|-------|-------
-    . . . | . 7 . | . . .
-    . . . | 2 . 8 | . . .
-    . 9 . | . 1 . | . 6 .
-    SUDOKU
-
-    Board.from_txt(txt)
-  end
-
-  let(:state) { board.state }
-
   describe '#register_change' do
+    let(:board) do
+      txt = <<~SUDOKU
+      . . . | 5 . 7 | . . .
+      . 1 9 | . 4 . | 2 7 .
+      . . 3 | . . . | 9 . .
+      -------|-------|-------
+      . . 6 | . . . | 3 . .
+      4 . . | 8 . 3 | . . 5
+      . . 2 | . . . | 8 . .
+      -------|-------|-------
+      . . . | . 7 . | . . .
+      . . . | 2 . 8 | . . .
+      . 9 . | . 1 . | . 6 .
+      SUDOKU
+
+      Board.from_txt(txt)
+    end
+    let(:state) { board.state }
+
     context 'when a cell is updated to a solved state' do
       it 'dispatches a series of action to update other seen cells' do
         expect(board.cells[0].candidates).to eq([2,6,8])
@@ -64,6 +63,49 @@ describe Board::State do
       expect {
         state.register_change(board, board.cells[0], [9])
       }.to raise_error(Board::State::InvalidError)
+    end
+  end
+
+  describe '#reset_to' do
+    let(:board) do
+      txt = <<~SUDOKU
+      3 9 . | 4 6 . | . . .
+      . . 6 | . . 3 | 7 . .
+      8 . . | . . . | . 6 .
+     -------|-------|-------
+      2 . . | . . 1 | . 5 .
+      . 5 . | . 9 . | . 4 .
+      . 8 . | 2 . . | . . 6
+     -------|-------|-------
+      . 4 . | . . . | . . 8
+      . . 2 | 8 . . | 5 . .
+      . . . | . 1 5 | . 7 4
+      SUDOKU
+
+      Board.from_txt(txt)
+    end
+
+    it 'resets the board state to an arbitrary point in time' do
+      original_state = board.state.instance_variable_get(:@cells)
+      Strategy::HiddenSingle.apply(board)
+
+      state_after_first_strategy = board.state.instance_variable_get(:@cells)
+      expect(original_state).not_to eq(state_after_first_strategy)
+
+      Strategy::LockedCandidatesPointing.apply(board)
+
+      state_after_second_strategy = board.state.instance_variable_get(:@cells)
+      expect(state_after_first_strategy).not_to eq(state_after_second_strategy)
+      point_in_time = board.state.history.all.last
+
+      Strategy::NakedTriple.apply(board)
+
+      state_after_thirs_strategy = board.state.instance_variable_get(:@cells)
+      expect(state_after_second_strategy).not_to eq(state_after_thirs_strategy)
+
+      board.state.reset_to(point_in_time)
+      current_state = board.state.instance_variable_get(:@cells)
+      expect(current_state).to eq(state_after_second_strategy)
     end
   end
 end
