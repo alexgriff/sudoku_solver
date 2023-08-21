@@ -93,7 +93,9 @@ describe Solve do
   it "can solve a _large_ series of sudokus reasonably quickly", skip: true do
     # 500 random boards
     boards = File.read("spec/fixtures/speed_test.txt").split("\n\n").map { |txt| Board.from_txt(txt) }
-    solved = boards.map { |board| Solve.new.solve(board) }
+    solved = boards.map do |board|
+      Solve.new(strategies: Solve::BASIC_STRATEGIES + [Strategy::RandomGuess]).solve(board)
+    end
 
     solved.each.with_index do |status, i|
       # expect("#{i} - #{status}").to eq("#{i} - true")

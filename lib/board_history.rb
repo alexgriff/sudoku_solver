@@ -53,4 +53,8 @@ class Board::History
   def reset
     @log = []
   end
+
+  def guesses
+    self.where(strategy: Strategy::RandomGuess.name, solves: true).reject { |action| action.cascaded_from_id }
+  end
 end

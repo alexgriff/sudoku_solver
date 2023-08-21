@@ -9,13 +9,15 @@ class Strategy::RandomGuess < Strategy::BaseStrategy
  
   def self.apply(board, cell=nil)
     selected_cell = cell || board.empty_cells.sample(random: random)
-    return if !selected_cell || selected_cell&.filled?
+    return if !selected_cell&.empty?
     
     try_it(board, board.empty_cells - [selected_cell], selected_cell)
     
+    # after finding the correct value, undo all the guesswork
+    # and put the state into a 'clean' state with only the one guessed cell filled in
     correct_value = selected_cell.value
-    guess = guess_history(board).find { |action| action.cell_id == selected_cell.id }
-    board.state.undo(guess)
+    first_guess = board.state.history.guesses.find { |action| action.strategy_id == selected_cell.id }
+    board.state.undo(first_guess)
     board.state.register_change(
       board,
       selected_cell,
@@ -45,12 +47,12 @@ class Strategy::RandomGuess < Strategy::BaseStrategy
           board,
           cell,
           [cand],
-          {strategy: name}
+          {strategy: name, strategy_id: cell.id}
         )
       rescue Board::State::InvalidError
         puts "    -- cand #{cand} failed" if debugging
         puts "******RESETTING STATE******" if debugging
-        board.state.undo(guess_history(board).last)
+        board.state.undo(board.state.history.guesses.last)
         cand = shuffled_cands.pop
         next 
       else
@@ -75,12 +77,8 @@ class Strategy::RandomGuess < Strategy::BaseStrategy
       true
     else
       puts "******RESETTING STATE******" if debugging
-      board.state.undo(guess_history(board).last)
+      board.state.undo(board.state.history.guesses.last)
       false
     end
-  end
-
-  def self.guess_history(board)
-    board.state.history.where(strategy: self.name, solves: true).reject { |action| action.cascaded_from_id }
   end
 end
